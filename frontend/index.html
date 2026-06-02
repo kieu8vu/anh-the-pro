@@ -7,21 +7,11 @@
   <meta name="description" content="Tạo ảnh thẻ chuyên nghiệp với AI: xóa nền, thay màu, chuẩn kích thước" />
   <meta name="theme-color" content="#1e293b" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="icon" href="/public/icon-192.png" type="image/png" />
-  <!-- Apple PWA -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="AnhThePro" />
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ═══════════════════════════════════════════
-       DESIGN TOKENS
-    ═══════════════════════════════════════════ */
     :root {
       --c-bg0:    #0d1117;
       --c-bg1:    #161b22;
@@ -43,816 +33,585 @@
       --font-mono: 'Space Mono', monospace;
       --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
     }
-
-    /* ═══════════════════════════════════════════
-       RESET & BASE
-    ═══════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: var(--font-main);
-      background: var(--c-bg0);
-      color: var(--c-text1);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+    body { font-family: var(--font-main); background: var(--c-bg0); color: var(--c-text1); min-height: 100vh; line-height: 1.6; }
     img { max-width: 100%; display: block; }
     button { cursor: pointer; font-family: inherit; }
-    select, input[type=checkbox] { font-family: inherit; }
 
-    /* ═══════════════════════════════════════════
-       HEADER
-    ═══════════════════════════════════════════ */
-    .header {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border-bottom: 1px solid var(--c-border);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo-icon {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, var(--c-accent), var(--c-gold));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 0 20px rgba(59,130,246,.35);
-    }
-    .logo-text h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .logo-text p {
-      font-size: 0.7rem;
-      color: var(--c-text2);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .status-badge {
-      font-size: 0.75rem;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--c-border);
-      color: var(--c-text2);
-      font-family: var(--font-mono);
-    }
-    .status-badge.ok      { border-color: var(--c-green); color: var(--c-green); }
-    .status-badge.error   { border-color: var(--c-red);   color: var(--c-red);   }
-    .status-badge.warn    { border-color: var(--c-gold);  color: var(--c-gold);  }
-    .status-badge.loading { border-color: var(--c-accent2); color: var(--c-accent2); animation: pulse 1.2s ease-in-out infinite; }
+    /* HEADER */
+    .header { background: #0f172a; border-bottom: 1px solid var(--c-border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--c-accent), var(--c-gold)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .logo-text h1 { font-size: 1.1rem; font-weight: 700; }
+    .logo-text p { font-size: 0.7rem; color: var(--c-text2); text-transform: uppercase; letter-spacing: .08em; }
+    .status-badge { font-size: 0.72rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--c-border); color: var(--c-text2); font-family: var(--font-mono); }
+    .status-badge.ok    { border-color: var(--c-green); color: var(--c-green); }
+    .status-badge.error { border-color: var(--c-red);   color: var(--c-red);   }
+    .status-badge.loading { border-color: var(--c-accent2); color: var(--c-accent2); animation: pulse 1.2s infinite; }
 
-    .btn-pwa {
-      font-size: 0.75rem;
-      padding: 6px 14px;
-      background: var(--c-bg3);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-sm);
-      color: var(--c-text2);
-      transition: var(--transition);
-      display: none; /* Hiện khi có installPrompt */
-    }
-    .btn-pwa:hover { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+    /* MAIN */
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
 
-    /* ═══════════════════════════════════════════
-       MAIN LAYOUT
-    ═══════════════════════════════════════════ */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-    }
-
-    /* ═══════════════════════════════════════════
-       HERO
-    ═══════════════════════════════════════════ */
-    .hero {
-      text-align: center;
-      padding: 2.5rem 0 2rem;
-    }
-    .hero h2 {
-      font-size: clamp(1.6rem, 4vw, 2.5rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-    }
-    .hero h2 span {
-      background: linear-gradient(135deg, var(--c-accent2), var(--c-gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      color: var(--c-text2);
-      margin-top: 0.75rem;
-      font-size: 1rem;
-    }
-    .feature-pills {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 1.25rem;
-    }
-    .pill {
-      font-size: 0.75rem;
-      padding: 4px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--c-border);
-      color: var(--c-text2);
-      background: var(--c-bg1);
-    }
+    /* HERO */
+    .hero { text-align: center; padding: 2rem 0 1.5rem; }
+    .hero h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: -.03em; }
+    .hero h2 span { background: linear-gradient(135deg, var(--c-accent2), var(--c-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { color: var(--c-text2); margin-top: .6rem; font-size: .95rem; }
+    .pills-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+    .pill { font-size: .72rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--c-border); color: var(--c-text2); background: var(--c-bg1); }
     .pill.ai { border-color: var(--c-accent); color: var(--c-accent2); }
 
-    /* ═══════════════════════════════════════════
-       UPLOAD AREA
-    ═══════════════════════════════════════════ */
-    .upload-section {
-      margin-top: 2rem;
-    }
-    .upload-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: start;
-    }
-    @media (max-width: 640px) { .upload-grid { grid-template-columns: 1fr; } }
+    /* STEPS */
+    .steps-bar { display: flex; gap: 0; margin: 2rem 0 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--c-border); }
+    .step-tab { flex: 1; padding: 12px 8px; text-align: center; font-size: .78rem; font-weight: 500; color: var(--c-text2); background: var(--c-bg1); border-right: 1px solid var(--c-border); cursor: default; transition: var(--transition); }
+    .step-tab:last-child { border-right: none; }
+    .step-tab.active { background: var(--c-accent); color: #fff; }
+    .step-tab.done   { background: var(--c-bg2); color: var(--c-green); }
 
-    .dropzone {
-      border: 2px dashed var(--c-border);
-      border-radius: var(--radius);
-      padding: 3rem 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: var(--transition);
-      background: var(--c-bg1);
-      position: relative;
-      overflow: hidden;
-    }
-    .dropzone::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(59,130,246,.04) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .dropzone:hover, .dropzone.dragover {
-      border-color: var(--c-accent);
-      background: rgba(59,130,246,.05);
-    }
-    .dropzone.dragover { transform: scale(1.01); }
-    .drop-icon { font-size: 3rem; margin-bottom: 1rem; }
-    .drop-hint {
-      color: var(--c-text2);
-      font-size: 0.9rem;
-    }
-    .drop-formats {
-      font-size: 0.72rem;
-      color: var(--c-text3);
-      margin-top: 0.5rem;
-      font-family: var(--font-mono);
-    }
+    /* PANELS */
+    .panel { display: none; margin-top: 1.5rem; }
+    .panel.active { display: block; }
 
-    .btn-camera-big {
-      background: var(--c-bg2);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      color: var(--c-text1);
-      font-size: 0.85rem;
-      transition: var(--transition);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      min-width: 110px;
-    }
-    .btn-camera-big:hover { background: var(--c-bg3); border-color: var(--c-accent); }
-    .btn-camera-big .cam-icon { font-size: 2rem; }
+    /* UPLOAD */
+    .dropzone { border: 2px dashed var(--c-border); border-radius: var(--radius); padding: 2.5rem 2rem; text-align: center; cursor: pointer; transition: var(--transition); background: var(--c-bg1); }
+    .dropzone:hover, .dropzone.drag { border-color: var(--c-accent); background: rgba(59,130,246,.05); }
+    .drop-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+    .drop-hint { color: var(--c-text2); font-size: .875rem; }
+    .drop-sub  { font-size: .7rem; color: var(--c-text3); margin-top: .4rem; font-family: var(--font-mono); }
+    .upload-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+    .btn-cam { background: var(--c-bg2); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 1.2rem; color: var(--c-text1); font-size: .8rem; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 90px; transition: var(--transition); }
+    .btn-cam:hover { border-color: var(--c-accent); }
 
-    /* ═══════════════════════════════════════════
-       PREVIEW ORIGINAL
-    ═══════════════════════════════════════════ */
-    #preview-original {
-      margin-top: 1.5rem;
-    }
-    #preview-original img {
-      max-height: 220px;
-      border-radius: var(--radius);
-      margin: 0 auto;
-      border: 1px solid var(--c-border);
-      box-shadow: var(--shadow);
-    }
+    /* CAMERA */
+    #camera-section { display: none; margin-top: 1.25rem; }
+    .cam-wrap { position: relative; border-radius: var(--radius); overflow: hidden; background: #000; max-width: 420px; margin: 0 auto; }
+    #cam-video { width: 100%; display: block; }
+    .cam-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+    .cam-oval { width: 160px; height: 200px; border: 2px solid rgba(255,255,255,.6); border-radius: 50%; box-shadow: 0 0 0 9999px rgba(0,0,0,.35); }
+    .cam-hint { margin-top: .75rem; font-size: .7rem; color: rgba(255,255,255,.8); background: rgba(0,0,0,.5); padding: 3px 10px; border-radius: 20px; }
+    .cam-btns { position: absolute; bottom: 16px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; }
+    .cam-btn { border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .cam-btn.primary { width: 56px; height: 56px; background: #fff; color: #000; font-size: 1.4rem; }
+    .cam-btn.sec { width: 40px; height: 40px; background: rgba(255,255,255,.18); color: #fff; font-size: 1rem; backdrop-filter: blur(4px); }
 
-    /* ═══════════════════════════════════════════
-       SETTINGS PANEL
-    ═══════════════════════════════════════════ */
-    #settings-panel {
-      display: none;
-      margin-top: 2rem;
-      background: var(--c-bg1);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      padding: 1.75rem;
-    }
-    .settings-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--c-text2);
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label {
-      font-size: 0.8rem;
-      color: var(--c-text2);
-      font-weight: 500;
-    }
-    select {
-      background: var(--c-bg2);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-sm);
-      color: var(--c-text1);
-      padding: 8px 12px;
-      font-size: 0.875rem;
-      appearance: none;
-      cursor: pointer;
-      transition: var(--transition);
-      width: 100%;
-    }
-    select:focus { outline: none; border-color: var(--c-accent); }
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-    }
-    input[type=checkbox] {
-      width: 18px; height: 18px;
-      accent-color: var(--c-accent);
-      cursor: pointer;
-    }
+    /* PREVIEW ORIG */
+    #preview-orig { margin-top: 1.25rem; }
+    #preview-orig img { max-height: 200px; border-radius: var(--radius); margin: 0 auto; border: 1px solid var(--c-border); }
 
-    /* ═══════════════════════════════════════════
-       COLOR SWATCH PICKER
-    ═══════════════════════════════════════════ */
-    .color-swatches {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .swatch {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-    }
+    /* AI REMOVE BG */
+    #panel-removebg { background: var(--c-bg1); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 1.5rem; }
+    .ai-status { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+    .ai-label { font-size: .875rem; font-weight: 500; }
+    .ai-sub { font-size: .75rem; color: var(--c-text2); }
+    .progress-wrap { margin-top: .75rem; }
+    .progress-track { height: 4px; background: var(--c-bg3); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-accent), var(--c-gold)); border-radius: 2px; transition: width .3s ease; }
+    .progress-label { font-size: .72rem; color: var(--c-text2); margin-top: 5px; font-family: var(--font-mono); }
+    #canvas-nobg { border-radius: var(--radius-sm); border: 1px solid var(--c-border); max-width: 100%; display: block; margin: 1rem auto 0; max-height: 200px; }
+
+    /* SETTINGS */
+    #panel-settings { background: var(--c-bg1); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 1.5rem; }
+    .settings-title { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-text2); margin-bottom: 1.1rem; }
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: .78rem; color: var(--c-text2); font-weight: 500; }
+    select { background: var(--c-bg2); border: 1px solid var(--c-border); border-radius: var(--radius-sm); color: var(--c-text1); padding: 8px 10px; font-size: .85rem; cursor: pointer; width: 100%; }
+    .swatches { display: flex; gap: 7px; flex-wrap: wrap; }
+    .swatch { width: 30px; height: 30px; border-radius: 7px; border: 2px solid transparent; cursor: pointer; transition: var(--transition); }
     .swatch:hover { transform: scale(1.15); }
     .swatch.active { border-color: var(--c-accent2); box-shadow: 0 0 0 2px var(--c-accent); }
-    .swatch[data-color="white"]      { background: #ffffff; }
-    .swatch[data-color="blue"]       { background: #4372c4; }
-    .swatch[data-color="light_blue"] { background: #add8e6; }
-    .swatch[data-color="red"]        { background: #cc0000; }
-    .swatch[data-color="gray"]       { background: #c8c8c8; }
-    .swatch[data-color="transparent"]{ background: repeating-conic-gradient(#9ca3af 0% 25%, #fff 0% 50%) 0 0 / 12px 12px; }
+    .swatch[data-c="white"]      { background: #fff; }
+    .swatch[data-c="blue"]       { background: #4372c4; }
+    .swatch[data-c="light_blue"] { background: #add8e6; }
+    .swatch[data-c="red"]        { background: #cc0000; }
+    .swatch[data-c="gray"]       { background: #c8c8c8; }
+    .check-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+    input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--c-accent); cursor: pointer; }
 
-    /* ═══════════════════════════════════════════
-       PROCESS BUTTON
-    ═══════════════════════════════════════════ */
-    .process-row {
-      margin-top: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 12px 28px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: 1px solid transparent;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn.primary {
-      background: var(--c-accent);
-      color: #fff;
-      border-color: var(--c-accent);
-      box-shadow: 0 0 20px rgba(59,130,246,.35);
-    }
-    .btn.primary:hover:not(:disabled) {
-      background: #2563eb;
-      box-shadow: 0 0 28px rgba(59,130,246,.5);
-      transform: translateY(-1px);
-    }
-    .btn.primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn.secondary {
-      background: var(--c-bg2);
-      border-color: var(--c-border);
-      color: var(--c-text1);
-    }
+    /* BUTTONS */
+    .btn { padding: 11px 24px; border-radius: var(--radius-sm); font-size: .875rem; font-weight: 600; border: 1px solid transparent; transition: var(--transition); display: inline-flex; align-items: center; gap: 7px; }
+    .btn.primary { background: var(--c-accent); color: #fff; border-color: var(--c-accent); box-shadow: 0 0 18px rgba(59,130,246,.3); }
+    .btn.primary:hover:not(:disabled) { background: #2563eb; transform: translateY(-1px); }
+    .btn.primary:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn.secondary { background: var(--c-bg2); border-color: var(--c-border); color: var(--c-text1); }
     .btn.secondary:hover { background: var(--c-bg3); }
-    .btn.ghost {
-      background: transparent;
-      border-color: transparent;
-      color: var(--c-text2);
-    }
+    .btn.ghost { background: transparent; border-color: transparent; color: var(--c-text2); }
     .btn.ghost:hover { color: var(--c-text1); }
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.25rem; }
 
-    /* ═══════════════════════════════════════════
-       PROGRESS BAR
-    ═══════════════════════════════════════════ */
-    #progress-wrap {
-      display: none;
-      margin-top: 1rem;
-    }
-    .progress-track {
-      height: 4px;
-      background: var(--c-bg3);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    #progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--c-accent), var(--c-gold));
-      border-radius: 2px;
-      transition: width 0.3s ease;
-      animation: shimmer 1.5s ease-in-out infinite;
-    }
-    @keyframes shimmer {
-      0%,100% { opacity: 1; }
-      50%      { opacity: 0.7; }
-    }
-    .progress-label {
-      font-size: 0.75rem;
-      color: var(--c-text2);
-      margin-top: 6px;
-      font-family: var(--font-mono);
-    }
+    /* RESULT */
+    #panel-result { margin-top: 1.5rem; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:560px){ .result-grid { grid-template-columns: 1fr; } }
+    .result-card { background: var(--c-bg1); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+    .result-card img { max-height: 260px; border-radius: 6px; margin: 0 auto .6rem; box-shadow: var(--shadow); }
+    .result-meta { font-size: .72rem; color: var(--c-text2); font-family: var(--font-mono); }
+    .result-title { font-size: .95rem; font-weight: 600; color: var(--c-green); margin-bottom: 1rem; }
 
-    /* ═══════════════════════════════════════════
-       CAMERA SECTION
-    ═══════════════════════════════════════════ */
-    #camera-section {
-      display: none;
-      margin-top: 1.5rem;
-    }
-    .camera-wrapper {
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: #000;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-    #cam-video {
-      width: 100%;
-      display: block;
-      border-radius: var(--radius);
-    }
-    .cam-guide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-    .cam-oval {
-      width: 180px; height: 220px;
-      border: 3px solid rgba(255,255,255,.6);
-      border-radius: 50%;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,.35);
-    }
-    .cam-hint {
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,.8);
-      background: rgba(0,0,0,.5);
-      padding: 4px 12px;
-      border-radius: 20px;
-      text-align: center;
-    }
-    .cam-controls {
-      position: absolute;
-      bottom: 20px;
-      left: 0; right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-    }
-    .cam-btn {
-      border: none;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      transition: var(--transition);
-    }
-    .cam-btn.primary {
-      width: 64px; height: 64px;
-      background: #fff;
-      color: #0d1117;
-      font-size: 1.5rem;
-      box-shadow: 0 0 20px rgba(255,255,255,.4);
-    }
-    .cam-btn.primary:hover { transform: scale(1.1); }
-    .cam-btn.secondary {
-      width: 44px; height: 44px;
-      background: rgba(255,255,255,.15);
-      color: #fff;
-      backdrop-filter: blur(4px);
-    }
-    .cam-btn.secondary:hover { background: rgba(255,255,255,.25); }
-
-    /* ═══════════════════════════════════════════
-       RESULT SECTION
-    ═══════════════════════════════════════════ */
-    #result-section {
-      margin-top: 2.5rem;
-    }
-    .preview-panel {}
-    .preview-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 1.25rem;
-      color: var(--c-green);
-    }
-    .preview-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    @media (max-width: 640px) { .preview-grid { grid-template-columns: 1fr; } }
-    .preview-single, .preview-sheet {
-      background: var(--c-bg1);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      padding: 1rem;
-      text-align: center;
-    }
-    .preview-img {
-      max-height: 280px;
-      margin: 0 auto 0.75rem;
-      border-radius: 6px;
-      box-shadow: var(--shadow);
-    }
-    .preview-sheet-img {
-      max-height: 280px;
-      width: 100%;
-      object-fit: contain;
-      border-radius: 6px;
-      margin-bottom: 0.75rem;
-    }
-    .preview-meta {
-      font-size: 0.75rem;
-      color: var(--c-text2);
-      font-family: var(--font-mono);
-    }
-    .preview-error { color: var(--c-red); }
-    .preview-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
-    }
-
-    /* ═══════════════════════════════════════════
-       STEPS GUIDE
-    ═══════════════════════════════════════════ */
-    .steps-section {
-      margin-top: 3.5rem;
-      padding-top: 2.5rem;
-      border-top: 1px solid var(--c-border);
-    }
-    .steps-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--c-text2);
-      margin-bottom: 1.5rem;
-    }
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-    .step-card {
-      background: var(--c-bg1);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      transition: var(--transition);
-    }
-    .step-card:hover { border-color: var(--c-accent); background: var(--c-bg2); }
-    .step-num {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--c-accent2);
-      margin-bottom: 0.5rem;
-    }
-    .step-label {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-    .step-desc {
-      font-size: 0.75rem;
-      color: var(--c-text2);
-      line-height: 1.5;
-    }
-
-    /* ═══════════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════════ */
-    .footer {
-      border-top: 1px solid var(--c-border);
-      padding: 1.5rem 2rem;
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--c-text3);
-    }
-    .footer a { color: var(--c-accent2); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-
-    /* ═══════════════════════════════════════════
-       ANIMATIONS
-    ═══════════════════════════════════════════ */
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .fade-up { animation: fadeUp 0.45s ease both; }
-    .fade-up-1 { animation-delay: 0.1s; }
-    .fade-up-2 { animation-delay: 0.2s; }
-    .fade-up-3 { animation-delay: 0.3s; }
-    .fade-up-4 { animation-delay: 0.4s; }
-
-    /* ═══════════════════════════════════════════
-       SCROLLBAR
-    ═══════════════════════════════════════════ */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--c-bg0); }
-    ::-webkit-scrollbar-thumb { background: var(--c-bg3); border-radius: 3px; }
-
-    /* ═══════════════════════════════════════════
-       RESPONSIVE
-    ═══════════════════════════════════════════ */
-    @media (max-width: 480px) {
-      .header { padding: 1rem; }
-      .container { padding: 1.5rem 1rem 3rem; }
-      .settings-grid { grid-template-columns: 1fr; }
-    }
+    @media(max-width:480px){ .header{padding:1rem;} .container{padding:1.5rem 1rem 3rem;} .upload-row{grid-template-columns:1fr;} }
   </style>
 </head>
-
 <body>
-  <!-- ════════════════════ HEADER ════════════════════ -->
-  <header class="header">
-    <div class="logo">
-      <div class="logo-icon">📸</div>
-      <div class="logo-text">
-        <h1>Ảnh Thẻ Pro</h1>
-        <p>AI Photo Studio</p>
-      </div>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">📸</div>
+    <div class="logo-text">
+      <h1>Ảnh Thẻ Pro</h1>
+      <p>AI chạy trên trình duyệt</p>
     </div>
-    <div class="header-right">
-      <span id="status-badge" class="status-badge">Đang kết nối…</span>
-      <button id="btn-pwa-install" class="btn-pwa">📱 Cài App</button>
+  </div>
+  <span id="status-badge" class="status-badge loading">Đang kết nối…</span>
+</header>
+
+<main class="container">
+
+  <div class="hero">
+    <h2>Ảnh Thẻ <span>Chuyên Nghiệp</span> — AI Miễn Phí</h2>
+    <p>Xóa nền bằng AI chạy thẳng trên trình duyệt · Không cần server · Hoàn toàn riêng tư</p>
+    <div class="pills-row">
+      <span class="pill ai">🤖 AI WebAssembly</span>
+      <span class="pill">📐 3×4, 4×6, Hộ chiếu…</span>
+      <span class="pill">🎨 Thay màu nền</span>
+      <span class="pill">🖨 Tờ in 4×5</span>
+      <span class="pill">🔒 Ảnh không rời máy bạn</span>
     </div>
-  </header>
+  </div>
 
-  <!-- ════════════════════ MAIN ════════════════════ -->
-  <main class="container">
+  <!-- STEP TABS -->
+  <div class="steps-bar">
+    <div class="step-tab active" id="tab0">① Chọn ảnh</div>
+    <div class="step-tab" id="tab1">② Xóa nền AI</div>
+    <div class="step-tab" id="tab2">③ Tùy chỉnh</div>
+    <div class="step-tab" id="tab3">④ Kết quả</div>
+  </div>
 
-    <!-- HERO -->
-    <section class="hero fade-up">
-      <h2>Tạo <span>Ảnh Thẻ Chuyên Nghiệp</span><br/>Bằng AI — Miễn Phí</h2>
-      <p>Upload ảnh · AI xóa nền · Chọn màu · Xuất đúng kích thước chuẩn</p>
-      <div class="feature-pills">
-        <span class="pill ai">🤖 AI xóa nền</span>
-        <span class="pill">📐 Chuẩn 3×4, 4×6, Hộ chiếu…</span>
-        <span class="pill">🎨 Thay màu nền</span>
-        <span class="pill">🖨 Tờ in 4×5 ảnh</span>
-        <span class="pill">📱 PWA offline</span>
+  <!-- PANEL 0: UPLOAD -->
+  <div class="panel active" id="panel0">
+    <div class="upload-row">
+      <div class="dropzone" id="dropzone">
+        <div class="drop-icon">🖼</div>
+        <p class="drop-hint" id="drop-hint">Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
+        <p class="drop-sub">JPG · PNG · WEBP · tối đa 10MB</p>
       </div>
-    </section>
-
-    <!-- UPLOAD -->
-    <section class="upload-section fade-up fade-up-1">
-      <div class="upload-grid">
-        <!-- Dropzone -->
-        <div id="dropzone" class="dropzone">
-          <div class="drop-icon">🖼</div>
-          <p class="drop-hint">Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
-          <p class="drop-formats">JPG · PNG · WEBP · HEIC · tối đa ~10MB</p>
+      <button class="btn-cam" id="btn-cam">
+        <span style="font-size:1.8rem">📷</span>
+        <span>Chụp<br/>Camera</span>
+      </button>
+    </div>
+    <input type="file" id="input-file" accept="image/*" style="display:none" />
+    <div id="camera-section">
+      <div class="cam-wrap">
+        <video id="cam-video" autoplay playsinline muted></video>
+        <canvas id="cam-canvas" style="display:none"></canvas>
+        <div class="cam-overlay">
+          <div class="cam-oval"></div>
+          <p class="cam-hint">Nhìn thẳng · Đủ sáng · Không đội mũ</p>
         </div>
-
-        <!-- Camera button -->
-        <button id="btn-camera" class="btn-camera-big">
-          <span class="cam-icon">📷</span>
-          <span>Chụp<br/>Camera</span>
-        </button>
+        <div class="cam-btns">
+          <button class="cam-btn sec" id="btn-flip">↺</button>
+          <button class="cam-btn primary" id="btn-capture">📷</button>
+          <button class="cam-btn sec" id="btn-cam-close">✕</button>
+        </div>
       </div>
+    </div>
+    <div id="preview-orig"></div>
+  </div>
 
-      <!-- Hidden file input -->
-      <input type="file" id="input-file" accept="image/*" style="display:none" />
+  <!-- PANEL 1: XÓA NỀN AI -->
+  <div class="panel" id="panel1">
+    <div id="panel-removebg">
+      <div class="ai-status">
+        <div>
+          <div class="ai-label" id="ai-label">🤖 AI đang xóa nền…</div>
+          <div class="ai-sub" id="ai-sub">Lần đầu tải model ~20MB, sau đó nhanh hơn</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-label" id="progress-label">Đang khởi tạo…</div>
+      </div>
+      <canvas id="canvas-nobg"></canvas>
+      <div class="action-row" id="removebg-actions" style="display:none">
+        <button class="btn primary" id="btn-next-settings">Tiếp theo — Tùy chỉnh →</button>
+        <button class="btn ghost" id="btn-redo-upload">↩ Chọn ảnh khác</button>
+      </div>
+    </div>
+  </div>
 
-      <!-- Camera preview -->
-      <div id="camera-section"></div>
-
-      <!-- Original preview -->
-      <div id="preview-original"></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section id="settings-panel">
+  <!-- PANEL 2: SETTINGS -->
+  <div class="panel" id="panel2">
+    <div id="panel-settings">
       <p class="settings-title">⚙ Tùy chỉnh ảnh thẻ</p>
-
       <div class="settings-grid">
-        <!-- Kích thước -->
         <div class="form-group">
-          <label class="form-label" for="size-select">📐 Kích thước</label>
+          <label class="form-label">📐 Kích thước</label>
           <select id="size-select">
-            <option value="the_3x4">Đang tải…</option>
+            <option value="the_3x4">Ảnh thẻ 3×4 cm</option>
+            <option value="the_4x6">Ảnh thẻ 4×6 cm</option>
+            <option value="the_2x3">Ảnh thẻ 2×3 cm</option>
+            <option value="chung_minh">CCCD/CMND</option>
+            <option value="passport">Hộ chiếu 35×45mm</option>
+            <option value="visa_us">Visa Mỹ 2×2 inch</option>
+            <option value="visa_schengen">Visa Schengen</option>
           </select>
         </div>
-
-        <!-- Format xuất -->
         <div class="form-group">
-          <label class="form-label" for="fmt-select">💾 Định dạng xuất</label>
+          <label class="form-label">💾 Định dạng xuất</label>
           <select id="fmt-select">
             <option value="jpeg">JPEG (nhỏ hơn)</option>
             <option value="png">PNG (chất lượng cao)</option>
           </select>
         </div>
-
-        <!-- Màu nền -->
         <div class="form-group">
           <label class="form-label">🎨 Màu nền</label>
-          <div class="color-swatches" id="color-swatches">
-            <div class="swatch active" data-color="white"       title="Trắng"></div>
-            <div class="swatch"        data-color="blue"        title="Xanh dương"></div>
-            <div class="swatch"        data-color="light_blue"  title="Xanh nhạt"></div>
-            <div class="swatch"        data-color="red"         title="Đỏ"></div>
-            <div class="swatch"        data-color="gray"        title="Xám"></div>
-            <div class="swatch"        data-color="transparent" title="Trong suốt"></div>
+          <div class="swatches" id="swatches">
+            <div class="swatch active" data-c="white"      title="Trắng"></div>
+            <div class="swatch"        data-c="blue"       title="Xanh dương"></div>
+            <div class="swatch"        data-c="light_blue" title="Xanh nhạt"></div>
+            <div class="swatch"        data-c="red"        title="Đỏ"></div>
+            <div class="swatch"        data-c="gray"       title="Xám"></div>
           </div>
-          <!-- Hidden select đồng bộ với swatches -->
           <select id="bg-select" style="display:none">
             <option value="white">Trắng</option>
             <option value="blue">Xanh dương</option>
             <option value="light_blue">Xanh nhạt</option>
             <option value="red">Đỏ</option>
             <option value="gray">Xám</option>
-            <option value="transparent">Trong suốt</option>
           </select>
         </div>
-
-        <!-- Enhance -->
         <div class="form-group">
           <label class="form-label">✨ Tùy chọn</label>
-          <div class="checkbox-row">
+          <div class="check-row">
             <input type="checkbox" id="enhance-check" checked />
-            <label for="enhance-check" style="font-size:.85rem;cursor:pointer">
-              Tăng cường chất lượng (sharpen)
-            </label>
+            <label for="enhance-check" style="font-size:.85rem;cursor:pointer">Tăng cường chất lượng</label>
           </div>
         </div>
       </div>
-
-      <!-- Process Button -->
-      <div class="process-row">
-        <button id="btn-process" class="btn primary" disabled>
-          🚀 Xử lý ảnh thẻ
-        </button>
+      <div class="action-row">
+        <button class="btn primary" id="btn-process">🚀 Tạo ảnh thẻ</button>
+        <button class="btn ghost" id="btn-back-removebg">← Xem lại xóa nền</button>
       </div>
-
-      <!-- Progress -->
-      <div id="progress-wrap">
-        <div class="progress-track">
-          <div id="progress-bar"></div>
-        </div>
-        <p class="progress-label">AI đang xử lý… có thể mất 15–30 giây lần đầu</p>
+      <div id="process-progress" style="display:none;margin-top:1rem;">
+        <div class="progress-track"><div class="progress-fill" id="process-fill"></div></div>
+        <div class="progress-label">Đang xử lý trên server…</div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- RESULT -->
-    <div id="result-section"></div>
-
-    <!-- HOW IT WORKS -->
-    <section class="steps-section fade-up fade-up-4">
-      <p class="steps-title">🗺 Cách hoạt động — 5 bước triển khai</p>
-      <div class="steps-grid">
-        <div class="step-card">
-          <p class="step-num">BƯỚC 01</p>
-          <p class="step-label">Repository</p>
-          <p class="step-desc">GitHub repo với cấu trúc backend/ + frontend/, .gitignore, README</p>
+  <!-- PANEL 3: RESULT -->
+  <div class="panel" id="panel3">
+    <div id="panel-result">
+      <p class="result-title">✅ Ảnh thẻ đã sẵn sàng!</p>
+      <div class="result-grid">
+        <div class="result-card">
+          <img id="result-img" src="" alt="Ảnh thẻ" />
+          <p class="result-meta" id="result-meta"></p>
         </div>
-        <div class="step-card">
-          <p class="step-num">BƯỚC 02</p>
-          <p class="step-label">Backend AI</p>
-          <p class="step-desc">FastAPI + rembg (U2-Net AI) + Pillow — xóa nền, resize, enhance</p>
-        </div>
-        <div class="step-card">
-          <p class="step-num">BƯỚC 03</p>
-          <p class="step-label">Deploy Backend</p>
-          <p class="step-desc">Push GitHub → Render.com auto deploy → endpoint HTTPS public</p>
-        </div>
-        <div class="step-card">
-          <p class="step-num">BƯỚC 04</p>
-          <p class="step-label">Frontend PWA</p>
-          <p class="step-desc">Vanilla JS + Canvas API + Service Worker — cài được như app mobile</p>
-        </div>
-        <div class="step-card">
-          <p class="step-num">BƯỚC 05</p>
-          <p class="step-label">Deploy Frontend</p>
-          <p class="step-desc">Drag & drop folder lên Netlify → live URL trong 30 giây</p>
+        <div class="result-card" id="sheet-card">
+          <p class="result-meta">Đang tạo tờ in…</p>
         </div>
       </div>
-    </section>
+      <div class="action-row">
+        <button class="btn primary" id="btn-dl-single">⬇ Tải ảnh đơn</button>
+        <button class="btn secondary" id="btn-dl-sheet">🖨 Tải tờ in 4×5</button>
+        <button class="btn ghost" id="btn-reset">↩ Làm lại</button>
+      </div>
+    </div>
+  </div>
 
-  </main>
+</main>
 
-  <!-- ════════════════════ FOOTER ════════════════════ -->
-  <footer class="footer">
-    <p>Ảnh Thẻ Pro · Mã nguồn mở ·
-      Stack: <strong>FastAPI + rembg + Pillow + PWA</strong> ·
-      Deploy: <a href="https://render.com" target="_blank" rel="noopener">Render</a> +
-              <a href="https://netlify.com" target="_blank" rel="noopener">Netlify</a>
-    </p>
-  </footer>
+<footer style="border-top:1px solid var(--c-border);padding:1.25rem 2rem;text-align:center;font-size:.72rem;color:var(--c-text3);">
+  Ảnh Thẻ Pro · AI xóa nền chạy trên trình duyệt (WebAssembly) · Backend: FastAPI + Pillow · Deploy: Render + Netlify
+</footer>
 
-  <!-- ════════════════════ SCRIPTS ════════════════════ -->
-  <script>
-    // ─── Config: đổi URL backend sau khi deploy Render ───────────────────
-    window.API_BASE = "https://anh-the-pro-api.onrender.com";
-    // Khi dev local: window.API_BASE = "http://localhost:8000";
-  </script>
+<!-- ══════════════════════════════════════════
+     @imgly/background-removal — chạy AI trong browser
+══════════════════════════════════════════ -->
+<script>
+  // ⚠️ Đổi URL này sau khi deploy Render.com
+  window.API_BASE = "https://anh-the-pro.onrender.com";
+</script>
 
-  <script type="module" src="/src/app.js"></script>
+<script type="module">
+// Tải thư viện AI xóa nền (chạy bằng WebAssembly trong trình duyệt)
+import { removeBackground, preload } from 'https://esm.sh/@imgly/background-removal@1.4.5';
 
-  <script>
-    // ─── Color swatch picker ─────────────────────────────────────────────
-    document.querySelectorAll(".swatch").forEach(sw => {
-      sw.addEventListener("click", () => {
-        document.querySelectorAll(".swatch").forEach(s => s.classList.remove("active"));
-        sw.classList.add("active");
-        document.getElementById("bg-select").value = sw.dataset.color;
-      });
-    });
+// ── DOM refs ──────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const dropzone      = $('dropzone');
+const inputFile     = $('input-file');
+const btnCam        = $('btn-cam');
+const camSection    = $('camera-section');
+const camVideo      = $('cam-video');
+const camCanvas     = $('cam-canvas');
+const btnCapture    = $('btn-capture');
+const btnFlip       = $('btn-flip');
+const btnCamClose   = $('btn-cam-close');
+const previewOrig   = $('preview-orig');
+const canvasNobg    = $('canvas-nobg');
+const aiLabel       = $('ai-label');
+const aiSub         = $('ai-sub');
+const progressFill  = $('progress-fill');
+const progressLabel = $('progress-label');
+const removebgActs  = $('removebg-actions');
+const btnNextSettings = $('btn-next-settings');
+const btnRedoUpload   = $('btn-redo-upload');
+const sizeSelect    = $('size-select');
+const fmtSelect     = $('fmt-select');
+const bgSelect      = $('bg-select');
+const enhanceCheck  = $('enhance-check');
+const btnProcess    = $('btn-process');
+const btnBackRemovebg = $('btn-back-removebg');
+const processProg   = $('process-progress');
+const processFill   = $('process-fill');
+const resultImg     = $('result-img');
+const resultMeta    = $('result-meta');
+const sheetCard     = $('sheet-card');
+const btnDlSingle   = $('btn-dl-single');
+const btnDlSheet    = $('btn-dl-sheet');
+const btnReset      = $('btn-reset');
+const statusBadge   = $('status-badge');
 
-    // ─── PWA Install prompt ───────────────────────────────────────────────
-    let deferredPrompt;
-    const btnPWA = document.getElementById("btn-pwa-install");
+// ── State ────────────────────────────────────────────────────
+let origBlob    = null;  // ảnh gốc
+let nobgBlob    = null;  // ảnh sau khi xóa nền (PNG RGBA)
+let resultDataURL = null;
+let sheetDataURL  = null;
+let camStream   = null;
+let facingMode  = 'user';
 
-    window.addEventListener("beforeinstallprompt", e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      btnPWA.style.display = "block";
-    });
+// ── Tabs ─────────────────────────────────────────────────────
+function setTab(n) {
+  for (let i = 0; i < 4; i++) {
+    const tab   = $('tab'+i);
+    const panel = $('panel'+i);
+    tab.classList.remove('active','done');
+    panel.classList.remove('active');
+    if (i < n)  tab.classList.add('done');
+    if (i === n){ tab.classList.add('active'); panel.classList.add('active'); }
+  }
+}
 
-    btnPWA.addEventListener("click", async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") btnPWA.style.display = "none";
-      deferredPrompt = null;
-    });
-  </script>
+// ── Status badge ─────────────────────────────────────────────
+function setStatus(msg, type) {
+  statusBadge.textContent = msg;
+  statusBadge.className   = 'status-badge ' + type;
+}
+
+// ── Ping backend ─────────────────────────────────────────────
+async function pingBackend() {
+  try {
+    const r = await fetch(window.API_BASE + '/health');
+    const d = await r.json();
+    setStatus('Server sẵn sàng ✓', 'ok');
+  } catch {
+    setStatus('Server offline — kiểm tra lại', 'error');
+  }
+}
+
+// ── Upload / Drag ─────────────────────────────────────────────
+dropzone.addEventListener('dragover',  e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+dropzone.addEventListener('click', () => inputFile.click());
+inputFile.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+
+async function loadFile(file) {
+  if (!file.type.startsWith('image/')) { alert('Vui lòng chọn file ảnh!'); return; }
+  origBlob = file;
+  const url = URL.createObjectURL(file);
+  previewOrig.innerHTML = `<img src="${url}" alt="Ảnh gốc" />`;
+  $('drop-hint').textContent = '✓ Đã chọn — nhấn "Xóa nền AI" để tiếp tục';
+  // Tự động chuyển sang bước xóa nền
+  setTimeout(() => startRemoveBg(), 300);
+}
+
+// ── Camera ───────────────────────────────────────────────────
+btnCam.addEventListener('click', async () => {
+  camSection.style.display = 'block';
+  await startCam();
+});
+btnCamClose.addEventListener('click', stopCam);
+btnFlip.addEventListener('click', async () => { facingMode = facingMode === 'user' ? 'environment' : 'user'; stopCam(); await startCam(); });
+btnCapture.addEventListener('click', () => {
+  camCanvas.width  = camVideo.videoWidth;
+  camCanvas.height = camVideo.videoHeight;
+  camCanvas.getContext('2d').drawImage(camVideo, 0, 0);
+  camCanvas.toBlob(blob => { stopCam(); loadFile(new File([blob], 'camera.jpg', {type:'image/jpeg'})); }, 'image/jpeg', .95);
+});
+
+async function startCam() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode, width:{ideal:1280}, height:{ideal:720} }, audio: false });
+    camVideo.srcObject = camStream;
+  } catch(e) { alert('Không truy cập được camera: ' + e.message); }
+}
+function stopCam() {
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  camSection.style.display = 'none';
+}
+
+// ── Xóa nền AI (WebAssembly) ─────────────────────────────────
+async function startRemoveBg() {
+  setTab(1);
+  progressFill.style.width  = '0%';
+  progressLabel.textContent = 'Đang tải model AI…';
+  aiLabel.textContent = '🤖 AI đang xóa nền…';
+  removebgActs.style.display = 'none';
+  canvasNobg.style.display   = 'none';
+
+  try {
+    const config = {
+      progress: (key, current, total) => {
+        const pct = total > 0 ? Math.round(current / total * 100) : 0;
+        progressFill.style.width  = pct + '%';
+        progressLabel.textContent = `${key}: ${pct}%`;
+      },
+      publicPath: 'https://esm.sh/@imgly/background-removal@1.4.5/dist/',
+    };
+
+    const resultBlob = await removeBackground(origBlob, config);
+    nobgBlob = resultBlob;
+
+    // Hiển thị preview ảnh đã xóa nền (dạng checkerboard)
+    const url = URL.createObjectURL(resultBlob);
+    const img = new Image();
+    img.onload = () => {
+      canvasNobg.width  = img.naturalWidth;
+      canvasNobg.height = img.naturalHeight;
+      const ctx = canvasNobg.getContext('2d');
+      // Vẽ nền checker
+      const size = 20;
+      for (let y = 0; y < canvasNobg.height; y += size) {
+        for (let x = 0; x < canvasNobg.width; x += size) {
+          ctx.fillStyle = (Math.floor(x/size)+Math.floor(y/size)) % 2 === 0 ? '#ccc' : '#fff';
+          ctx.fillRect(x, y, size, size);
+        }
+      }
+      ctx.drawImage(img, 0, 0);
+      canvasNobg.style.display = 'block';
+    };
+    img.src = url;
+
+    progressFill.style.width  = '100%';
+    progressLabel.textContent = 'Xóa nền hoàn tất!';
+    aiLabel.textContent = '✅ Xóa nền thành công!';
+    aiSub.textContent   = 'Kiểm tra kết quả bên dưới rồi nhấn Tiếp theo';
+    removebgActs.style.display = 'flex';
+
+  } catch(e) {
+    aiLabel.textContent = '❌ Lỗi: ' + e.message;
+    progressLabel.textContent = 'Thử lại với ảnh khác';
+    removebgActs.style.display = 'flex';
+  }
+}
+
+btnNextSettings.addEventListener('click', () => setTab(2));
+btnRedoUpload.addEventListener('click',   () => { nobgBlob = null; origBlob = null; previewOrig.innerHTML = ''; setTab(0); });
+btnBackRemovebg.addEventListener('click', () => setTab(1));
+
+// ── Swatch picker ─────────────────────────────────────────────
+document.querySelectorAll('.swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    bgSelect.value = sw.dataset.c;
+  });
+});
+
+// ── Process — gửi lên backend ─────────────────────────────────
+btnProcess.addEventListener('click', async () => {
+  if (!nobgBlob) { alert('Chưa có ảnh đã xóa nền!'); return; }
+
+  btnProcess.disabled = true;
+  processProg.style.display = 'block';
+  processFill.style.width = '30%';
+
+  const form = new FormData();
+  form.append('file',       nobgBlob, 'nobg.png');
+  form.append('size_key',   sizeSelect.value);
+  form.append('bg_color',   bgSelect.value);
+  form.append('enhance',    enhanceCheck.checked ? 'true' : 'false');
+  form.append('output_fmt', fmtSelect.value);
+
+  try {
+    processFill.style.width = '60%';
+    const res  = await fetch(window.API_BASE + '/api/process', { method: 'POST', body: form });
+    const data = await res.json();
+    processFill.style.width = '100%';
+
+    if (!data.success) throw new Error(data.detail || 'Lỗi server');
+
+    const mime    = data.format === 'png' ? 'image/png' : 'image/jpeg';
+    resultDataURL = `data:${mime};base64,${data.image_b64}`;
+
+    resultImg.src     = resultDataURL;
+    resultMeta.textContent = `${data.width} × ${data.height} px · ${data.size_label}`;
+
+    btnDlSingle.onclick = () => dlURL(resultDataURL, `anh-the.${data.format}`);
+    buildSheet(resultDataURL, data);
+    setTab(3);
+
+  } catch(e) {
+    alert('Lỗi xử lý: ' + e.message);
+  } finally {
+    btnProcess.disabled = false;
+    processProg.style.display = 'none';
+    processFill.style.width   = '0%';
+  }
+});
+
+// ── Tờ in 4×5 ─────────────────────────────────────────────────
+function buildSheet(imgSrc, data) {
+  const img = new Image();
+  img.onload = () => {
+    const cols=4, rows=5, gap=8, margin=16;
+    const cw=data.width, ch=data.height;
+    const canvas = document.createElement('canvas');
+    canvas.width  = margin*2 + cols*cw + (cols-1)*gap;
+    canvas.height = margin*2 + rows*ch + (rows-1)*gap;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      ctx.drawImage(img, margin+c*(cw+gap), margin+r*(ch+gap), cw, ch);
+    }
+    sheetDataURL = canvas.toDataURL('image/jpeg', .95);
+    sheetCard.innerHTML = `<img src="${sheetDataURL}" alt="Tờ in" style="max-height:260px;border-radius:6px;margin:0 auto .6rem;" /><p class="result-meta">Tờ in 4×5 ảnh</p>`;
+    btnDlSheet.onclick = () => dlURL(sheetDataURL, 'to-in-anh-the.jpg');
+  };
+  img.src = imgSrc;
+}
+
+// ── Download ─────────────────────────────────────────────────
+function dlURL(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+}
+
+// ── Reset ────────────────────────────────────────────────────
+btnReset.addEventListener('click', () => {
+  origBlob = nobgBlob = resultDataURL = sheetDataURL = null;
+  previewOrig.innerHTML = '';
+  $('drop-hint').textContent = 'Kéo thả ảnh vào đây hoặc nhấn để chọn';
+  setTab(0);
+});
+
+// ── Init ─────────────────────────────────────────────────────
+pingBackend();
+setTab(0);
+
+// Preload model AI ngầm sau 3 giây
+setTimeout(() => {
+  preload({ publicPath: 'https://esm.sh/@imgly/background-removal@1.4.5/dist/' }).catch(()=>{});
+}, 3000);
+
+</script>
 </body>
 </html>
