@@ -1,0 +1,19 @@
+# render.yaml — Cấu hình deploy backend lên Render.com (Bước 3)
+# Push file này lên GitHub, sau đó kết nối repo với Render.com
+
+services:
+  - type: web
+    name: anh-the-pro-api
+    env: python
+    region: singapore          # Chọn region gần Việt Nam nhất
+    plan: free                 # Free tier — đủ dùng cho demo
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: PORT
+        value: "8000"
+    # Tự động deploy khi push lên branch main
+    autoDeploy: true
