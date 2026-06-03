@@ -652,97 +652,108 @@ function drawDetectOverlay(ctx, result, lEye, rEye, chin, angle, scale){
 }
 
 // ── TỰ ĐỘNG CĂN CHỈNH VÀ CROP ───────────────────────────────────────────
+//
+// PHƯƠNG PHÁP: Dùng Inter-Eye Distance (IED) làm đơn vị tham chiếu.
+// face-api box.y KHÔNG phải đỉnh đầu thực — nằm giữa trán → sai khi dùng làm headH.
+// IED là khoảng cách 2 mắt, ổn định và chính xác hơn nhiều.
+//
+//  IED  → faceH (mắt→cằm) = IED × 1.8
+//       → headH (đỉnh→cằm) = faceH × 1.55  (đỉnh đầu + tóc cao hơn mắt ~55%)
+//  cropH = headH / faceHeadRatio
+//  cropTop = eyeMidY − eyeLine × cropH
+//  cropLeft = eyeMidX − cropW / 2
+// ─────────────────────────────────────────────────────────────────────────
 function autoCrop(fd, silent){
   var sz = SIZES[selSize.value] || SIZES.the_3x4;
   var img = fd.img;
   var doAlign = ckAlign.checked;
 
-  // ── Bước 1: Xoay ảnh để mặt thẳng ─────────────────────────────────
+  // ── Bước 1: Xoay ảnh thẳng quanh trung điểm 2 mắt ──────────────────
   var srcCanvas = document.createElement('canvas');
   srcCanvas.width  = img.naturalWidth;
   srcCanvas.height = img.naturalHeight;
   var srcCtx = srcCanvas.getContext('2d');
 
-  if(doAlign && Math.abs(fd.angle) > 0.5){
-    // Xoay quanh trung tâm khuôn mặt
-    var cx = fd.lEye.x + (fd.rEye.x - fd.lEye.x)/2;
-    var cy = fd.lEye.y + (fd.rEye.y - fd.lEye.y)/2;
+  var eyeMidX = (fd.lEye.x + fd.rEye.x) / 2;
+  var eyeMidY = (fd.lEye.y + fd.rEye.y) / 2;
+
+  if(doAlign && Math.abs(fd.angle) > 0.3){
     srcCtx.save();
-    srcCtx.translate(cx, cy);
+    srcCtx.translate(eyeMidX, eyeMidY);
     srcCtx.rotate(-fd.angle * Math.PI / 180);
-    srcCtx.translate(-cx, -cy);
+    srcCtx.translate(-eyeMidX, -eyeMidY);
     srcCtx.drawImage(img, 0, 0);
     srcCtx.restore();
     setStat('fi-align','Đã xoay '+fd.angle.toFixed(1)+'°','ok');
   } else {
     srcCtx.drawImage(img, 0, 0);
-    setStat('fi-align', doAlign?'Mặt đã thẳng ('+fd.angle.toFixed(1)+'°)':'Không xoay','ok');
+    setStat('fi-align', doAlign?'Mặt thẳng ('+fd.angle.toFixed(1)+'°)':'Không xoay','ok');
   }
 
-  // ── Bước 2: Tính vùng crop chuẩn ảnh thẻ ──────────────────────────
-  // Mục tiêu:
-  //   - Chiều cao đầu (headTopY → chin) chiếm faceHeadRatio*100% chiều cao ảnh thẻ
-  //   - Đường mắt ở eyeLine*100% từ trên ảnh thẻ
-  //   - Khuôn mặt căn giữa theo chiều ngang
-  //   - Thêm headroom phía trên
+  // ── Bước 2: Tính kích thước đầu qua IED ─────────────────────────────
+  var ied = Math.sqrt(
+    Math.pow(fd.rEye.x - fd.lEye.x, 2) +
+    Math.pow(fd.rEye.y - fd.lEye.y, 2)
+  );
 
-  // Chiều cao đầu trong ảnh gốc
-  var headH   = fd.totalHeadH;
-  var headTopY= fd.headTopY;
+  // mắt → cằm ≈ IED × 1.8 (tỷ lệ khuôn mặt trung bình)
+  var faceH_eyeToChin = ied * 1.8;
+  // đỉnh đầu cao hơn đường mắt ≈ 55% (faceH_eyeToChin) — bao gồm tóc
+  var faceH_eyeToTop  = faceH_eyeToChin * 0.55;
+  var totalHeadH = faceH_eyeToChin + faceH_eyeToTop;
 
-  // Scale: headH phải = faceHeadRatio * cropH
-  var cropH = headH / sz.faceHeadRatio;
+  // ── Bước 3: Tính vùng crop theo tiêu chuẩn ảnh thẻ ─────────────────
+  // totalHeadH chiếm faceHeadRatio% chiều cao ảnh thẻ
+  var cropH = totalHeadH / sz.faceHeadRatio;
   var cropW = cropH * (sz.w / sz.h);
 
-  // Vị trí mắt trong ảnh gốc (sau khi có thể đã xoay)
-  // Tâm mắt ở eyeLine từ top của crop
-  var eyeMidY = (fd.lEye.y + fd.rEye.y) / 2;
-  var cropTopFromEye  = eyeMidY - sz.eyeLine * cropH;
+  // Mắt ở eyeLine% từ trên ảnh thẻ
+  var cropTop  = eyeMidY - sz.eyeLine * cropH;
+  // Căn giữa ngang theo trung điểm 2 mắt
+  var cropLeft = eyeMidX - cropW / 2;
 
-  // Tâm ngang
-  var faceCX = fd.faceCenterX;
-  var cropLeft = faceCX - cropW / 2;
+  // Clamp trong ảnh gốc
+  cropLeft = Math.max(0, Math.min(cropLeft, img.naturalWidth  - cropW));
+  cropTop  = Math.max(0, Math.min(cropTop,  img.naturalHeight - cropH));
+  if(cropW > img.naturalWidth) { cropW = img.naturalWidth;  cropLeft = 0; }
+  if(cropH > img.naturalHeight){ cropH = img.naturalHeight; cropTop  = 0; }
 
-  // Đảm bảo không ra ngoài ảnh gốc
-  cropLeft = Math.max(0, Math.min(cropLeft, img.naturalWidth - cropW));
-  var cropTop = Math.max(0, Math.min(cropTopFromEye, img.naturalHeight - cropH));
-
-  // Nếu crop vượt ra ngoài ảnh, điều chỉnh
-  if(cropW > img.naturalWidth){cropW=img.naturalWidth;cropLeft=0;}
-  if(cropH > img.naturalHeight){cropH=img.naturalHeight;cropTop=0;}
-
-  // ── Bước 3: Vẽ lên cnvCrop ─────────────────────────────────────────
+  // ── Bước 4: Render ───────────────────────────────────────────────────
   cnvCrop.width  = sz.w;
   cnvCrop.height = sz.h;
   var outCtx = cnvCrop.getContext('2d');
 
-  // Nền màu nhạt (sẽ được thêm màu nền thật ở bước sau)
-  outCtx.fillStyle = '#e8e8e8';
+  outCtx.fillStyle = '#ffffff';
   outCtx.fillRect(0, 0, sz.w, sz.h);
 
-  // Vẽ ảnh đã crop
-  outCtx.drawImage(srcCanvas,
+  outCtx.drawImage(
+    srcCanvas,
     Math.round(cropLeft), Math.round(cropTop),
     Math.round(cropW),    Math.round(cropH),
     0, 0, sz.w, sz.h
   );
 
-  // Vẽ đường guide (mờ)
+  // Đường guide mắt
   var eyeY_out = sz.eyeLine * sz.h;
-  outCtx.strokeStyle='rgba(59,130,246,.3)';outCtx.lineWidth=1;outCtx.setLineDash([4,4]);
-  outCtx.beginPath();outCtx.moveTo(0,eyeY_out);outCtx.lineTo(sz.w,eyeY_out);outCtx.stroke();
-  outCtx.setLineDash([]);
+  outCtx.strokeStyle = 'rgba(59,130,246,.2)';
+  outCtx.lineWidth = 1; outCtx.setLineDash([4,4]);
+  outCtx.beginPath();
+  outCtx.moveTo(0, eyeY_out); outCtx.lineTo(sz.w, eyeY_out);
+  outCtx.stroke(); outCtx.setLineDash([]);
 
-  // Hiện preview
-  cropPreview.style.display='block';
-  var eyePct = Math.round(sz.eyeLine*100);
-  cropLbl.textContent = sz.w+'×'+sz.h+' px · '+sz.label+' · Mắt ở '+eyePct+'% từ trên';
+  // Thông tin
+  cropPreview.style.display = 'block';
+  var eyePct  = Math.round(sz.eyeLine * 100);
+  var headPct = Math.round(sz.faceHeadRatio * 100);
+  cropLbl.textContent = sz.w+'×'+sz.h+' px · '+sz.label
+    +' · Đầu '+headPct+'% · Mắt ở '+eyePct+'%';
   setStat('fi-eyepos', eyePct+'% từ trên', Math.abs(eyePct-42)<5?'ok':'warn');
 
-  // Chuyển sang blob
-  cnvCrop.toBlob(function(b){croppedBlob=b;},'image/png');
-}
+  console.log('[AnhThe] IED='+Math.round(ied)+'px headH='+Math.round(totalHeadH)
+    +'px cropH='+Math.round(cropH)+'px cropW='+Math.round(cropW)+'px');
 
+  cnvCrop.toBlob(function(b){ croppedBlob = b; }, 'image/png');
+}
 // Reload crop khi đổi kích thước
 selSize.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
 ckAlign.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
