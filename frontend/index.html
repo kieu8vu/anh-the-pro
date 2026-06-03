@@ -89,6 +89,16 @@
 
     .crop-preview{margin-top:.875rem;text-align:center;display:none}
     #cnv-crop{border-radius:var(--rs);border:2px solid var(--bd);display:block;margin:0 auto;max-height:220px;max-width:100%}
+
+    /* XÓA NỀN */
+    .removebg-section{margin-top:.875rem;background:var(--bg2);border-radius:var(--rs);padding:.875rem;display:none}
+    .removebg-section.show{display:block}
+    .rb-title{font-size:.8rem;font-weight:600;margin-bottom:.5rem}
+    .rb-options{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem}
+    .rb-opt{padding:5px 12px;border-radius:20px;border:1px solid var(--bd);font-size:.72rem;cursor:pointer;background:var(--bg1);color:var(--t2);transition:.15s}
+    .rb-opt.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+    .rb-status{font-size:.72rem;color:var(--t2);font-family:var(--fm);min-height:18px}
+    #cnv-nobg{display:none;border-radius:var(--rs);border:2px solid var(--green);margin:.75rem auto 0;max-height:180px;max-width:100%}
     .crop-lbl{font-size:.7rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
 
     /* COUNTRY SELECTOR */
@@ -232,6 +242,34 @@
       <div class="crop-preview" id="crop-preview">
         <canvas id="cnv-crop"></canvas>
         <p class="crop-lbl" id="crop-lbl">—</p>
+      </div>
+
+      <!-- XÓA NỀN -->
+      <div class="removebg-section" id="rb-section">
+        <div class="rb-title">✂️ Xóa phông nền</div>
+        <div class="rb-options">
+          <button class="rb-opt on" data-mode="auto" id="rb-auto">🤖 Tự động (AI)</button>
+          <button class="rb-opt" data-mode="manual" id="rb-manual">🎨 Thủ công (chọn màu)</button>
+          <button class="rb-opt" data-mode="skip" id="rb-skip">⏭ Bỏ qua</button>
+        </div>
+        <div class="rb-status" id="rb-status">Đang tải thư viện AI xóa nền…</div>
+        <div class="bar-wrap" id="rb-bar-wrap" style="display:none">
+          <div class="bar-track"><div class="bar-fill" id="rb-fill"></div></div>
+        </div>
+        <!-- Thủ công: chọn màu nền để xóa -->
+        <div id="rb-manual-ui" style="display:none;margin-top:.6rem">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--t2)">
+            <span>Màu nền cần xóa:</span>
+            <input type="color" id="rb-pick-color" value="#ffffff" style="width:36px;height:28px;border-radius:5px;border:1px solid var(--bd);cursor:pointer;background:var(--bg2)"/>
+            <span id="rb-pick-hex" style="font-family:var(--fm);font-size:.7rem">#ffffff</span>
+            <span style="color:var(--t3)">· Ngưỡng:</span>
+            <input type="range" id="rb-thresh" min="10" max="120" value="40" style="flex:1;accent-color:var(--ac)"/>
+            <span id="rb-thresh-val" style="font-family:var(--fm);font-size:.7rem;min-width:25px">40</span>
+          </div>
+          <p style="font-size:.68rem;color:var(--t3);margin-top:4px">Nhấn vào vùng nền trong ảnh dưới để lấy màu, rồi nhấn Xóa</p>
+          <button class="btn sec" id="rb-do-manual" style="margin-top:6px;padding:6px 14px;font-size:.78rem">✂️ Xóa nền</button>
+        </div>
+        <canvas id="cnv-nobg" title="Nhấn để lấy màu nền"></canvas>
       </div>
       <div class="act-row" id="face-acts" style="display:none">
         <button class="btn pri" id="btn-to-set">Tiếp → Chọn quốc gia</button>
@@ -609,7 +647,7 @@ function selectCountry(key){
   buildCountryGrid(currentRegion);
   renderSpec(selectedCountry);
   setBgFromCountry(selectedCountry);
-  if(faceResult) autoCrop(faceResult);
+  if(faceResult) autoCropAndRb(faceResult);
 }
 
 function renderSpec(c){
@@ -631,7 +669,7 @@ function renderSpec(c){
 function setBgFromCountry(c){
   selBg.value=c.bg in BG_COLORS?c.bg:'white';
   updateBgPreview();
-  if(faceResult) autoCrop(faceResult);
+  if(faceResult) autoCropAndRb(faceResult);
 }
 
 function updateBgPreview(){
@@ -646,8 +684,8 @@ function updateBgPreview(){
   bgPreview.style.background=hex;
   bgPreview.style.borderColor=hex==='#FFFFFF'?'var(--bd)':hex;
 }
-selBg.addEventListener('change',function(){updateBgPreview();if(faceResult)autoCrop(faceResult);});
-bgCustom.addEventListener('input',function(){updateBgPreview();if(faceResult)autoCrop(faceResult);});
+selBg.addEventListener('change',function(){updateBgPreview();if(faceResult)autoCropAndRb(faceResult);});
+bgCustom.addEventListener('input',function(){updateBgPreview();if(faceResult)autoCropAndRb(faceResult);});
 
 // Region tabs
 regionTabs.querySelectorAll('.rtab').forEach(function(btn){
@@ -784,7 +822,7 @@ function runDetect(blob){
       var estHeadH=Math.round(faceResult.ied*1.8*1.55);
       setStat('fi-headh',estHeadH+' px (ước lượng)','');
 
-      autoCrop(faceResult);
+      autoCropAndRb(faceResult);
       setProgress(100,'✅ Hoàn tất!');
       faceTtl.textContent='✅ Nhận diện thành công!';
       faceSub.textContent='Kiểm tra ảnh thẻ phía dưới rồi nhấn Tiếp theo';
@@ -917,7 +955,7 @@ function autoCrop(fd){
   cnvCrop.toBlob(function(b){croppedBlob=b;},'image/png');
 }
 
-ckAlign.addEventListener('change',function(){if(faceResult)autoCrop(faceResult);});
+ckAlign.addEventListener('change',function(){if(faceResult)autoCropAndRb(faceResult);});
 
 $('btn-to-set').addEventListener('click',function(){setTab(2);});
 $('btn-retry').addEventListener('click',function(){
@@ -1032,6 +1070,224 @@ btnRst.addEventListener('click',function(){
   $('res-ttl').textContent='✅ Ảnh thẻ đã sẵn sàng!';
   setTab(0);
 });
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// XÓA PHÔNG NỀN
+// Mode: auto (AI @imgly) | manual (color distance) | skip
+// ═══════════════════════════════════════════════════════════════════════
+var rbSection=$('rb-section'), rbStatus=$('rb-status');
+var rbBarWrap=$('rb-bar-wrap'), rbFill=$('rb-fill');
+var rbManualUI=$('rb-manual-ui'), rbPickColor=$('rb-pick-color');
+var rbPickHex=$('rb-pick-hex'), rbThresh=$('rb-thresh'), rbThreshVal=$('rb-thresh-val');
+var cnvNobg=$('cnv-nobg');
+var rbMode='auto', bgLibReady=false, bgLibFn=null;
+var croppedBeforeNobg=null; // ảnh crop trước khi xóa nền
+
+// Load thư viện AI xóa nền (lazy — chỉ load 1 lần)
+function loadBgLib(){
+  if(bgLibReady||bgLibFn) return;
+  rbStatus.textContent='Đang tải thư viện AI xóa nền…';
+  var cdns=[
+    'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/background-removal.js',
+    'https://unpkg.com/@imgly/background-removal@1.4.5/dist/background-removal.js',
+  ];
+  function tryLoad(i){
+    if(i>=cdns.length){
+      rbStatus.textContent='⚠ Không tải được AI — dùng chế độ thủ công';
+      // Auto switch sang manual
+      setRbMode('manual');
+      return;
+    }
+    var s=document.createElement('script');
+    s.src=cdns[i];
+    s.onload=function(){
+      setTimeout(function(){
+        var lib=window.BackgroundRemoval||window['@imgly/background-removal'];
+        if(lib&&(lib.removeBackground||lib.default)){
+          bgLibFn=lib.removeBackground||lib.default;
+          bgLibReady=true;
+          rbStatus.textContent='✓ AI xóa nền sẵn sàng';
+        } else {
+          tryLoad(i+1);
+        }
+      },200);
+    };
+    s.onerror=function(){ tryLoad(i+1); };
+    document.head.appendChild(s);
+  }
+  tryLoad(0);
+}
+
+function setRbMode(m){
+  rbMode=m;
+  document.querySelectorAll('.rb-opt').forEach(function(b){b.classList.remove('on');});
+  var btn=document.querySelector('.rb-opt[data-mode="'+m+'"]');
+  if(btn) btn.classList.add('on');
+  rbManualUI.style.display=m==='manual'?'block':'none';
+  if(m==='auto'&&!bgLibReady) loadBgLib();
+  if(m==='skip'){
+    rbStatus.textContent='Bỏ qua xóa nền — giữ nguyên ảnh crop';
+    cnvNobg.style.display='none';
+  }
+}
+
+document.querySelectorAll('.rb-opt').forEach(function(b){
+  b.addEventListener('click',function(){ setRbMode(b.dataset.mode); });
+});
+
+// Nhấn vào cnvNobg để pick màu
+cnvNobg.addEventListener('click',function(e){
+  if(rbMode!=='manual') return;
+  var rect=cnvNobg.getBoundingClientRect();
+  var x=Math.round((e.clientX-rect.left)*(cnvNobg.width/rect.width));
+  var y=Math.round((e.clientY-rect.top)*(cnvNobg.height/rect.height));
+  var ctx=cnvNobg.getContext('2d');
+  var d=ctx.getImageData(x,y,1,1).data;
+  var hex='#'+[d[0],d[1],d[2]].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+  rbPickColor.value=hex;
+  rbPickHex.textContent=hex;
+});
+rbThresh.addEventListener('input',function(){rbThreshVal.textContent=rbThresh.value;});
+rbPickColor.addEventListener('input',function(){rbPickHex.textContent=rbPickColor.value;});
+
+// Xóa nền thủ công (color distance)
+$('rb-do-manual').addEventListener('click',function(){
+  if(!croppedBeforeNobg){rbStatus.textContent='Chưa có ảnh crop!';return;}
+  rbStatus.textContent='Đang xóa nền thủ công…';
+  var img=new Image();
+  img.onload=function(){
+    cnvNobg.width=img.naturalWidth;cnvNobg.height=img.naturalHeight;
+    var ctx=cnvNobg.getContext('2d');
+    ctx.drawImage(img,0,0);
+    var imageData=ctx.getImageData(0,0,cnvNobg.width,cnvNobg.height);
+    var d=imageData.data;
+    // Parse hex màu tham chiếu
+    var hex=rbPickColor.value.replace('#','');
+    var rr=parseInt(hex.substring(0,2),16);
+    var rg=parseInt(hex.substring(2,4),16);
+    var rb2=parseInt(hex.substring(4,6),16);
+    var thresh=parseInt(rbThresh.value);
+    for(var i=0;i<d.length;i+=4){
+      var dist=Math.sqrt(Math.pow(d[i]-rr,2)+Math.pow(d[i+1]-rg,2)+Math.pow(d[i+2]-rb2,2));
+      if(dist<thresh) d[i+3]=0;
+    }
+    ctx.putImageData(imageData,0,0);
+    cnvNobg.style.display='block';
+    // Cập nhật croppedBlob
+    cnvNobg.toBlob(function(b){croppedBlob=b;},'image/png');
+    rbStatus.textContent='✓ Xóa nền thủ công xong! Chỉnh ngưỡng nếu cần.';
+  };
+  img.onerror=function(){rbStatus.textContent='Lỗi load ảnh';};
+  img.src=URL.createObjectURL(croppedBeforeNobg);
+});
+
+// Xóa nền AI
+function doRemoveBgAI(blob){
+  if(!bgLibReady||!bgLibFn){
+    rbStatus.textContent='⚠ AI chưa sẵn sàng — thử lại sau hoặc dùng thủ công';
+    return;
+  }
+  rbStatus.textContent='AI đang xóa nền…';
+  rbBarWrap.style.display='block';
+  rbFill.style.width='0%';
+
+  // Hiện ảnh lên canvas trước
+  var img=new Image();
+  img.onload=function(){
+    cnvNobg.width=img.naturalWidth;cnvNobg.height=img.naturalHeight;
+    cnvNobg.getContext('2d').drawImage(img,0,0);
+    cnvNobg.style.display='block';
+  };
+  img.src=URL.createObjectURL(blob);
+
+  bgLibFn(blob,{
+    progress:function(key,cur,tot){
+      var pct=tot>0?Math.round(cur/tot*100):0;
+      rbFill.style.width=pct+'%';
+      rbStatus.textContent=key+': '+pct+'%';
+    }
+  }).then(function(resultBlob){
+    rbFill.style.width='100%';
+    rbStatus.textContent='✅ AI xóa nền xong!';
+    rbBarWrap.style.display='none';
+
+    // Hiện kết quả (checkerboard)
+    var url=URL.createObjectURL(resultBlob);
+    var img2=new Image();
+    img2.onload=function(){
+      cnvNobg.width=img2.naturalWidth;cnvNobg.height=img2.naturalHeight;
+      var ctx=cnvNobg.getContext('2d');
+      var sz=16;
+      for(var y=0;y<cnvNobg.height;y+=sz)
+        for(var x=0;x<cnvNobg.width;x+=sz){
+          ctx.fillStyle=((Math.floor(x/sz)+Math.floor(y/sz))%2===0)?'#bbb':'#eee';
+          ctx.fillRect(x,y,sz,sz);
+        }
+      ctx.drawImage(img2,0,0);
+      cnvNobg.style.display='block';
+    };
+    img2.src=url;
+
+    // Cập nhật croppedBlob với ảnh đã xóa nền
+    croppedBlob=resultBlob;
+
+  }).catch(function(e){
+    rbBarWrap.style.display='none';
+    rbStatus.textContent='❌ Lỗi AI: '+e.message+' — thử chế độ thủ công';
+    setRbMode('manual');
+  });
+}
+
+// Hook: sau khi autoCrop xong, hiện rb-section và auto xóa nền nếu mode=auto
+function autoCropAndRb(fd){
+  autoCrop(fd);
+  // Lưu blob trước xóa nền
+  setTimeout(function(){
+    cnvCrop.toBlob(function(b){
+      croppedBeforeNobg=b;
+      // Hiện section xóa nền
+      rbSection.classList.add('show');
+      // Load cnvNobg = bản copy ảnh crop để chỉnh
+      if(b){
+        var imgTmp=new Image();
+        imgTmp.onload=function(){
+          cnvNobg.width=imgTmp.naturalWidth;cnvNobg.height=imgTmp.naturalHeight;
+          cnvNobg.getContext('2d').drawImage(imgTmp,0,0);
+          cnvNobg.style.display='block';
+        };
+        imgTmp.src=URL.createObjectURL(b);
+      }
+      // Auto xóa nền nếu mode=auto
+      if(rbMode==='auto'){
+        if(bgLibReady) doRemoveBgAI(b);
+        else {
+          // Lib chưa load xong, chờ
+          var wait=setInterval(function(){
+            if(bgLibReady){clearInterval(wait);doRemoveBgAI(b);}
+            else if(!document.querySelector('script[src*="background-removal"]')){
+              clearInterval(wait);
+            }
+          },500);
+        }
+      }
+    },'image/png');
+  }, 100);
+}
+// Ghi đè autoCrop global
+// autoCropAndRb wraps autoCrop
+
+// Reset khi chọn ảnh khác
+var _origRetry=$('btn-retry').onclick;
+$('btn-retry').addEventListener('click',function(){
+  rbSection.classList.remove('show');
+  cnvNobg.style.display='none';
+  croppedBeforeNobg=null;
+  rbStatus.textContent='Đang tải thư viện AI xóa nền…';
+});
+
+// Load lib ngay khi trang mở
+loadBgLib();
 
 // ── Khởi chạy ─────────────────────────────────────────────────────────────
 ping();
