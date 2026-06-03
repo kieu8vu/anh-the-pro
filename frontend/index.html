@@ -20,7 +20,6 @@
     body{font-family:var(--fn);background:var(--bg0);color:var(--t1);min-height:100vh}
     img{max-width:100%;display:block}
     button{cursor:pointer;font-family:inherit}
-
     .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px}
     .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -30,7 +29,6 @@
     .badge.ok{border-color:var(--green);color:var(--green)}
     .badge.err{border-color:var(--red);color:var(--red)}
     .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
-
     .wrap{max-width:960px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
     .hero{text-align:center;padding:1.75rem 0 1.25rem}
     .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
@@ -39,16 +37,13 @@
     .tags{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:.9rem}
     .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
     .tag.hi{border-color:var(--ac);color:var(--ac2)}
-
     .tabs{display:flex;margin:1.75rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
     .tab{flex:1;padding:11px 6px;text-align:center;font-size:.75rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s}
     .tab:last-child{border-right:none}
     .tab.on{background:var(--ac);color:#fff}
     .tab.done{background:var(--bg2);color:var(--green)}
-
     .pnl{display:none;margin-top:1.25rem}
     .pnl.on{display:block}
-
     .up-row{display:grid;grid-template-columns:1fr 84px;gap:10px}
     @media(max-width:420px){.up-row{grid-template-columns:1fr}}
     .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2.25rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1)}
@@ -58,7 +53,6 @@
     .dz-sub{font-size:.68rem;color:var(--t3);margin-top:.35rem;font-family:var(--fm)}
     .cam-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem .5rem;color:var(--t1);font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;transition:.18s}
     .cam-btn:hover{border-color:var(--ac)}
-
     #cam-sec{display:none;margin-top:1rem}
     .cam-box{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:400px;margin:0 auto}
     #cam-vid{width:100%;display:block}
@@ -69,20 +63,16 @@
     .cb{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
     .cb.big{width:52px;height:52px;background:#fff;color:#000;font-size:1.3rem}
     .cb.sm{width:38px;height:38px;background:rgba(255,255,255,.18);color:#fff;font-size:.95rem}
-
     #prev-orig{margin-top:1rem}
     #prev-orig img{max-height:180px;border-radius:var(--r);margin:0 auto;border:1px solid var(--bd)}
-
-    .rb-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
-    .rb-lbl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
-    .rb-sub{font-size:.75rem;color:var(--t2);margin-bottom:.75rem}
+    .box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
+    .box-lbl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
+    .box-sub{font-size:.75rem;color:var(--t2);margin-bottom:.75rem}
     .bar-wrap{margin-bottom:.5rem}
     .bar-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
     .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),var(--gold));border-radius:2px;transition:width .25s}
     .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
     #cnv-nobg{border-radius:var(--rs);border:1px solid var(--bd);display:none;margin:1rem auto 0;max-height:210px;max-width:100%}
-
-    .set-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
     .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
     .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
     .fg{display:flex;flex-direction:column;gap:5px}
@@ -99,7 +89,6 @@
     .sw[data-c="gray"]{background:#c8c8c8}
     .ck-row{display:flex;align-items:center;gap:7px;padding:6px 0}
     input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
-
     .btn{padding:10px 22px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
     .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.28)}
     .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
@@ -109,7 +98,6 @@
     .btn.gh{background:transparent;border-color:transparent;color:var(--t2)}
     .btn.gh:hover{color:var(--t1)}
     .act-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.1rem}
-
     .res-ttl{font-size:.9rem;font-weight:600;color:var(--green);margin-bottom:.9rem}
     .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
     @media(max-width:520px){.res-grid{grid-template-columns:1fr}}
@@ -118,24 +106,24 @@
     .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
     #proc-bar{display:none;margin-top:.9rem}
 
-    /* Loading overlay */
-    #lib-loading{position:fixed;inset:0;background:rgba(13,17,23,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
-    #lib-loading.hide{display:none}
-    .lib-spinner{width:48px;height:48px;border:3px solid var(--bg3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
-    .lib-txt{font-size:.875rem;color:var(--t2)}
+    /* Info box */
+    .info-box{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:var(--ac2);margin-bottom:1rem;line-height:1.6}
+    .info-box b{color:var(--t1)}
+
+    /* Slider */
+    .slider-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+    input[type=range]{flex:1;accent-color:var(--ac);cursor:pointer}
+    .slider-val{font-size:.78rem;color:var(--t1);min-width:32px;text-align:right;font-family:var(--fm)}
+
+    /* Canvas preview */
+    .cnv-wrap{position:relative;margin:1rem auto 0;text-align:center}
+    #cnv-edit{border-radius:var(--rs);border:1px solid var(--bd);max-width:100%;max-height:220px;cursor:crosshair}
 
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-    @keyframes spin{to{transform:rotate(360deg)}}
     footer{border-top:1px solid var(--bd);padding:1.1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
   </style>
 </head>
 <body>
-
-<!-- Loading overlay khi tải thư viện AI -->
-<div id="lib-loading">
-  <div class="lib-spinner"></div>
-  <div class="lib-txt">Đang tải thư viện AI xóa nền…</div>
-</div>
 
 <header class="hdr">
   <div class="logo">
@@ -150,25 +138,25 @@
 
 <main class="wrap">
   <div class="hero">
-    <h2>Ảnh Thẻ <em>Chuyên Nghiệp</em> — AI Miễn Phí</h2>
-    <p>Xóa nền bằng AI ngay trên trình duyệt · Không cần server · Hoàn toàn riêng tư</p>
+    <h2>Ảnh Thẻ <em>Chuyên Nghiệp</em> — Miễn Phí</h2>
+    <p>Xóa nền thông minh · Chuẩn kích thước · Thay màu nền · Tờ in 4×5</p>
     <div class="tags">
-      <span class="tag hi">🤖 AI WebAssembly</span>
+      <span class="tag hi">✂️ Xóa nền thông minh</span>
       <span class="tag">📐 3×4, 4×6, Hộ chiếu…</span>
       <span class="tag">🎨 Thay màu nền</span>
       <span class="tag">🖨 Tờ in 4×5</span>
-      <span class="tag">🔒 Ảnh không rời máy bạn</span>
+      <span class="tag">🔒 Không upload lên server</span>
     </div>
   </div>
 
   <div class="tabs">
     <div class="tab on" id="t0">① Chọn ảnh</div>
-    <div class="tab"    id="t1">② Xóa nền AI</div>
+    <div class="tab"    id="t1">② Xóa nền</div>
     <div class="tab"    id="t2">③ Tùy chỉnh</div>
     <div class="tab"    id="t3">④ Kết quả</div>
   </div>
 
-  <!-- P0 -->
+  <!-- P0: UPLOAD -->
   <div class="pnl on" id="p0">
     <div class="up-row">
       <div class="dz" id="dz">
@@ -200,26 +188,56 @@
     <div id="prev-orig"></div>
   </div>
 
-  <!-- P1 -->
+  <!-- P1: XÓA NỀN -->
   <div class="pnl" id="p1">
-    <div class="rb-box">
-      <div class="rb-lbl" id="rb-lbl">🤖 AI đang xóa nền…</div>
-      <div class="rb-sub" id="rb-sub">Lần đầu tải model ~20MB — xin chờ</div>
+    <div class="box">
+      <div class="info-box">
+        💡 <b>Hướng dẫn xóa nền:</b> Dùng thanh trượt để tinh chỉnh ngưỡng xóa nền tự động,
+        hoặc nhấn vào màu nền trong ảnh để xóa chính xác hơn.
+        Nền trắng/đơn sắc cho kết quả tốt nhất.
+      </div>
+      <div class="box-lbl" id="rb-lbl">✂️ Xóa nền thông minh</div>
+      <div class="box-sub" id="rb-sub">Điều chỉnh ngưỡng xóa nền phù hợp với ảnh của bạn</div>
+
+      <div class="fg" style="margin-bottom:.75rem">
+        <label class="fl">Ngưỡng xóa nền (càng cao = xóa mạnh hơn)</label>
+        <div class="slider-row">
+          <input type="range" id="thresh-slider" min="0" max="80" value="30" step="1">
+          <span class="slider-val" id="thresh-val">30</span>
+        </div>
+      </div>
+
+      <div class="fg" style="margin-bottom:.75rem">
+        <label class="fl">Màu tham chiếu để xóa (nhấn vào ảnh để chọn tự động)</label>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+          <div id="ref-color-box" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--bd);background:#ffffff;cursor:pointer;flex-shrink:0" title="Nhấn vào ảnh để lấy màu"></div>
+          <span style="font-size:.75rem;color:var(--t2)">Nhấn vào vùng nền trong ảnh bên dưới để lấy màu tham chiếu</span>
+        </div>
+      </div>
+
       <div class="bar-wrap">
         <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
-        <div class="bar-lbl"  id="bar-lbl">Đang khởi tạo…</div>
+        <div class="bar-lbl" id="bar-lbl">Sẵn sàng xử lý</div>
       </div>
-      <canvas id="cnv-nobg"></canvas>
-      <div class="act-row" id="rb-acts" style="display:none">
-        <button class="btn pri" id="btn-to-set">Tiếp theo — Tùy chỉnh →</button>
+
+      <div class="cnv-wrap">
+        <canvas id="cnv-edit" title="Nhấn vào vùng nền để lấy màu tham chiếu"></canvas>
+      </div>
+      <p style="font-size:.68rem;color:var(--t3);margin-top:6px;text-align:center">↑ Nhấn vào vùng nền trong ảnh để lấy màu tham chiếu</p>
+
+      <canvas id="cnv-nobg" style="display:none"></canvas>
+
+      <div class="act-row">
+        <button class="btn pri" id="btn-do-remove">✂️ Xóa nền</button>
+        <button class="btn sec" id="btn-to-set" style="display:none">Tiếp theo →</button>
         <button class="btn gh"  id="btn-redo">↩ Chọn ảnh khác</button>
       </div>
     </div>
   </div>
 
-  <!-- P2 -->
+  <!-- P2: SETTINGS -->
   <div class="pnl" id="p2">
-    <div class="set-box">
+    <div class="box">
       <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
       <div class="set-grid">
         <div class="fg">
@@ -277,7 +295,7 @@
     </div>
   </div>
 
-  <!-- P3 -->
+  <!-- P3: RESULT -->
   <div class="pnl" id="p3">
     <p class="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
     <div class="res-grid">
@@ -297,79 +315,24 @@
   </div>
 </main>
 
-<footer>Ảnh Thẻ Pro · AI WebAssembly · FastAPI + Pillow · Render + Netlify</footer>
+<footer>Ảnh Thẻ Pro · Xóa nền Canvas API · Backend FastAPI + Pillow · Render + Netlify</footer>
 
 <script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
 
-<!-- Tải thư viện AI từ nhiều CDN dự phòng -->
 <script>
 (function(){
-  var CDNS = [
-    'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/background-removal.js',
-    'https://unpkg.com/@imgly/background-removal@1.4.5/dist/background-removal.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/onnxruntime-web/1.14.0/ort.min.js' // fallback marker
-  ];
-
-  function hideLoader(){ document.getElementById('lib-loading').classList.add('hide'); }
-
-  function checkLoaded(){
-    // Thư viện expose qua window.BackgroundRemoval hoặc tên module khác
-    var lib = window.BackgroundRemoval;
-    if(lib && (lib.removeBackground || lib.default)){
-      window.__bgLib = lib.removeBackground || lib.default;
-      hideLoader();
-      console.log('[AnhThe] AI lib loaded OK');
-      return true;
-    }
-    return false;
-  }
-
-  function loadScript(url, cb){
-    var s = document.createElement('script');
-    s.src = url;
-    s.onload = function(){ setTimeout(function(){ cb(checkLoaded()); }, 100); };
-    s.onerror = function(){ cb(false); };
-    document.head.appendChild(s);
-  }
-
-  function tryLoad(idx){
-    if(idx >= 2){ // chỉ thử 2 CDN thật
-      hideLoader();
-      console.warn('[AnhThe] Không tải được thư viện AI từ CDN');
-      document.getElementById('lib-loading').innerHTML =
-        '<div style="color:#ef4444;font-size:.9rem;text-align:center;padding:2rem">' +
-        '⚠️ Không tải được thư viện AI<br><br>' +
-        '<button onclick="location.reload()" style="padding:8px 20px;background:#3b82f6;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">🔄 Tải lại trang</button>' +
-        '</div>';
-      document.getElementById('lib-loading').classList.remove('hide');
-      return;
-    }
-    console.log('[AnhThe] Thử CDN ' + idx + ': ' + CDNS[idx]);
-    loadScript(CDNS[idx], function(ok){
-      if(ok){ console.log('[AnhThe] CDN ' + idx + ' OK'); }
-      else   { tryLoad(idx + 1); }
-    });
-  }
-
-  // Bắt đầu load sau DOM ready
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', function(){ tryLoad(0); });
-  } else {
-    tryLoad(0);
-  }
-})();
-</script>
-
-<script>
-(function(){
-  function $(i){ return document.getElementById(i); }
+  function $(i){return document.getElementById(i);}
 
   var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
   var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
   var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
-  var prevOrig=$('prev-orig'), cnvNobg=$('cnv-nobg');
+  var prevOrig=$('prev-orig');
+  var cnvEdit=$('cnv-edit'), cnvNobg=$('cnv-nobg');
   var rbLbl=$('rb-lbl'), rbSub=$('rb-sub');
-  var barFill=$('bar-fill'), barLbl=$('bar-lbl'), rbActs=$('rb-acts');
+  var barFill=$('bar-fill'), barLbl=$('bar-lbl');
+  var threshSlider=$('thresh-slider'), threshVal=$('thresh-val');
+  var refColorBox=$('ref-color-box');
+  var btnDoRemove=$('btn-do-remove'), btnToSet=$('btn-to-set'), btnRedo=$('btn-redo');
   var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
   var ckEnh=$('ck-enh'), btnProc=$('btn-proc'), btnBack=$('btn-back');
   var procBar=$('proc-bar'), procFill=$('proc-fill');
@@ -379,7 +342,10 @@
 
   var origBlob=null, nobgBlob=null, resURL=null, sheetURL=null;
   var camStream=null, facing='user';
+  var refColor={r:255,g:255,b:255}; // màu tham chiếu để xóa nền
+  var origImageData=null; // lưu pixel data gốc
 
+  // ── Tabs ──
   function setTab(n){
     for(var i=0;i<4;i++){
       var t=$('t'+i), p=$('p'+i);
@@ -387,26 +353,25 @@
       p.className='pnl'+(i===n?' on':'');
     }
   }
+  function setBadge(msg,cls){badge.textContent=msg;badge.className='badge '+cls;}
 
-  function setBadge(msg,cls){ badge.textContent=msg; badge.className='badge '+cls; }
-
-  // Ping backend
+  // ── Ping backend ──
   function ping(){
     fetch(window.API_BASE+'/health')
-      .then(function(r){ return r.json(); })
-      .then(function(){ setBadge('Server sẵn sàng ✓','ok'); })
-      .catch(function(){ setBadge('Server offline','err'); });
+      .then(function(r){return r.json();})
+      .then(function(){setBadge('Server sẵn sàng ✓','ok');})
+      .catch(function(){setBadge('Server offline','err');});
   }
 
-  // Upload
-  dz.addEventListener('dragover',function(e){ e.preventDefault(); dz.classList.add('ov'); });
-  dz.addEventListener('dragleave',function(){ dz.classList.remove('ov'); });
+  // ── Upload ──
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
   dz.addEventListener('drop',function(e){
-    e.preventDefault(); dz.classList.remove('ov');
-    if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+    e.preventDefault();dz.classList.remove('ov');
+    if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);
   });
-  dz.addEventListener('click',function(){ inpFile.click(); });
-  inpFile.addEventListener('change',function(e){ if(e.target.files[0]) loadFile(e.target.files[0]); });
+  dz.addEventListener('click',function(){inpFile.click();});
+  inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.target.files[0]);});
 
   function loadFile(f){
     if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
@@ -414,145 +379,187 @@
     var url=URL.createObjectURL(f);
     prevOrig.innerHTML='<img src="'+url+'" alt="Ảnh gốc"/>';
     $('dz-hint').textContent='✓ Đã chọn ảnh';
-    setTimeout(startRemoveBg, 350);
+    // Load ảnh vào canvas chỉnh sửa
+    var img=new Image();
+    img.onload=function(){
+      // Scale để vừa canvas preview (max 600px)
+      var maxW=600, maxH=400;
+      var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
+      cnvEdit.width=Math.round(img.naturalWidth*scale);
+      cnvEdit.height=Math.round(img.naturalHeight*scale);
+      var ctx=cnvEdit.getContext('2d');
+      ctx.drawImage(img,0,0,cnvEdit.width,cnvEdit.height);
+      origImageData=ctx.getImageData(0,0,cnvEdit.width,cnvEdit.height);
+      // Lấy màu góc trên trái làm màu tham chiếu mặc định
+      pickColorAt(0,0);
+      btnToSet.style.display='none';
+      setTab(1);
+    };
+    img.src=url;
   }
 
-  // Camera
-  btnCam.addEventListener('click',function(){ camSec.style.display='block'; startCam(); });
-  btnCamX.addEventListener('click', stopCam);
-  btnFlip.addEventListener('click',function(){ facing=facing==='user'?'environment':'user'; stopCam(); startCam(); });
+  // ── Camera ──
+  btnCam.addEventListener('click',function(){camSec.style.display='block';startCam();});
+  btnCamX.addEventListener('click',stopCam);
+  btnFlip.addEventListener('click',function(){facing=facing==='user'?'environment':'user';stopCam();startCam();});
   btnCap.addEventListener('click',function(){
-    camCnv.width=camVid.videoWidth; camCnv.height=camVid.videoHeight;
+    camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
     camCnv.getContext('2d').drawImage(camVid,0,0);
-    camCnv.toBlob(function(b){ stopCam(); loadFile(new File([b],'cam.jpg',{type:'image/jpeg'})); },'image/jpeg',.95);
+    camCnv.toBlob(function(b){stopCam();loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));},'image/jpeg',.95);
   });
-
   function startCam(){
     navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
-      .then(function(s){ camStream=s; camVid.srcObject=s; })
-      .catch(function(e){ alert('Không mở được camera: '+e.message); });
+      .then(function(s){camStream=s;camVid.srcObject=s;})
+      .catch(function(e){alert('Không mở được camera: '+e.message);});
   }
   function stopCam(){
-    if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+    if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
     camSec.style.display='none';
   }
 
-  // Xóa nền AI
-  function startRemoveBg(){
-    setTab(1);
-    barFill.style.width='0%';
-    barLbl.textContent='Đang tải model AI…';
-    rbLbl.textContent='🤖 AI đang xóa nền…';
-    rbSub.textContent='Lần đầu tải model ~20MB — xin chờ';
-    rbActs.style.display='none';
-    cnvNobg.style.display='none';
+  // ── Nhấn vào canvas để lấy màu tham chiếu ──
+  cnvEdit.addEventListener('click',function(e){
+    var rect=cnvEdit.getBoundingClientRect();
+    var x=Math.round((e.clientX-rect.left)*(cnvEdit.width/rect.width));
+    var y=Math.round((e.clientY-rect.top)*(cnvEdit.height/rect.height));
+    pickColorAt(x,y);
+    // Auto xóa nền
+    doRemoveBg();
+  });
 
-    // Chờ thư viện load xong (tối đa 30 giây)
-    var waited=0;
-    function waitForLib(){
-      var fn = window.__bgLib;
-      if(fn){
-        doRemoveBg(fn);
-      } else if(waited < 30000){
-        waited+=500;
-        barLbl.textContent='Đang tải thư viện AI… ('+Math.round(waited/1000)+'s)';
-        setTimeout(waitForLib, 500);
-      } else {
-        rbLbl.textContent='❌ Không tải được thư viện AI';
-        rbSub.textContent='Kiểm tra kết nối mạng và tải lại trang (F5)';
-        rbActs.style.display='flex';
-      }
-    }
-    waitForLib();
+  function pickColorAt(x,y){
+    if(!origImageData)return;
+    var idx=(y*cnvEdit.width+x)*4;
+    var d=origImageData.data;
+    refColor={r:d[idx],g:d[idx+1],b:d[idx+2]};
+    refColorBox.style.background='rgb('+refColor.r+','+refColor.g+','+refColor.b+')';
   }
 
-  function doRemoveBg(removeBgFn){
-    var cfg={
-      progress:function(key,cur,tot){
-        var pct=tot>0?Math.round(cur/tot*100):0;
-        barFill.style.width=pct+'%';
-        barLbl.textContent=key+': '+pct+'%';
-      }
-    };
+  // ── Slider ──
+  threshSlider.addEventListener('input',function(){
+    threshVal.textContent=this.value;
+    if(origImageData) doRemoveBg();
+  });
 
-    removeBgFn(origBlob, cfg).then(function(blob){
-      nobgBlob=blob;
-      var url=URL.createObjectURL(blob);
-      var img=new Image();
-      img.onload=function(){
-        cnvNobg.width=img.naturalWidth;
-        cnvNobg.height=img.naturalHeight;
-        var ctx=cnvNobg.getContext('2d');
-        var sz=20;
-        for(var y=0;y<cnvNobg.height;y+=sz)
-          for(var x=0;x<cnvNobg.width;x+=sz){
-            ctx.fillStyle=((Math.floor(x/sz)+Math.floor(y/sz))%2===0)?'#ccc':'#fff';
-            ctx.fillRect(x,y,sz,sz);
-          }
-        ctx.drawImage(img,0,0);
-        cnvNobg.style.display='block';
-      };
-      img.src=url;
+  // ── Xóa nền bằng Color Distance (Canvas API) ──
+  btnDoRemove.addEventListener('click',doRemoveBg);
+
+  function colorDist(r1,g1,b1,r2,g2,b2){
+    return Math.sqrt((r1-r2)*(r1-r2)+(g1-g2)*(g1-g2)+(b1-b2)*(b1-b2));
+  }
+
+  function doRemoveBg(){
+    if(!origImageData){alert('Chưa có ảnh!');return;}
+    barFill.style.width='30%';
+    barLbl.textContent='Đang xóa nền…';
+
+    setTimeout(function(){
+      var thresh=parseInt(threshSlider.value)*1.5+20; // 0-80 → 20-140
+      var src=origImageData;
+      var w=cnvEdit.width, h=cnvEdit.height;
+
+      // Tạo canvas kết quả cùng kích thước
+      cnvNobg.width=w; cnvNobg.height=h;
+      var ctxOut=cnvNobg.getContext('2d');
+      var outData=ctxOut.createImageData(w,h);
+      var srcD=src.data, outD=outData.data;
+
+      var rr=refColor.r, rg=refColor.g, rb=refColor.b;
+
+      for(var i=0;i<srcD.length;i+=4){
+        var r=srcD[i], g=srcD[i+1], b=srcD[i+2];
+        var dist=colorDist(r,g,b,rr,rg,rb);
+        outD[i]=r; outD[i+1]=g; outD[i+2]=b;
+        // Alpha: nếu gần màu tham chiếu → trong suốt
+        if(dist<thresh){
+          outD[i+3]=0; // transparent
+        } else {
+          outD[i+3]=srcD[i+3]; // giữ nguyên
+        }
+      }
+      ctxOut.putImageData(outData,0,0);
+
+      // Cũng cập nhật canvas edit để xem trước (vẽ trên nền checker)
+      var ctxEdit=cnvEdit.getContext('2d');
+      var sz=16;
+      for(var y=0;y<h;y+=sz)
+        for(var x=0;x<w;x+=sz){
+          ctxEdit.fillStyle=((Math.floor(x/sz)+Math.floor(y/sz))%2===0)?'#aaa':'#eee';
+          ctxEdit.fillRect(x,y,sz,sz);
+        }
+      ctxEdit.drawImage(cnvNobg,0,0);
+
       barFill.style.width='100%';
-      barLbl.textContent='✅ Xóa nền hoàn tất!';
-      rbLbl.textContent='✅ Xóa nền thành công!';
-      rbSub.textContent='Kiểm tra kết quả rồi nhấn Tiếp theo';
-      rbActs.style.display='flex';
+      barLbl.textContent='✅ Xóa nền xong! Nhấn "Tiếp theo" hoặc điều chỉnh lại';
+      rbLbl.textContent='✅ Xóa nền hoàn tất';
+      btnToSet.style.display='inline-flex';
 
-    }).catch(function(e){
-      rbLbl.textContent='❌ Lỗi: '+e.message;
-      rbSub.textContent='';
-      barLbl.textContent='Thử lại với ảnh khác';
-      rbActs.style.display='flex';
-    });
+      // Chuyển canvas thành blob
+      cnvNobg.toBlob(function(b){
+        nobgBlob=b;
+      },'image/png');
+
+    }, 50);
   }
 
-  $('btn-to-set').addEventListener('click',function(){ setTab(2); });
-  $('btn-redo').addEventListener('click',function(){
-    nobgBlob=null; origBlob=null; prevOrig.innerHTML='';
+  btnToSet.addEventListener('click',function(){setTab(2);});
+  btnRedo.addEventListener('click',function(){
+    nobgBlob=null;origBlob=null;prevOrig.innerHTML='';origImageData=null;
     $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
+    btnToSet.style.display='none';
     setTab(0);
   });
-  btnBack.addEventListener('click',function(){ setTab(1); });
+  btnBack.addEventListener('click',function(){setTab(1);});
 
-  // Swatches
+  // ── Swatches ──
   document.querySelectorAll('.sw').forEach(function(sw){
     sw.addEventListener('click',function(){
-      document.querySelectorAll('.sw').forEach(function(s){ s.classList.remove('on'); });
+      document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
       sw.classList.add('on');
       selBg.value=sw.dataset.c;
     });
   });
 
-  // Process
+  // ── Process (gửi lên backend) ──
   btnProc.addEventListener('click',function(){
-    if(!nobgBlob){ alert('Chưa có ảnh xóa nền!'); return; }
+    if(!nobgBlob){
+      // Nếu chưa xóa nền, dùng ảnh gốc
+      if(!origBlob){alert('Chưa có ảnh!');return;}
+      nobgBlob=origBlob;
+    }
     btnProc.disabled=true;
     procBar.style.display='block';
     procFill.style.width='30%';
 
     var form=new FormData();
-    form.append('file', nobgBlob, 'nobg.png');
-    form.append('size_key', selSize.value);
-    form.append('bg_color', selBg.value);
-    form.append('enhance', ckEnh.checked?'true':'false');
-    form.append('output_fmt', selFmt.value);
+    form.append('file',nobgBlob,'nobg.png');
+    form.append('size_key',selSize.value);
+    form.append('bg_color',selBg.value);
+    form.append('enhance',ckEnh.checked?'true':'false');
+    form.append('output_fmt',selFmt.value);
 
     procFill.style.width='60%';
     fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
-      .then(function(r){ return r.json(); })
+      .then(function(r){return r.json();})
       .then(function(d){
         procFill.style.width='100%';
-        if(!d.success) throw new Error(d.detail||'Lỗi server');
+        if(!d.success)throw new Error(d.detail||'Lỗi server');
         var mime=d.format==='png'?'image/png':'image/jpeg';
         resURL='data:'+mime+';base64,'+d.image_b64;
         resImg.src=resURL;
         resMeta.textContent=d.width+' × '+d.height+' px · '+d.size_label;
-        btnDl1.onclick=function(){ dlURL(resURL,'anh-the.'+d.format); };
+        btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
         buildSheet(resURL,d);
         setTab(3);
       })
-      .catch(function(e){ alert('Lỗi xử lý: '+e.message); })
+      .catch(function(e){
+        // Nếu server offline, thử xử lý local
+        if(e.message.indexOf('fetch')!==-1||e.message.indexOf('Failed')!==-1){
+          processLocal();
+        } else {
+          alert('Lỗi: '+e.message);
+        }
+      })
       .finally(function(){
         btnProc.disabled=false;
         procBar.style.display='none';
@@ -560,6 +567,48 @@
       });
   });
 
+  // Xử lý local khi server offline
+  function processLocal(){
+    if(!cnvNobg.width){alert('Vui lòng xóa nền trước!');return;}
+    // Ghép màu nền + resize đơn giản
+    var sizes={
+      the_3x4:{w:354,h:472,label:'Ảnh thẻ 3×4 cm'},
+      the_4x6:{w:472,h:709,label:'Ảnh thẻ 4×6 cm'},
+      the_2x3:{w:236,h:354,label:'Ảnh thẻ 2×3 cm'},
+      chung_minh:{w:260,h:330,label:'CCCD/CMND'},
+      passport:{w:413,h:531,label:'Hộ chiếu'},
+      visa_us:{w:600,h:600,label:'Visa Mỹ'},
+      visa_schengen:{w:413,h:531,label:'Visa Schengen'}
+    };
+    var bgColors={
+      white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],
+      red:[204,0,0],gray:[200,200,200]
+    };
+    var sz=sizes[selSize.value]||sizes.the_3x4;
+    var bg=bgColors[selBg.value]||[255,255,255];
+
+    var cv=document.createElement('canvas');
+    cv.width=sz.w; cv.height=sz.h;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle='rgb('+bg[0]+','+bg[1]+','+bg[2]+')';
+    ctx.fillRect(0,0,sz.w,sz.h);
+
+    // Scale + crop center
+    var sw=cnvNobg.width, sh=cnvNobg.height;
+    var scale=Math.max(sz.w/sw, sz.h/sh);
+    var dw=Math.round(sw*scale), dh=Math.round(sh*scale);
+    var dx=Math.round((sz.w-dw)/2), dy=Math.round((sz.h-dh)/2);
+    ctx.drawImage(cnvNobg,dx,dy,dw,dh);
+
+    resURL=cv.toDataURL('image/jpeg',.95);
+    resImg.src=resURL;
+    resMeta.textContent=sz.w+' × '+sz.h+' px · '+sz.label+' (xử lý local)';
+    btnDl1.onclick=function(){dlURL(resURL,'anh-the.jpg');};
+    buildSheet(resURL,{width:sz.w,height:sz.h});
+    setTab(3);
+  }
+
+  // ── Sheet 4×5 ──
   function buildSheet(src,d){
     var img=new Image();
     img.onload=function(){
@@ -569,23 +618,26 @@
       cv.width=mg*2+cols*cw+(cols-1)*gap;
       cv.height=mg*2+rows*ch+(rows-1)*gap;
       var ctx=cv.getContext('2d');
-      ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
       for(var r=0;r<rows;r++)
         for(var c=0;c<cols;c++)
           ctx.drawImage(img,mg+c*(cw+gap),mg+r*(ch+gap),cw,ch);
       sheetURL=cv.toDataURL('image/jpeg',.95);
       sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:250px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
-      btnDl5.onclick=function(){ dlURL(sheetURL,'to-in-anh-the.jpg'); };
+      btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
     };
     img.src=src;
   }
 
-  function dlURL(url,name){ var a=document.createElement('a'); a.href=url; a.download=name; a.click(); }
+  function dlURL(url,name){
+    var a=document.createElement('a');a.href=url;a.download=name;a.click();
+  }
 
   btnRst.addEventListener('click',function(){
-    origBlob=nobgBlob=resURL=sheetURL=null;
+    origBlob=nobgBlob=resURL=sheetURL=origImageData=null;
     prevOrig.innerHTML='';
     $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
+    btnToSet.style.display='none';
     setTab(0);
   });
 
