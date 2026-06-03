@@ -1,248 +1,262 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Ảnh Thẻ Pro — AI Photo Studio</title>
-  <meta name="description" content="Tạo ảnh thẻ chuyên nghiệp với AI: xóa nền, thay màu, chuẩn kích thước" />
-  <meta name="theme-color" content="#1e293b" />
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-
+  <meta name="theme-color" content="#1e293b"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --c-bg0:#0d1117;--c-bg1:#161b22;--c-bg2:#1e2730;--c-bg3:#262f3d;
-      --c-border:#30363d;--c-accent:#3b82f6;--c-accent2:#60a5fa;
-      --c-gold:#f59e0b;--c-green:#10b981;--c-red:#ef4444;
-      --c-text1:#e6edf3;--c-text2:#8b949e;--c-text3:#6e7681;
-      --radius:12px;--radius-sm:8px;--shadow:0 4px 24px rgba(0,0,0,.45);
-      --font-main:'Be Vietnam Pro',sans-serif;--font-mono:'Space Mono',monospace;
-      --tr:0.2s cubic-bezier(0.4,0,0.2,1);
+    :root{
+      --bg0:#0d1117;--bg1:#161b22;--bg2:#1e2730;--bg3:#262f3d;
+      --bd:#30363d;--ac:#3b82f6;--ac2:#60a5fa;--gold:#f59e0b;
+      --green:#10b981;--red:#ef4444;
+      --t1:#e6edf3;--t2:#8b949e;--t3:#6e7681;
+      --r:12px;--rs:8px;--fn:'Be Vietnam Pro',sans-serif;--fm:'Space Mono',monospace;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:var(--font-main);background:var(--c-bg0);color:var(--c-text1);min-height:100vh;line-height:1.6;}
-    img{max-width:100%;display:block;}
-    button{cursor:pointer;font-family:inherit;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--fn);background:var(--bg0);color:var(--t1);min-height:100vh}
+    img{max-width:100%;display:block}
+    button{cursor:pointer;font-family:inherit}
 
-    .header{background:#0f172a;border-bottom:1px solid var(--c-border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-    .logo{display:flex;align-items:center;gap:12px;}
-    .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--c-accent),var(--c-gold));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-    .logo-text h1{font-size:1.1rem;font-weight:700;}
-    .logo-text p{font-size:.7rem;color:var(--c-text2);text-transform:uppercase;letter-spacing:.08em;}
-    .status-badge{font-size:.72rem;padding:4px 12px;border-radius:20px;border:1px solid var(--c-border);color:var(--c-text2);font-family:var(--font-mono);}
-    .status-badge.ok{border-color:var(--c-green);color:var(--c-green);}
-    .status-badge.error{border-color:var(--c-red);color:var(--c-red);}
-    .status-badge.loading{border-color:var(--c-accent2);color:var(--c-accent2);animation:pulse 1.2s infinite;}
+    /* HEADER */
+    .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .logo h1{font-size:1rem;font-weight:700}
+    .logo p{font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
+    .badge{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm)}
+    .badge.ok{border-color:var(--green);color:var(--green)}
+    .badge.err{border-color:var(--red);color:var(--red)}
+    .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
 
-    .container{max-width:1000px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+    /* LAYOUT */
+    .wrap{max-width:960px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
 
-    .hero{text-align:center;padding:2rem 0 1.5rem;}
-    .hero h2{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;letter-spacing:-.03em;}
-    .hero h2 span{background:linear-gradient(135deg,var(--c-accent2),var(--c-gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .hero p{color:var(--c-text2);margin-top:.6rem;font-size:.95rem;}
-    .pills-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:1rem;}
-    .pill{font-size:.72rem;padding:4px 12px;border-radius:20px;border:1px solid var(--c-border);color:var(--c-text2);background:var(--c-bg1);}
-    .pill.ai{border-color:var(--c-accent);color:var(--c-accent2);}
+    /* HERO */
+    .hero{text-align:center;padding:1.75rem 0 1.25rem}
+    .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
+    .hero h2 em{font-style:normal;background:linear-gradient(135deg,var(--ac2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{color:var(--t2);margin-top:.5rem;font-size:.9rem}
+    .tags{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:.9rem}
+    .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
+    .tag.hi{border-color:var(--ac);color:var(--ac2)}
 
-    .steps-bar{display:flex;gap:0;margin:2rem 0 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--c-border);}
-    .step-tab{flex:1;padding:12px 8px;text-align:center;font-size:.78rem;font-weight:500;color:var(--c-text2);background:var(--c-bg1);border-right:1px solid var(--c-border);cursor:default;transition:var(--tr);}
-    .step-tab:last-child{border-right:none;}
-    .step-tab.active{background:var(--c-accent);color:#fff;}
-    .step-tab.done{background:var(--c-bg2);color:var(--c-green);}
+    /* TABS */
+    .tabs{display:flex;margin:1.75rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
+    .tab{flex:1;padding:11px 6px;text-align:center;font-size:.75rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s}
+    .tab:last-child{border-right:none}
+    .tab.on{background:var(--ac);color:#fff}
+    .tab.done{background:var(--bg2);color:var(--green)}
 
-    .panel{display:none;margin-top:1.5rem;}
-    .panel.active{display:block;}
+    /* PANELS */
+    .pnl{display:none;margin-top:1.25rem}
+    .pnl.on{display:block}
 
-    .dropzone{border:2px dashed var(--c-border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:var(--tr);background:var(--c-bg1);}
-    .dropzone:hover,.dropzone.drag{border-color:var(--c-accent);background:rgba(59,130,246,.05);}
-    .drop-icon{font-size:2.5rem;margin-bottom:.75rem;}
-    .drop-hint{color:var(--c-text2);font-size:.875rem;}
-    .drop-sub{font-size:.7rem;color:var(--c-text3);margin-top:.4rem;font-family:var(--font-mono);}
-    .upload-row{display:grid;grid-template-columns:1fr auto;gap:12px;}
-    .btn-cam{background:var(--c-bg2);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.2rem;color:var(--c-text1);font-size:.8rem;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;transition:var(--tr);}
-    .btn-cam:hover{border-color:var(--c-accent);}
+    /* UPLOAD */
+    .up-row{display:grid;grid-template-columns:1fr 84px;gap:10px}
+    @media(max-width:420px){.up-row{grid-template-columns:1fr}}
+    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2.25rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1)}
+    .dz:hover,.dz.ov{border-color:var(--ac);background:rgba(59,130,246,.05)}
+    .dz-ico{font-size:2.2rem;margin-bottom:.6rem}
+    .dz-hint{color:var(--t2);font-size:.85rem}
+    .dz-sub{font-size:.68rem;color:var(--t3);margin-top:.35rem;font-family:var(--fm)}
+    .cam-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem .5rem;color:var(--t1);font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;transition:.18s}
+    .cam-btn:hover{border-color:var(--ac)}
 
-    #camera-section{display:none;margin-top:1.25rem;}
-    .cam-wrap{position:relative;border-radius:var(--radius);overflow:hidden;background:#000;max-width:420px;margin:0 auto;}
-    #cam-video{width:100%;display:block;}
-    .cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-    .cam-oval{width:160px;height:200px;border:2px solid rgba(255,255,255,.6);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.35);}
-    .cam-hint{margin-top:.75rem;font-size:.7rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:3px 10px;border-radius:20px;}
-    .cam-btns{position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:14px;}
-    .cam-btn{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-    .cam-btn.primary{width:56px;height:56px;background:#fff;color:#000;font-size:1.4rem;}
-    .cam-btn.sec{width:40px;height:40px;background:rgba(255,255,255,.18);color:#fff;font-size:1rem;}
+    /* CAMERA */
+    #cam-sec{display:none;margin-top:1rem}
+    .cam-box{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:400px;margin:0 auto}
+    #cam-vid{width:100%;display:block}
+    .cam-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+    .cam-oval{width:148px;height:188px;border:2px solid rgba(255,255,255,.6);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.38)}
+    .cam-tip{margin-top:.65rem;font-size:.65rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:3px 9px;border-radius:20px}
+    .cam-ctrls{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:12px}
+    .cb{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .cb.big{width:52px;height:52px;background:#fff;color:#000;font-size:1.3rem}
+    .cb.sm{width:38px;height:38px;background:rgba(255,255,255,.18);color:#fff;font-size:.95rem}
 
-    #preview-orig{margin-top:1.25rem;}
-    #preview-orig img{max-height:200px;border-radius:var(--radius);margin:0 auto;border:1px solid var(--c-border);}
+    /* ORIG PREVIEW */
+    #prev-orig{margin-top:1rem}
+    #prev-orig img{max-height:180px;border-radius:var(--r);margin:0 auto;border:1px solid var(--bd)}
 
-    #panel-removebg{background:var(--c-bg1);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.5rem;}
-    .ai-label{font-size:.875rem;font-weight:500;margin-bottom:.35rem;}
-    .ai-sub{font-size:.75rem;color:var(--c-text2);}
-    .prog-wrap{margin-top:.75rem;}
-    .prog-track{height:4px;background:var(--c-bg3);border-radius:2px;overflow:hidden;}
-    .prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--c-accent),var(--c-gold));border-radius:2px;transition:width .3s ease;}
-    .prog-label{font-size:.72rem;color:var(--c-text2);margin-top:5px;font-family:var(--font-mono);}
-    #canvas-nobg{border-radius:var(--radius-sm);border:1px solid var(--c-border);max-width:100%;display:none;margin:1rem auto 0;max-height:220px;}
+    /* REMOVE BG PANEL */
+    .rb-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
+    .rb-lbl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
+    .rb-sub{font-size:.75rem;color:var(--t2);margin-bottom:.75rem}
+    .bar-wrap{margin-bottom:.5rem}
+    .bar-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),var(--gold));border-radius:2px;transition:width .25s}
+    .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
+    #cnv-nobg{border-radius:var(--rs);border:1px solid var(--bd);display:none;margin:1rem auto 0;max-height:210px;max-width:100%}
 
-    #panel-settings{background:var(--c-bg1);border:1px solid var(--c-border);border-radius:var(--radius);padding:1.5rem;}
-    .settings-title{font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--c-text2);margin-bottom:1.1rem;}
-    .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;}
-    .form-group{display:flex;flex-direction:column;gap:5px;}
-    .form-label{font-size:.78rem;color:var(--c-text2);font-weight:500;}
-    select{background:var(--c-bg2);border:1px solid var(--c-border);border-radius:var(--radius-sm);color:var(--c-text1);padding:8px 10px;font-size:.85rem;cursor:pointer;width:100%;}
-    .swatches{display:flex;gap:7px;flex-wrap:wrap;}
-    .swatch{width:30px;height:30px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:var(--tr);}
-    .swatch:hover{transform:scale(1.15);}
-    .swatch.active{border-color:var(--c-accent2);box-shadow:0 0 0 2px var(--c-accent);}
-    .swatch[data-c="white"]{background:#fff;}
-    .swatch[data-c="blue"]{background:#4372c4;}
-    .swatch[data-c="light_blue"]{background:#add8e6;}
-    .swatch[data-c="red"]{background:#cc0000;}
-    .swatch[data-c="gray"]{background:#c8c8c8;}
-    .check-row{display:flex;align-items:center;gap:8px;padding:8px 0;}
-    input[type=checkbox]{width:16px;height:16px;accent-color:var(--c-accent);cursor:pointer;}
+    /* SETTINGS */
+    .set-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
+    .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
+    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
+    .fg{display:flex;flex-direction:column;gap:5px}
+    .fl{font-size:.75rem;color:var(--t2);font-weight:500}
+    select{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);padding:7px 10px;font-size:.83rem;cursor:pointer;width:100%}
+    .sw-row{display:flex;gap:6px;flex-wrap:wrap}
+    .sw{width:28px;height:28px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:.15s;flex-shrink:0}
+    .sw:hover{transform:scale(1.15)}
+    .sw.on{border-color:var(--ac2);box-shadow:0 0 0 2px var(--ac)}
+    .sw[data-c="white"]{background:#fff}
+    .sw[data-c="blue"]{background:#4372c4}
+    .sw[data-c="light_blue"]{background:#add8e6}
+    .sw[data-c="red"]{background:#cc0000}
+    .sw[data-c="gray"]{background:#c8c8c8}
+    .ck-row{display:flex;align-items:center;gap:7px;padding:6px 0}
+    input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
 
-    .btn{padding:11px 24px;border-radius:var(--radius-sm);font-size:.875rem;font-weight:600;border:1px solid transparent;transition:var(--tr);display:inline-flex;align-items:center;gap:7px;}
-    .btn.primary{background:var(--c-accent);color:#fff;border-color:var(--c-accent);box-shadow:0 0 18px rgba(59,130,246,.3);}
-    .btn.primary:hover:not(:disabled){background:#2563eb;transform:translateY(-1px);}
-    .btn.primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
-    .btn.secondary{background:var(--c-bg2);border-color:var(--c-border);color:var(--c-text1);}
-    .btn.secondary:hover{background:var(--c-bg3);}
-    .btn.ghost{background:transparent;border-color:transparent;color:var(--c-text2);}
-    .btn.ghost:hover{color:var(--c-text1);}
-    .action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.25rem;}
+    /* BUTTONS */
+    .btn{padding:10px 22px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.28)}
+    .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
+    .btn.pri:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn.sec{background:var(--bg2);border-color:var(--bd);color:var(--t1)}
+    .btn.sec:hover{background:var(--bg3)}
+    .btn.gh{background:transparent;border-color:transparent;color:var(--t2)}
+    .btn.gh:hover{color:var(--t1)}
+    .act-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.1rem}
 
-    #panel-result{margin-top:1.5rem;}
-    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-    @media(max-width:560px){.result-grid{grid-template-columns:1fr;}}
-    .result-card{background:var(--c-bg1);border:1px solid var(--c-border);border-radius:var(--radius);padding:1rem;text-align:center;}
-    .result-card img{max-height:260px;border-radius:6px;margin:0 auto .6rem;box-shadow:var(--shadow);}
-    .result-meta{font-size:.72rem;color:var(--c-text2);font-family:var(--font-mono);}
-    .result-title{font-size:.95rem;font-weight:600;color:var(--c-green);margin-bottom:1rem;}
+    /* RESULT */
+    .res-ttl{font-size:.9rem;font-weight:600;color:var(--green);margin-bottom:.9rem}
+    .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+    @media(max-width:520px){.res-grid{grid-template-columns:1fr}}
+    .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem;text-align:center}
+    .res-card img{max-height:250px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+    .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
 
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-    @media(max-width:480px){.header{padding:1rem;}.container{padding:1.5rem 1rem 3rem;}.upload-row{grid-template-columns:1fr;}}
+    /* PROC PROGRESS */
+    #proc-bar{display:none;margin-top:.9rem}
+
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+    footer{border-top:1px solid var(--bd);padding:1.1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
   </style>
 </head>
 <body>
 
-<header class="header">
+<header class="hdr">
   <div class="logo">
-    <div class="logo-icon">📸</div>
-    <div class="logo-text">
+    <div class="logo-ico">📸</div>
+    <div>
       <h1>Ảnh Thẻ Pro</h1>
       <p>AI chạy trên trình duyệt</p>
     </div>
   </div>
-  <span id="status-badge" class="status-badge loading">Đang kết nối…</span>
+  <span id="badge" class="badge spin">Đang kết nối…</span>
 </header>
 
-<main class="container">
+<main class="wrap">
   <div class="hero">
-    <h2>Ảnh Thẻ <span>Chuyên Nghiệp</span> — AI Miễn Phí</h2>
-    <p>Xóa nền bằng AI chạy thẳng trên trình duyệt · Không cần server · Hoàn toàn riêng tư</p>
-    <div class="pills-row">
-      <span class="pill ai">🤖 AI WebAssembly</span>
-      <span class="pill">📐 3×4, 4×6, Hộ chiếu…</span>
-      <span class="pill">🎨 Thay màu nền</span>
-      <span class="pill">🖨 Tờ in 4×5</span>
-      <span class="pill">🔒 Ảnh không rời máy bạn</span>
+    <h2>Ảnh Thẻ <em>Chuyên Nghiệp</em> — AI Miễn Phí</h2>
+    <p>Xóa nền bằng AI ngay trên trình duyệt · Không cần server · Hoàn toàn riêng tư</p>
+    <div class="tags">
+      <span class="tag hi">🤖 AI WebAssembly</span>
+      <span class="tag">📐 3×4, 4×6, Hộ chiếu…</span>
+      <span class="tag">🎨 Thay màu nền</span>
+      <span class="tag">🖨 Tờ in 4×5</span>
+      <span class="tag">🔒 Ảnh không rời máy bạn</span>
     </div>
   </div>
 
-  <div class="steps-bar">
-    <div class="step-tab active" id="tab0">① Chọn ảnh</div>
-    <div class="step-tab" id="tab1">② Xóa nền AI</div>
-    <div class="step-tab" id="tab2">③ Tùy chỉnh</div>
-    <div class="step-tab" id="tab3">④ Kết quả</div>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on"  id="t0">① Chọn ảnh</div>
+    <div class="tab"     id="t1">② Xóa nền AI</div>
+    <div class="tab"     id="t2">③ Tùy chỉnh</div>
+    <div class="tab"     id="t3">④ Kết quả</div>
   </div>
 
-  <!-- PANEL 0 -->
-  <div class="panel active" id="panel0">
-    <div class="upload-row">
-      <div class="dropzone" id="dropzone">
-        <div class="drop-icon">🖼</div>
-        <p class="drop-hint" id="drop-hint">Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
-        <p class="drop-sub">JPG · PNG · WEBP · tối đa 10MB</p>
+  <!-- P0: UPLOAD -->
+  <div class="pnl on" id="p0">
+    <div class="up-row">
+      <div class="dz" id="dz">
+        <div class="dz-ico">🖼</div>
+        <p class="dz-hint" id="dz-hint">Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
+        <p class="dz-sub">JPG · PNG · WEBP · tối đa 10MB</p>
       </div>
-      <button class="btn-cam" id="btn-cam">
-        <span style="font-size:1.8rem">📷</span>
-        <span>Chụp<br/>Camera</span>
+      <button class="cam-btn" id="btn-cam">
+        <span style="font-size:1.6rem">📷</span>
+        <span>Chụp<br>Camera</span>
       </button>
     </div>
-    <input type="file" id="input-file" accept="image/*" style="display:none" />
-    <div id="camera-section">
-      <div class="cam-wrap">
-        <video id="cam-video" autoplay playsinline muted></video>
-        <canvas id="cam-canvas" style="display:none"></canvas>
-        <div class="cam-overlay">
+    <input type="file" id="inp-file" accept="image/*" style="display:none">
+
+    <div id="cam-sec">
+      <div class="cam-box">
+        <video id="cam-vid" autoplay playsinline muted></video>
+        <canvas id="cam-cnv" style="display:none"></canvas>
+        <div class="cam-ov">
           <div class="cam-oval"></div>
-          <p class="cam-hint">Nhìn thẳng · Đủ sáng · Không đội mũ</p>
+          <p class="cam-tip">Nhìn thẳng · Đủ sáng · Không đội mũ</p>
         </div>
-        <div class="cam-btns">
-          <button class="cam-btn sec" id="btn-flip">↺</button>
-          <button class="cam-btn primary" id="btn-capture">📷</button>
-          <button class="cam-btn sec" id="btn-cam-close">✕</button>
+        <div class="cam-ctrls">
+          <button class="cb sm" id="btn-flip">↺</button>
+          <button class="cb big" id="btn-cap">📷</button>
+          <button class="cb sm" id="btn-cam-x">✕</button>
         </div>
       </div>
     </div>
-    <div id="preview-orig"></div>
+
+    <div id="prev-orig"></div>
   </div>
 
-  <!-- PANEL 1 -->
-  <div class="panel" id="panel1">
-    <div id="panel-removebg">
-      <div class="ai-label" id="ai-label">🤖 AI đang xóa nền…</div>
-      <div class="ai-sub" id="ai-sub">Lần đầu tải model ~20MB, sau đó nhanh hơn</div>
-      <div class="prog-wrap">
-        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-        <div class="prog-label" id="prog-label">Đang khởi tạo…</div>
+  <!-- P1: XÓA NỀN -->
+  <div class="pnl" id="p1">
+    <div class="rb-box">
+      <div class="rb-lbl" id="rb-lbl">🤖 AI đang xóa nền…</div>
+      <div class="rb-sub" id="rb-sub">Lần đầu tải model ~20MB — xin chờ</div>
+      <div class="bar-wrap">
+        <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="bar-lbl"  id="bar-lbl">Đang khởi tạo…</div>
       </div>
-      <canvas id="canvas-nobg"></canvas>
-      <div class="action-row" id="removebg-acts" style="display:none">
-        <button class="btn primary" id="btn-next-settings">Tiếp theo — Tùy chỉnh →</button>
-        <button class="btn ghost" id="btn-redo">↩ Chọn ảnh khác</button>
+      <canvas id="cnv-nobg"></canvas>
+      <div class="act-row" id="rb-acts" style="display:none">
+        <button class="btn pri" id="btn-to-set">Tiếp theo — Tùy chỉnh →</button>
+        <button class="btn gh"  id="btn-redo">↩ Chọn ảnh khác</button>
       </div>
     </div>
   </div>
 
-  <!-- PANEL 2 -->
-  <div class="panel" id="panel2">
-    <div id="panel-settings">
-      <p class="settings-title">⚙ Tùy chỉnh ảnh thẻ</p>
-      <div class="settings-grid">
-        <div class="form-group">
-          <label class="form-label">📐 Kích thước</label>
-          <select id="size-select">
+  <!-- P2: SETTINGS -->
+  <div class="pnl" id="p2">
+    <div class="set-box">
+      <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
+      <div class="set-grid">
+        <div class="fg">
+          <label class="fl">📐 Kích thước</label>
+          <select id="sel-size">
             <option value="the_3x4">Ảnh thẻ 3×4 cm</option>
             <option value="the_4x6">Ảnh thẻ 4×6 cm</option>
             <option value="the_2x3">Ảnh thẻ 2×3 cm</option>
-            <option value="chung_minh">CCCD/CMND</option>
+            <option value="chung_minh">CCCD / CMND</option>
             <option value="passport">Hộ chiếu 35×45mm</option>
             <option value="visa_us">Visa Mỹ 2×2 inch</option>
             <option value="visa_schengen">Visa Schengen</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">💾 Định dạng xuất</label>
-          <select id="fmt-select">
+        <div class="fg">
+          <label class="fl">💾 Định dạng</label>
+          <select id="sel-fmt">
             <option value="jpeg">JPEG (nhỏ hơn)</option>
             <option value="png">PNG (chất lượng cao)</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">🎨 Màu nền</label>
-          <div class="swatches">
-            <div class="swatch active" data-c="white"      title="Trắng"></div>
-            <div class="swatch"        data-c="blue"       title="Xanh dương"></div>
-            <div class="swatch"        data-c="light_blue" title="Xanh nhạt"></div>
-            <div class="swatch"        data-c="red"        title="Đỏ"></div>
-            <div class="swatch"        data-c="gray"       title="Xám"></div>
+        <div class="fg">
+          <label class="fl">🎨 Màu nền</label>
+          <div class="sw-row">
+            <div class="sw on" data-c="white"      title="Trắng"></div>
+            <div class="sw"    data-c="blue"       title="Xanh dương"></div>
+            <div class="sw"    data-c="light_blue" title="Xanh nhạt"></div>
+            <div class="sw"    data-c="red"        title="Đỏ"></div>
+            <div class="sw"    data-c="gray"       title="Xám"></div>
           </div>
-          <select id="bg-select" style="display:none">
+          <select id="sel-bg" style="display:none">
             <option value="white">Trắng</option>
             <option value="blue">Xanh dương</option>
             <option value="light_blue">Xanh nhạt</option>
@@ -250,299 +264,281 @@
             <option value="gray">Xám</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">✨ Tùy chọn</label>
-          <div class="check-row">
-            <input type="checkbox" id="enhance-check" checked />
-            <label for="enhance-check" style="font-size:.85rem;cursor:pointer">Tăng cường chất lượng</label>
+        <div class="fg">
+          <label class="fl">✨ Tùy chọn</label>
+          <div class="ck-row">
+            <input type="checkbox" id="ck-enh" checked>
+            <label for="ck-enh" style="font-size:.83rem;cursor:pointer">Tăng cường chất lượng</label>
           </div>
         </div>
       </div>
-      <div class="action-row">
-        <button class="btn primary" id="btn-process">🚀 Tạo ảnh thẻ</button>
-        <button class="btn ghost" id="btn-back">← Xem lại xóa nền</button>
+      <div class="act-row">
+        <button class="btn pri" id="btn-proc">🚀 Tạo ảnh thẻ</button>
+        <button class="btn gh"  id="btn-back">← Xem lại xóa nền</button>
       </div>
-      <div id="proc-prog" style="display:none;margin-top:1rem;">
-        <div class="prog-track"><div class="prog-fill" id="proc-fill"></div></div>
-        <div class="prog-label">Đang xử lý trên server…</div>
+      <div id="proc-bar">
+        <div class="bar-track"><div class="bar-fill" id="proc-fill"></div></div>
+        <div class="bar-lbl">Đang xử lý trên server…</div>
       </div>
     </div>
   </div>
 
-  <!-- PANEL 3 -->
-  <div class="panel" id="panel3">
-    <div>
-      <p class="result-title">✅ Ảnh thẻ đã sẵn sàng!</p>
-      <div class="result-grid">
-        <div class="result-card">
-          <img id="result-img" src="" alt="Ảnh thẻ" />
-          <p class="result-meta" id="result-meta"></p>
-        </div>
-        <div class="result-card" id="sheet-card">
-          <p class="result-meta">Đang tạo tờ in…</p>
-        </div>
+  <!-- P3: RESULT -->
+  <div class="pnl" id="p3">
+    <p class="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
+    <div class="res-grid">
+      <div class="res-card">
+        <img id="res-img" src="" alt="Ảnh thẻ">
+        <p class="res-meta" id="res-meta"></p>
       </div>
-      <div class="action-row">
-        <button class="btn primary"   id="btn-dl-single">⬇ Tải ảnh đơn</button>
-        <button class="btn secondary" id="btn-dl-sheet">🖨 Tải tờ in 4×5</button>
-        <button class="btn ghost"     id="btn-reset">↩ Làm lại</button>
+      <div class="res-card" id="sheet-card">
+        <p class="res-meta">Đang tạo tờ in…</p>
       </div>
+    </div>
+    <div class="act-row">
+      <button class="btn pri" id="btn-dl1">⬇ Tải ảnh đơn</button>
+      <button class="btn sec" id="btn-dl5">🖨 Tải tờ in 4×5</button>
+      <button class="btn gh"  id="btn-rst">↩ Làm lại</button>
     </div>
   </div>
 </main>
 
-<footer style="border-top:1px solid var(--c-border);padding:1.25rem 2rem;text-align:center;font-size:.72rem;color:var(--c-text3);">
-  Ảnh Thẻ Pro · AI xóa nền WebAssembly · Backend: FastAPI + Pillow · Deploy: Render + Netlify
-</footer>
+<footer>Ảnh Thẻ Pro · AI WebAssembly xóa nền · Backend FastAPI + Pillow · Render + Netlify</footer>
+
+<!-- CONFIG — đổi URL nếu backend thay đổi -->
+<script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
+
+<!-- Load thư viện AI xóa nền từ unpkg (stable, không cần publicPath) -->
+<script src="https://unpkg.com/@imgly/background-removal@1.4.5/dist/background-removal.js"></script>
 
 <script>
-  window.API_BASE = "https://anh-the-pro.onrender.com";
-</script>
+(function(){
+  // ── refs ──
+  function $(i){return document.getElementById(i)}
+  var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
+  var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
+  var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
+  var prevOrig=$('prev-orig'), cnvNobg=$('cnv-nobg');
+  var rbLbl=$('rb-lbl'), rbSub=$('rb-sub');
+  var barFill=$('bar-fill'), barLbl=$('bar-lbl'), rbActs=$('rb-acts');
+  var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
+  var ckEnh=$('ck-enh'), btnProc=$('btn-proc'), btnBack=$('btn-back');
+  var procBar=$('proc-bar'), procFill=$('proc-fill');
+  var resImg=$('res-img'), resMeta=$('res-meta'), sheetCard=$('sheet-card');
+  var btnDl1=$('btn-dl1'), btnDl5=$('btn-dl5'), btnRst=$('btn-rst');
+  var badge=$('badge');
 
-<script type="module">
-import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm';
+  var origBlob=null, nobgBlob=null, resURL=null, sheetURL=null;
+  var camStream=null, facing='user';
 
-const $  = id => document.getElementById(id);
-const dropzone   = $('dropzone');
-const inputFile  = $('input-file');
-const btnCam     = $('btn-cam');
-const camSection = $('camera-section');
-const camVideo   = $('cam-video');
-const camCanvas  = $('cam-canvas');
-const btnCapture = $('btn-capture');
-const btnFlip    = $('btn-flip');
-const btnCamClose= $('btn-cam-close');
-const previewOrig= $('preview-orig');
-const canvasNobg = $('canvas-nobg');
-const aiLabel    = $('ai-label');
-const aiSub      = $('ai-sub');
-const progFill   = $('prog-fill');
-const progLabel  = $('prog-label');
-const removebgActs=$('removebg-acts');
-const sizeSelect = $('size-select');
-const fmtSelect  = $('fmt-select');
-const bgSelect   = $('bg-select');
-const enhanceChk = $('enhance-check');
-const btnProcess = $('btn-process');
-const btnBack    = $('btn-back');
-const procProg   = $('proc-prog');
-const procFill   = $('proc-fill');
-const resultImg  = $('result-img');
-const resultMeta = $('result-meta');
-const sheetCard  = $('sheet-card');
-const btnDlSingle= $('btn-dl-single');
-const btnDlSheet = $('btn-dl-sheet');
-const btnReset   = $('btn-reset');
-const statusBadge= $('status-badge');
-
-let origBlob=null, nobgBlob=null, resultURL=null, sheetURL=null;
-let camStream=null, facingMode='user';
-
-// ── Tabs ──
-function setTab(n){
-  for(let i=0;i<4;i++){
-    const t=$('tab'+i), p=$('panel'+i);
-    t.classList.remove('active','done');
-    p.classList.remove('active');
-    if(i<n) t.classList.add('done');
-    if(i===n){t.classList.add('active');p.classList.add('active');}
+  // ── tabs ──
+  function setTab(n){
+    for(var i=0;i<4;i++){
+      var t=$('t'+i), p=$('p'+i);
+      t.className='tab'+(i<n?' done':i===n?' on':'');
+      p.className='pnl'+(i===n?' on':'');
+    }
   }
-}
 
-// ── Status ──
-function setStatus(msg,type){
-  statusBadge.textContent=msg;
-  statusBadge.className='status-badge '+type;
-}
+  // ── badge ──
+  function setBadge(msg,cls){badge.textContent=msg;badge.className='badge '+cls;}
 
-// ── Ping backend ──
-async function pingBackend(){
-  try{
-    const r=await fetch(window.API_BASE+'/health');
-    await r.json();
-    setStatus('Server sẵn sàng ✓','ok');
-  }catch{
-    setStatus('Server offline','error');
+  // ── ping ──
+  function ping(){
+    fetch(window.API_BASE+'/health')
+      .then(function(r){return r.json();})
+      .then(function(){setBadge('Server sẵn sàng ✓','ok');})
+      .catch(function(){setBadge('Server offline','err');});
   }
-}
 
-// ── Upload ──
-dropzone.addEventListener('dragover', e=>{e.preventDefault();dropzone.classList.add('drag');});
-dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag'));
-dropzone.addEventListener('drop',e=>{
-  e.preventDefault();dropzone.classList.remove('drag');
-  if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
-});
-dropzone.addEventListener('click',()=>inputFile.click());
-inputFile.addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0]);});
+  // ── upload ──
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
+  dz.addEventListener('drop',function(e){
+    e.preventDefault();dz.classList.remove('ov');
+    if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+  dz.addEventListener('click',function(){inpFile.click();});
+  inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.target.files[0]);});
 
-async function loadFile(file){
-  if(!file.type.startsWith('image/')){alert('Vui lòng chọn file ảnh!');return;}
-  origBlob=file;
-  const url=URL.createObjectURL(file);
-  previewOrig.innerHTML=`<img src="${url}" alt="Ảnh gốc"/>`;
-  $('drop-hint').textContent='✓ Đã chọn — đang chuyển sang xóa nền…';
-  setTimeout(()=>startRemoveBg(),400);
-}
+  function loadFile(f){
+    if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
+    origBlob=f;
+    var url=URL.createObjectURL(f);
+    prevOrig.innerHTML='<img src="'+url+'" alt="Ảnh gốc"/>';
+    $('dz-hint').textContent='✓ Đã chọn — đang xử lý…';
+    setTimeout(startRemoveBg,350);
+  }
 
-// ── Camera ──
-btnCam.addEventListener('click',async()=>{camSection.style.display='block';await startCam();});
-btnCamClose.addEventListener('click',stopCam);
-btnFlip.addEventListener('click',async()=>{facingMode=facingMode==='user'?'environment':'user';stopCam();await startCam();});
-btnCapture.addEventListener('click',()=>{
-  camCanvas.width=camVideo.videoWidth;
-  camCanvas.height=camVideo.videoHeight;
-  camCanvas.getContext('2d').drawImage(camVideo,0,0);
-  camCanvas.toBlob(blob=>{stopCam();loadFile(new File([blob],'camera.jpg',{type:'image/jpeg'}));;},'image/jpeg',.95);
-});
-async function startCam(){
-  try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1280},height:{ideal:720}},audio:false});
-    camVideo.srcObject=camStream;
-  }catch(e){alert('Không truy cập được camera: '+e.message);}
-}
-function stopCam(){
-  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-  camSection.style.display='none';
-}
+  // ── camera ──
+  btnCam.addEventListener('click',function(){camSec.style.display='block';startCam();});
+  btnCamX.addEventListener('click',stopCam);
+  btnFlip.addEventListener('click',function(){facing=facing==='user'?'environment':'user';stopCam();startCam();});
+  btnCap.addEventListener('click',function(){
+    camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
+    camCnv.getContext('2d').drawImage(camVid,0,0);
+    camCnv.toBlob(function(b){stopCam();loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));},'image/jpeg',.95);
+  });
 
-// ── Xóa nền AI (WebAssembly) ──
-async function startRemoveBg(){
-  setTab(1);
-  progFill.style.width='0%';
-  progLabel.textContent='Đang tải model AI…';
-  aiLabel.textContent='🤖 AI đang xóa nền…';
-  aiSub.textContent='Lần đầu tải model ~20MB, sau đó nhanh hơn';
-  removebgActs.style.display='none';
-  canvasNobg.style.display='none';
+  function startCam(){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
+      .then(function(s){camStream=s;camVid.srcObject=s;})
+      .catch(function(e){alert('Không mở được camera: '+e.message);});
+  }
+  function stopCam(){
+    if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+    camSec.style.display='none';
+  }
 
-  try{
-    const config={
-      progress:(key,current,total)=>{
-        const pct=total>0?Math.round(current/total*100):0;
-        progFill.style.width=pct+'%';
-        progLabel.textContent=key+': '+pct+'%';
+  // ── xóa nền AI ──
+  function startRemoveBg(){
+    setTab(1);
+    barFill.style.width='0%';
+    barLbl.textContent='Đang tải model AI…';
+    rbLbl.textContent='🤖 AI đang xóa nền…';
+    rbSub.textContent='Lần đầu tải model ~20MB — xin chờ';
+    rbActs.style.display='none';
+    cnvNobg.style.display='none';
+
+    // Kiểm tra thư viện đã load chưa
+    var lib = window.BackgroundRemoval || (window['@imgly/background-removal']);
+    if(!lib || !lib.removeBackground){
+      rbLbl.textContent='❌ Lỗi: Không tải được thư viện AI';
+      rbSub.textContent='Vui lòng tải lại trang (F5)';
+      rbActs.style.display='flex';
+      return;
+    }
+
+    var cfg={
+      progress:function(key,cur,tot){
+        var pct=tot>0?Math.round(cur/tot*100):0;
+        barFill.style.width=pct+'%';
+        barLbl.textContent=key+': '+pct+'%';
       }
     };
 
-    const blob=await removeBackground(origBlob,config);
-    nobgBlob=blob;
+    lib.removeBackground(origBlob,cfg).then(function(blob){
+      nobgBlob=blob;
+      var url=URL.createObjectURL(blob);
+      var img=new Image();
+      img.onload=function(){
+        cnvNobg.width=img.naturalWidth;
+        cnvNobg.height=img.naturalHeight;
+        var ctx=cnvNobg.getContext('2d');
+        var sz=20;
+        for(var y=0;y<cnvNobg.height;y+=sz)
+          for(var x=0;x<cnvNobg.width;x+=sz){
+            ctx.fillStyle=((Math.floor(x/sz)+Math.floor(y/sz))%2===0)?'#ccc':'#fff';
+            ctx.fillRect(x,y,sz,sz);
+          }
+        ctx.drawImage(img,0,0);
+        cnvNobg.style.display='block';
+      };
+      img.src=url;
+      barFill.style.width='100%';
+      barLbl.textContent='Xóa nền hoàn tất!';
+      rbLbl.textContent='✅ Xóa nền thành công!';
+      rbSub.textContent='Kiểm tra kết quả rồi nhấn Tiếp theo';
+      rbActs.style.display='flex';
 
-    // Vẽ preview checker + ảnh
-    const url=URL.createObjectURL(blob);
-    const img=new Image();
-    img.onload=()=>{
-      canvasNobg.width=img.naturalWidth;
-      canvasNobg.height=img.naturalHeight;
-      const ctx=canvasNobg.getContext('2d');
-      const sz=20;
-      for(let y=0;y<canvasNobg.height;y+=sz)
-        for(let x=0;x<canvasNobg.width;x+=sz){
-          ctx.fillStyle=(Math.floor(x/sz)+Math.floor(y/sz))%2===0?'#ccc':'#fff';
-          ctx.fillRect(x,y,sz,sz);
-        }
-      ctx.drawImage(img,0,0);
-      canvasNobg.style.display='block';
-    };
-    img.src=url;
-
-    progFill.style.width='100%';
-    progLabel.textContent='Xóa nền hoàn tất!';
-    aiLabel.textContent='✅ Xóa nền thành công!';
-    aiSub.textContent='Kiểm tra kết quả rồi nhấn Tiếp theo';
-    removebgActs.style.display='flex';
-
-  }catch(e){
-    aiLabel.textContent='❌ Lỗi: '+e.message;
-    aiSub.textContent='';
-    progLabel.textContent='Thử lại với ảnh khác';
-    removebgActs.style.display='flex';
+    }).catch(function(e){
+      rbLbl.textContent='❌ Lỗi: '+e.message;
+      rbSub.textContent='';
+      barLbl.textContent='Thử lại với ảnh khác';
+      rbActs.style.display='flex';
+    });
   }
-}
 
-$('btn-next-settings').addEventListener('click',()=>setTab(2));
-$('btn-redo').addEventListener('click',()=>{nobgBlob=null;origBlob=null;previewOrig.innerHTML='';setTab(0);});
-btnBack.addEventListener('click',()=>setTab(1));
-
-// ── Swatch ──
-document.querySelectorAll('.swatch').forEach(sw=>{
-  sw.addEventListener('click',()=>{
-    document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
-    sw.classList.add('active');
-    bgSelect.value=sw.dataset.c;
+  $('btn-to-set').addEventListener('click',function(){setTab(2);});
+  $('btn-redo').addEventListener('click',function(){
+    nobgBlob=null;origBlob=null;prevOrig.innerHTML='';
+    $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
+    setTab(0);
   });
-});
+  btnBack.addEventListener('click',function(){setTab(1);});
 
-// ── Process ──
-btnProcess.addEventListener('click',async()=>{
-  if(!nobgBlob){alert('Chưa có ảnh đã xóa nền!');return;}
-  btnProcess.disabled=true;
-  procProg.style.display='block';
-  procFill.style.width='30%';
+  // ── swatches ──
+  document.querySelectorAll('.sw').forEach(function(sw){
+    sw.addEventListener('click',function(){
+      document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
+      sw.classList.add('on');
+      selBg.value=sw.dataset.c;
+    });
+  });
 
-  const form=new FormData();
-  form.append('file',nobgBlob,'nobg.png');
-  form.append('size_key',sizeSelect.value);
-  form.append('bg_color',bgSelect.value);
-  form.append('enhance',enhanceChk.checked?'true':'false');
-  form.append('output_fmt',fmtSelect.value);
+  // ── process ──
+  btnProc.addEventListener('click',function(){
+    if(!nobgBlob){alert('Chưa có ảnh xóa nền!');return;}
+    btnProc.disabled=true;
+    procBar.style.display='block';
+    procFill.style.width='30%';
 
-  try{
+    var form=new FormData();
+    form.append('file',nobgBlob,'nobg.png');
+    form.append('size_key',selSize.value);
+    form.append('bg_color',selBg.value);
+    form.append('enhance',ckEnh.checked?'true':'false');
+    form.append('output_fmt',selFmt.value);
+
     procFill.style.width='60%';
-    const res=await fetch(window.API_BASE+'/api/process',{method:'POST',body:form});
-    const data=await res.json();
-    procFill.style.width='100%';
-    if(!data.success) throw new Error(data.detail||'Lỗi server');
+    fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        procFill.style.width='100%';
+        if(!d.success) throw new Error(d.detail||'Lỗi server');
+        var mime=d.format==='png'?'image/png':'image/jpeg';
+        resURL='data:'+mime+';base64,'+d.image_b64;
+        resImg.src=resURL;
+        resMeta.textContent=d.width+' × '+d.height+' px · '+d.size_label;
+        btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
+        buildSheet(resURL,d);
+        setTab(3);
+      })
+      .catch(function(e){alert('Lỗi xử lý: '+e.message);})
+      .finally(function(){
+        btnProc.disabled=false;
+        procBar.style.display='none';
+        procFill.style.width='0%';
+      });
+  });
 
-    const mime=data.format==='png'?'image/png':'image/jpeg';
-    resultURL='data:'+mime+';base64,'+data.image_b64;
-    resultImg.src=resultURL;
-    resultMeta.textContent=data.width+' × '+data.height+' px · '+data.size_label;
-    btnDlSingle.onclick=()=>dlURL(resultURL,'anh-the.'+data.format);
-    buildSheet(resultURL,data);
-    setTab(3);
-
-  }catch(e){
-    alert('Lỗi xử lý: '+e.message);
-  }finally{
-    btnProcess.disabled=false;
-    procProg.style.display='none';
-    procFill.style.width='0%';
+  // ── sheet ──
+  function buildSheet(src,d){
+    var img=new Image();
+    img.onload=function(){
+      var cols=4,rows=5,gap=8,mg=14;
+      var cw=d.width,ch=d.height;
+      var cv=document.createElement('canvas');
+      cv.width=mg*2+cols*cw+(cols-1)*gap;
+      cv.height=mg*2+rows*ch+(rows-1)*gap;
+      var ctx=cv.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+      for(var r=0;r<rows;r++)
+        for(var c=0;c<cols;c++)
+          ctx.drawImage(img,mg+c*(cw+gap),mg+r*(ch+gap),cw,ch);
+      sheetURL=cv.toDataURL('image/jpeg',.95);
+      sheetCard.innerHTML='<img src="'+sheetURL+'" alt="Tờ in" style="max-height:250px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
+      btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
+    };
+    img.src=src;
   }
-});
 
-// ── Tờ in ──
-function buildSheet(src,data){
-  const img=new Image();
-  img.onload=()=>{
-    const cols=4,rows=5,gap=8,margin=16;
-    const cw=data.width,ch=data.height;
-    const canvas=document.createElement('canvas');
-    canvas.width=margin*2+cols*cw+(cols-1)*gap;
-    canvas.height=margin*2+rows*ch+(rows-1)*gap;
-    const ctx=canvas.getContext('2d');
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
-    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++)
-      ctx.drawImage(img,margin+c*(cw+gap),margin+r*(ch+gap),cw,ch);
-    sheetURL=canvas.toDataURL('image/jpeg',.95);
-    sheetCard.innerHTML='<img src="'+sheetURL+'" alt="Tờ in" style="max-height:260px;border-radius:6px;margin:0 auto .6rem;"/><p class="result-meta">Tờ in 4×5 ảnh</p>';
-    btnDlSheet.onclick=()=>dlURL(sheetURL,'to-in-anh-the.jpg');
-  };
-  img.src=src;
-}
+  function dlURL(url,name){
+    var a=document.createElement('a');a.href=url;a.download=name;a.click();
+  }
 
-function dlURL(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+  // ── reset ──
+  btnRst.addEventListener('click',function(){
+    origBlob=nobgBlob=resURL=sheetURL=null;
+    prevOrig.innerHTML='';
+    $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
+    setTab(0);
+  });
 
-btnReset.addEventListener('click',()=>{
-  origBlob=nobgBlob=resultURL=sheetURL=null;
-  previewOrig.innerHTML='';
-  $('drop-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
+  // ── init ──
+  ping();
   setTab(0);
-});
-
-// ── Init ──
-pingBackend();
-setTab(0);
+})();
 </script>
 </body>
 </html>
