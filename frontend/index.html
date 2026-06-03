@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Ảnh Thẻ Pro — AI Nhận Diện Khuôn Mặt</title>
+  <title>Ảnh Thẻ Pro — AI Tự Động</title>
   <meta name="theme-color" content="#1e293b"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -21,23 +21,19 @@
     img{max-width:100%;display:block}
     button{cursor:pointer;font-family:inherit}
 
-    /* HEADER */
-    .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .logo{display:flex;align-items:center;gap:10px}
-    .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+    .logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
     .logo h1{font-size:1rem;font-weight:700}
     .logo p{font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
-    .badge-row{display:flex;gap:8px;align-items:center}
-    .badge{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm)}
+    .badges{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{font-size:.7rem;padding:3px 10px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);white-space:nowrap}
     .badge.ok{border-color:var(--green);color:var(--green)}
     .badge.err{border-color:var(--red);color:var(--red)}
     .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
-    .badge.purple{border-color:var(--purple);color:var(--purple)}
 
-    /* LAYOUT */
     .wrap{max-width:1000px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
 
-    /* HERO */
     .hero{text-align:center;padding:1.5rem 0 1rem}
     .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
     .hero h2 em{font-style:normal;background:linear-gradient(135deg,var(--ac2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -45,74 +41,77 @@
     .tags{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:.9rem}
     .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
     .tag.hi{border-color:var(--ac);color:var(--ac2)}
-    .tag.pu{border-color:var(--purple);color:var(--purple)}
+    .tag.pu{border-color:var(--purple);color:#a78bfa}
 
-    /* STEPS */
     .steps{display:flex;margin:1.5rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
     .step{flex:1;padding:10px 4px;text-align:center;font-size:.72rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s;line-height:1.4}
     .step:last-child{border-right:none}
     .step.on{background:var(--ac);color:#fff}
     .step.done{background:var(--bg2);color:var(--green)}
 
-    /* PANELS */
     .pnl{display:none;margin-top:1.25rem}
     .pnl.on{display:block}
 
     /* UPLOAD */
     .up-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:500px){.up-grid{grid-template-columns:1fr}}
-    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1);min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1);min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
     .dz:hover,.dz.ov{border-color:var(--ac);background:rgba(59,130,246,.05)}
-    .dz-ico{font-size:2rem;margin-bottom:.5rem}
+    .dz-ico{font-size:2rem}
     .dz-hint{color:var(--t2);font-size:.83rem}
-    .dz-sub{font-size:.67rem;color:var(--t3);margin-top:.35rem;font-family:var(--fm)}
-    .cam-box-btn{background:var(--bg2);border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1rem;color:var(--t1);font-size:.83rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;transition:.18s;min-height:160px;cursor:pointer}
-    .cam-box-btn:hover{border-color:var(--ac)}
+    .dz-sub{font-size:.67rem;color:var(--t3);font-family:var(--fm)}
+    .cam-btn{background:var(--bg2);border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1rem;color:var(--t1);font-size:.83rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:160px;cursor:pointer;transition:.18s}
+    .cam-btn:hover{border-color:var(--ac)}
 
     /* CAMERA */
     #cam-sec{display:none;margin-top:1rem}
     .cam-wrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:420px;margin:0 auto}
     #cam-vid{width:100%;display:block}
     .cam-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-    .cam-oval{width:148px;height:188px;border:3px solid rgba(59,130,246,.8);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45);animation:pulse-border 2s ease-in-out infinite}
+    .cam-oval{width:150px;height:195px;border:3px solid rgba(59,130,246,.85);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
     .cam-tip{margin-top:.65rem;font-size:.65rem;color:rgba(255,255,255,.9);background:rgba(59,130,246,.6);padding:3px 10px;border-radius:20px}
     .cam-ctrls{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:12px}
     .cb{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
     .cb.big{width:56px;height:56px;background:#fff;color:#000;font-size:1.4rem}
     .cb.sm{width:40px;height:40px;background:rgba(255,255,255,.18);color:#fff;font-size:1rem;backdrop-filter:blur(4px)}
 
-    /* FACE DETECT PANEL */
-    .face-panel{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
-    .face-title{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
-    .face-sub{font-size:.75rem;color:var(--t2);margin-bottom:.875rem}
+    /* BOX CHUNG */
+    .box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
+    .box-ttl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
+    .box-sub{font-size:.75rem;color:var(--t2);margin-bottom:.875rem}
+
+    /* PROGRESS */
     .bar-wrap{margin-bottom:.75rem}
     .bar-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
     .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--ac),var(--gold));border-radius:3px;transition:width .3s}
     .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
 
-    /* FACE RESULT GRID */
-    .face-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-    @media(max-width:540px){.face-result-grid{grid-template-columns:1fr}}
-    .face-orig-wrap{position:relative;border-radius:var(--rs);overflow:hidden;background:#000;border:1px solid var(--bd)}
-    #cnv-detect{width:100%;display:block}
-    .face-info-box{background:var(--bg2);border-radius:var(--rs);padding:1rem}
-    .face-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:.78rem}
-    .face-stat:last-child{border-bottom:none}
-    .face-stat-key{color:var(--t2)}
-    .face-stat-val{font-weight:600;font-family:var(--fm)}
-    .face-stat-val.ok{color:var(--green)}
-    .face-stat-val.warn{color:var(--gold)}
-    .face-stat-val.err{color:var(--red)}
+    /* DETECT LAYOUT */
+    .detect-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+    @media(max-width:580px){.detect-grid{grid-template-columns:1fr}}
 
-    /* CROP PREVIEW */
-    #cnv-crop-wrap{margin-top:1rem;text-align:center;display:none}
-    #cnv-crop{border-radius:var(--rs);border:1px solid var(--bd);max-height:220px;margin:0 auto}
+    .cnv-box{position:relative;border-radius:var(--rs);overflow:hidden;background:#111;border:1px solid var(--bd)}
+    #cnv-detect{width:100%;display:block}
+
+    .stats-box{background:var(--bg2);border-radius:var(--rs);padding:.875rem;display:flex;flex-direction:column;gap:0}
+    .stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:.78rem}
+    .stat:last-child{border-bottom:none}
+    .stat-k{color:var(--t2);font-size:.72rem}
+    .stat-v{font-weight:600;font-family:var(--fm);font-size:.78rem}
+    .stat-v.ok{color:var(--green)}
+    .stat-v.warn{color:var(--gold)}
+    .stat-v.err{color:var(--red)}
+
+    /* PREVIEW CROP */
+    .crop-preview{margin-top:1rem;text-align:center}
     .crop-label{font-size:.72rem;color:var(--t2);margin-top:5px;font-family:var(--fm)}
+    #cnv-crop{border-radius:var(--rs);border:2px solid var(--bd);display:block;margin:0 auto;max-height:240px;max-width:100%}
+    .crop-guide{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
+    .guide-pill{font-size:.68rem;padding:2px 9px;border-radius:20px;background:var(--bg2);border:1px solid var(--bd);color:var(--t3)}
 
     /* SETTINGS */
-    .set-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
     .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
-    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:.875rem}
+    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
     .fg{display:flex;flex-direction:column;gap:5px}
     .fl{font-size:.75rem;color:var(--t2);font-weight:500}
     select{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);padding:7px 10px;font-size:.83rem;cursor:pointer;width:100%}
@@ -128,14 +127,11 @@
     .ck-row{display:flex;align-items:center;gap:7px;padding:5px 0}
     input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
 
-    /* BUTTONS */
+    /* BTN */
     .btn{padding:10px 20px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
-    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.3)}
+    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 14px rgba(59,130,246,.3)}
     .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
     .btn.pri:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none}
-    .btn.pu{background:var(--purple);color:#fff;border-color:var(--purple)}
-    .btn.pu:hover:not(:disabled){background:#7c3aed;transform:translateY(-1px)}
-    .btn.pu:disabled{opacity:.38;cursor:not-allowed}
     .btn.sec{background:var(--bg2);border-color:var(--bd);color:var(--t1)}
     .btn.sec:hover{background:var(--bg3)}
     .btn.gh{background:transparent;border-color:transparent;color:var(--t2)}
@@ -149,13 +145,11 @@
     .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem;text-align:center}
     .res-card img{max-height:260px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
     .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
-    #proc-bar{display:none;margin-top:.9rem}
 
-    /* INFO BOX */
-    .info-box{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.3);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:#a78bfa;margin-bottom:1rem;line-height:1.6}
+    #proc-bar{display:none;margin-top:.9rem}
+    .info-box{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:#a78bfa;margin-bottom:1rem;line-height:1.6}
 
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-    @keyframes pulse-border{0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 3px rgba(59,130,246,.8)}50%{box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 6px rgba(59,130,246,.4)}}
     footer{border-top:1px solid var(--bd);padding:1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
   </style>
 </head>
@@ -166,10 +160,10 @@
     <div class="logo-ico">📸</div>
     <div>
       <h1>Ảnh Thẻ Pro</h1>
-      <p>AI nhận diện khuôn mặt</p>
+      <p>AI tự động căn chỉnh khuôn mặt</p>
     </div>
   </div>
-  <div class="badge-row">
+  <div class="badges">
     <span id="badge-ai" class="badge spin">Đang tải AI…</span>
     <span id="badge-sv" class="badge spin">Server…</span>
   </div>
@@ -178,22 +172,21 @@
 <main class="wrap">
   <div class="hero">
     <h2>Ảnh Thẻ <em>Chuẩn Quy Định</em> — AI Tự Động</h2>
-    <p>Tự động nhận diện khuôn mặt · Căn chỉnh vị trí đúng tỷ lệ · Tạo ảnh thẻ chuẩn</p>
+    <p>Upload ảnh bất kỳ → AI nhận diện khuôn mặt → Căn chỉnh đúng vị trí → Tạo ảnh thẻ chuẩn</p>
     <div class="tags">
-      <span class="tag pu">🤖 AI nhận diện khuôn mặt</span>
-      <span class="tag pu">📐 Tự căn chỉnh vị trí</span>
-      <span class="tag hi">🎨 Thay màu nền</span>
-      <span class="tag">📋 3×4, 4×6, Hộ chiếu…</span>
+      <span class="tag pu">🤖 AI nhận diện 68 điểm mốc</span>
+      <span class="tag pu">📐 Căn khuôn mặt đúng tỷ lệ chuẩn</span>
+      <span class="tag hi">🎨 Thêm màu nền tự động</span>
+      <span class="tag">📋 3×4, 4×6, Hộ chiếu, CCCD…</span>
       <span class="tag">🖨 Tờ in 4×5</span>
     </div>
   </div>
 
-  <!-- STEPS -->
   <div class="steps">
-    <div class="step on"  id="s0">① Chọn ảnh</div>
-    <div class="step"     id="s1">② Nhận diện<br>khuôn mặt</div>
-    <div class="step"     id="s2">③ Tùy chỉnh</div>
-    <div class="step"     id="s3">④ Kết quả</div>
+    <div class="step on" id="s0">① Chọn ảnh</div>
+    <div class="step"    id="s1">② Nhận diện<br>& Căn chỉnh</div>
+    <div class="step"    id="s2">③ Tùy chỉnh</div>
+    <div class="step"    id="s3">④ Kết quả</div>
   </div>
 
   <!-- P0: UPLOAD -->
@@ -202,24 +195,22 @@
       <div class="dz" id="dz">
         <div class="dz-ico">🖼</div>
         <p class="dz-hint" id="dz-hint">Kéo thả ảnh hoặc nhấn để chọn</p>
-        <p class="dz-sub">JPG · PNG · WEBP · Nên dùng ảnh chân dung rõ mặt</p>
+        <p class="dz-sub">JPG · PNG · WEBP · Ảnh chân dung rõ mặt</p>
       </div>
-      <button class="cam-box-btn" id="btn-cam">
+      <button class="cam-btn" id="btn-cam">
         <span style="font-size:1.8rem">📷</span>
-        <span style="font-weight:500">Chụp Camera</span>
-        <span style="font-size:.72rem;color:var(--t2)">Tự động căn khuôn mặt</span>
+        <span style="font-weight:600">Chụp Camera</span>
+        <span style="font-size:.72rem;color:var(--t2)">AI tự căn khuôn mặt</span>
       </button>
     </div>
     <input type="file" id="inp-file" accept="image/*" style="display:none">
-
-    <!-- Camera section -->
     <div id="cam-sec">
       <div class="cam-wrap">
         <video id="cam-vid" autoplay playsinline muted></video>
         <canvas id="cam-cnv" style="display:none"></canvas>
         <div class="cam-ov">
           <div class="cam-oval"></div>
-          <p class="cam-tip">Nhìn thẳng · Khuôn mặt vào vòng tròn · Đủ sáng</p>
+          <p class="cam-tip">Khuôn mặt vào vòng tròn · Nhìn thẳng · Đủ sáng</p>
         </div>
         <div class="cam-ctrls">
           <button class="cb sm" id="btn-flip">↺</button>
@@ -230,96 +221,75 @@
     </div>
   </div>
 
-  <!-- P1: NHẬN DIỆN KHUÔN MẶT -->
+  <!-- P1: NHẬN DIỆN & CĂN CHỈNH -->
   <div class="pnl" id="p1">
-    <div class="face-panel">
-      <div class="info-box">
-        🤖 <strong>AI đang phân tích khuôn mặt:</strong> Phát hiện vị trí · Xác định 68 điểm mốc · 
-        Tính tỷ lệ đầu/khuôn mặt · Căn chỉnh về vị trí chuẩn ảnh thẻ · Xóa nền tự động
+    <div class="box">
+      <div class="info-box" id="info-box">
+        🤖 <strong>AI đang phân tích:</strong> Phát hiện khuôn mặt → Xác định 68 điểm mốc → Đo góc nghiêng → Tự động xoay thẳng → Căn đúng tỷ lệ chuẩn ảnh thẻ
       </div>
-      <div class="face-title" id="face-title">🔍 Đang nhận diện khuôn mặt…</div>
-      <div class="face-sub"   id="face-sub">Vui lòng chờ AI phân tích</div>
+      <div class="box-ttl" id="face-ttl">🔍 Đang nhận diện khuôn mặt…</div>
+      <div class="box-sub" id="face-sub">Vui lòng chờ AI phân tích</div>
       <div class="bar-wrap">
         <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
-        <div class="bar-lbl"  id="bar-lbl">Đang khởi tạo…</div>
+        <div class="bar-lbl"  id="bar-lbl">Khởi tạo…</div>
       </div>
 
-      <div class="face-result-grid" id="face-result-grid" style="display:none">
-        <!-- Canvas hiển thị kết quả nhận diện -->
-        <div class="face-orig-wrap">
+      <!-- Kết quả nhận diện -->
+      <div class="detect-grid" id="detect-grid" style="display:none">
+        <div class="cnv-box">
           <canvas id="cnv-detect"></canvas>
         </div>
-        <!-- Thông tin khuôn mặt -->
-        <div class="face-info-box" id="face-info">
-          <div class="face-stat">
-            <span class="face-stat-key">Phát hiện khuôn mặt</span>
-            <span class="face-stat-val" id="fi-detected">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Độ tin cậy</span>
-            <span class="face-stat-val" id="fi-score">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Vị trí mắt trái</span>
-            <span class="face-stat-val" id="fi-eye-l">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Vị trí mắt phải</span>
-            <span class="face-stat-val" id="fi-eye-r">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Trục khuôn mặt</span>
-            <span class="face-stat-val" id="fi-angle">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Kích thước khuôn mặt</span>
-            <span class="face-stat-val" id="fi-size">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Tỷ lệ khuôn mặt/ảnh</span>
-            <span class="face-stat-val" id="fi-ratio">—</span>
-          </div>
-          <div class="face-stat">
-            <span class="face-stat-key">Căn chỉnh</span>
-            <span class="face-stat-val" id="fi-align">—</span>
-          </div>
+        <div class="stats-box">
+          <div class="stat"><span class="stat-k">Phát hiện khuôn mặt</span><span class="stat-v" id="fi-found">—</span></div>
+          <div class="stat"><span class="stat-k">Độ tin cậy AI</span><span class="stat-v" id="fi-score">—</span></div>
+          <div class="stat"><span class="stat-k">Kích thước khuôn mặt</span><span class="stat-v" id="fi-size">—</span></div>
+          <div class="stat"><span class="stat-k">Góc nghiêng khuôn mặt</span><span class="stat-v" id="fi-angle">—</span></div>
+          <div class="stat"><span class="stat-k">Tỷ lệ mặt/ảnh</span><span class="stat-v" id="fi-ratio">—</span></div>
+          <div class="stat"><span class="stat-k">Điểm mốc landmark</span><span class="stat-v" id="fi-lm">—</span></div>
+          <div class="stat"><span class="stat-k">Căn chỉnh tự động</span><span class="stat-v" id="fi-align">—</span></div>
+          <div class="stat"><span class="stat-k">Vị trí mắt trong ảnh thẻ</span><span class="stat-v" id="fi-eyepos">—</span></div>
         </div>
       </div>
 
       <!-- Preview ảnh đã căn chỉnh -->
-      <div id="cnv-crop-wrap">
+      <div class="crop-preview" id="crop-preview" style="display:none">
         <canvas id="cnv-crop"></canvas>
-        <p class="crop-label" id="crop-label">Ảnh đã căn chỉnh vị trí khuôn mặt</p>
+        <p class="crop-label" id="crop-lbl">Đang tạo ảnh thẻ…</p>
+        <div class="crop-guide">
+          <span class="guide-pill">📐 Khuôn mặt căn giữa</span>
+          <span class="guide-pill">👁 Mắt đúng vị trí chuẩn</span>
+          <span class="guide-pill">↕ Tỷ lệ đầu/ảnh đúng tiêu chuẩn</span>
+        </div>
       </div>
 
       <div class="act-row" id="face-acts" style="display:none">
-        <button class="btn pu" id="btn-to-set">Tiếp theo — Tùy chỉnh →</button>
-        <button class="btn gh" id="btn-retry">↩ Chọn ảnh khác</button>
+        <button class="btn pri" id="btn-to-set">Tiếp theo — Chọn kích thước →</button>
+        <button class="btn gh"  id="btn-retry">↩ Chọn ảnh khác</button>
       </div>
     </div>
   </div>
 
   <!-- P2: SETTINGS -->
   <div class="pnl" id="p2">
-    <div class="set-box">
+    <div class="box">
       <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
       <div class="set-grid">
         <div class="fg">
-          <label class="fl">📐 Kích thước</label>
+          <label class="fl">📐 Loại ảnh thẻ</label>
           <select id="sel-size">
-            <option value="the_3x4">Ảnh thẻ 3×4 cm</option>
+            <option value="the_3x4">Ảnh thẻ 3×4 cm (phổ thông)</option>
             <option value="the_4x6">Ảnh thẻ 4×6 cm</option>
             <option value="the_2x3">Ảnh thẻ 2×3 cm</option>
-            <option value="chung_minh">CCCD / CMND</option>
-            <option value="passport">Hộ chiếu 35×45mm</option>
-            <option value="visa_us">Visa Mỹ 2×2 inch</option>
-            <option value="visa_schengen">Visa Schengen</option>
+            <option value="chung_minh">CCCD / CMND (22×28mm)</option>
+            <option value="passport">Hộ chiếu (35×45mm)</option>
+            <option value="visa_us">Visa Mỹ (2×2 inch)</option>
+            <option value="visa_schengen">Visa Schengen (35×45mm)</option>
           </select>
         </div>
         <div class="fg">
-          <label class="fl">💾 Định dạng</label>
+          <label class="fl">💾 Định dạng xuất</label>
           <select id="sel-fmt">
-            <option value="jpeg">JPEG (nhỏ hơn)</option>
+            <option value="jpeg">JPEG (phổ thông)</option>
             <option value="png">PNG (chất lượng cao)</option>
           </select>
         </div>
@@ -341,14 +311,14 @@
           </select>
         </div>
         <div class="fg">
-          <label class="fl">✨ Tùy chọn</label>
+          <label class="fl">✨ Tùy chọn nâng cao</label>
           <div class="ck-row">
             <input type="checkbox" id="ck-enh" checked>
             <label for="ck-enh" style="font-size:.83rem;cursor:pointer">Tăng cường chất lượng</label>
           </div>
           <div class="ck-row">
             <input type="checkbox" id="ck-align" checked>
-            <label for="ck-align" style="font-size:.83rem;cursor:pointer">Căn chỉnh góc khuôn mặt</label>
+            <label for="ck-align" style="font-size:.83rem;cursor:pointer">Tự động xoay thẳng mặt</label>
           </div>
         </div>
       </div>
@@ -365,7 +335,7 @@
 
   <!-- P3: RESULT -->
   <div class="pnl" id="p3">
-    <p class="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
+    <p class="res-ttl" id="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
     <div class="res-grid">
       <div class="res-card">
         <img id="res-img" src="" alt="Ảnh thẻ">
@@ -378,482 +348,524 @@
     <div class="act-row">
       <button class="btn pri" id="btn-dl1">⬇ Tải ảnh đơn</button>
       <button class="btn sec" id="btn-dl5">🖨 Tải tờ in 4×5</button>
-      <button class="btn gh"  id="btn-rst">↩ Làm lại</button>
+      <button class="btn gh"  id="btn-rst">↩ Làm lại từ đầu</button>
     </div>
   </div>
 </main>
 
-<footer>Ảnh Thẻ Pro · face-api.js AI · Backend FastAPI + Pillow · Render + Netlify</footer>
+<footer>Ảnh Thẻ Pro · face-api.js AI · FastAPI + Pillow · Render + Netlify</footer>
 
 <script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
-
-<!-- face-api.js từ CDN -->
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <script>
 (function(){
-  // ── DOM refs ──
-  function $(i){return document.getElementById(i);}
-  var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
-  var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
-  var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
-  var faceTitle=$('face-title'), faceSub=$('face-sub');
-  var barFill=$('bar-fill'), barLbl=$('bar-lbl');
-  var faceResultGrid=$('face-result-grid');
-  var cnvDetect=$('cnv-detect'), cnvCrop=$('cnv-crop'), cnvCropWrap=$('cnv-crop-wrap');
-  var cropLabel=$('crop-label'), faceActs=$('face-acts');
-  var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
-  var ckEnh=$('ck-enh'), ckAlign=$('ck-align');
-  var btnProc=$('btn-proc'), btnBack=$('btn-back');
-  var procBar=$('proc-bar'), procFill=$('proc-fill'), procLbl=$('proc-lbl');
-  var resImg=$('res-img'), resMeta=$('res-meta'), sheetCard=$('sheet-card');
-  var btnDl1=$('btn-dl1'), btnDl5=$('btn-dl5'), btnRst=$('btn-rst');
-  var badgeAI=$('badge-ai'), badgeSV=$('badge-sv');
+'use strict';
 
-  var origBlob=null, croppedBlob=null, resURL=null, sheetURL=null;
-  var camStream=null, facing='user';
-  var faceData=null; // kết quả nhận diện khuôn mặt
-  var aiReady=false;
+// ── Refs ──────────────────────────────────────────────────────────────────
+function $(id){ return document.getElementById(id); }
+var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
+var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
+var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
+var faceTtl=$('face-ttl'), faceSub=$('face-sub'), infoBox=$('info-box');
+var barFill=$('bar-fill'), barLbl=$('bar-lbl');
+var detectGrid=$('detect-grid'), cnvDetect=$('cnv-detect');
+var cropPreview=$('crop-preview'), cnvCrop=$('cnv-crop'), cropLbl=$('crop-lbl');
+var faceActs=$('face-acts');
+var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
+var ckEnh=$('ck-enh'), ckAlign=$('ck-align');
+var btnProc=$('btn-proc'), btnBack=$('btn-back');
+var procBar=$('proc-bar'), procFill=$('proc-fill'), procLbl=$('proc-lbl');
+var resImg=$('res-img'), resMeta=$('res-meta'), sheetCard=$('sheet-card');
+var btnDl1=$('btn-dl1'), btnDl5=$('btn-dl5'), btnRst=$('btn-rst');
+var badgeAI=$('badge-ai'), badgeSV=$('badge-sv');
 
-  // ── Kích thước ảnh thẻ chuẩn (px @ 300dpi) ──
-  var SIZES={
-    the_3x4:    {w:354, h:472,  label:'Ảnh thẻ 3×4 cm',    faceRatio:.55, eyeFromTop:.42},
-    the_4x6:    {w:472, h:709,  label:'Ảnh thẻ 4×6 cm',    faceRatio:.55, eyeFromTop:.42},
-    the_2x3:    {w:236, h:354,  label:'Ảnh thẻ 2×3 cm',    faceRatio:.55, eyeFromTop:.42},
-    chung_minh: {w:260, h:330,  label:'CCCD/CMND',          faceRatio:.6,  eyeFromTop:.42},
-    passport:   {w:413, h:531,  label:'Hộ chiếu 35×45mm',  faceRatio:.7,  eyeFromTop:.45},
-    visa_us:    {w:600, h:600,  label:'Visa Mỹ 2×2 inch',  faceRatio:.6,  eyeFromTop:.40},
-    visa_schengen:{w:413,h:531, label:'Visa Schengen',      faceRatio:.7,  eyeFromTop:.45},
+// ── State ─────────────────────────────────────────────────────────────────
+var origBlob=null, croppedBlob=null, resURL=null, sheetURL=null;
+var camStream=null, facing='user';
+var aiReady=false, faceResult=null;
+
+// ── Tiêu chuẩn ảnh thẻ ──────────────────────────────────────────────────
+// faceHeadRatio: tỷ lệ chiều cao ĐẦU (từ đỉnh đầu đến cằm) / chiều cao ảnh
+// eyeLine: vị trí đường mắt tính từ trên xuống (% chiều cao ảnh)
+// headroom: khoảng trống trên đỉnh đầu tính từ top (% chiều cao ảnh)
+var SIZES = {
+  the_3x4:     {w:354, h:472,  label:'Ảnh thẻ 3×4 cm',   faceHeadRatio:0.70, eyeLine:0.42, headroom:0.08},
+  the_4x6:     {w:472, h:709,  label:'Ảnh thẻ 4×6 cm',   faceHeadRatio:0.68, eyeLine:0.42, headroom:0.08},
+  the_2x3:     {w:236, h:354,  label:'Ảnh thẻ 2×3 cm',   faceHeadRatio:0.70, eyeLine:0.42, headroom:0.08},
+  chung_minh:  {w:260, h:330,  label:'CCCD/CMND',         faceHeadRatio:0.75, eyeLine:0.43, headroom:0.07},
+  passport:    {w:413, h:531,  label:'Hộ chiếu 35×45mm', faceHeadRatio:0.75, eyeLine:0.45, headroom:0.07},
+  visa_us:     {w:600, h:600,  label:'Visa Mỹ 2×2 inch', faceHeadRatio:0.65, eyeLine:0.40, headroom:0.10},
+  visa_schengen:{w:413,h:531,  label:'Visa Schengen',     faceHeadRatio:0.75, eyeLine:0.45, headroom:0.07},
+};
+
+// ── Tabs ──────────────────────────────────────────────────────────────────
+function setTab(n){
+  for(var i=0;i<4;i++){
+    $('s'+i).className='step'+(i<n?' done':i===n?' on':'');
+    $('p'+i).className='pnl'+(i===n?' on':'');
+  }
+}
+function setProgress(pct,msg){ barFill.style.width=pct+'%'; barLbl.textContent=msg; }
+function setStat(id,val,cls){ $(id).textContent=val; $(id).className='stat-v'+(cls?' '+cls:''); }
+
+// ── Ping backend ──────────────────────────────────────────────────────────
+function ping(){
+  fetch(window.API_BASE+'/health')
+    .then(function(r){return r.json();})
+    .then(function(){badgeSV.textContent='Server ✓';badgeSV.className='badge ok';})
+    .catch(function(){badgeSV.textContent='Offline';badgeSV.className='badge err';});
+}
+
+// ── Tải AI model ─────────────────────────────────────────────────────────
+var MODEL_URL='https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+function loadModels(){
+  badgeAI.textContent='Đang tải AI…';badgeAI.className='badge spin';
+  Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
+  ]).then(function(){
+    aiReady=true;
+    window.aiReady=true;
+    badgeAI.textContent='AI sẵn sàng ✓';badgeAI.className='badge ok';
+  }).catch(function(e){
+    badgeAI.textContent='AI lỗi';badgeAI.className='badge err';
+    console.error('Model load error:',e);
+  });
+}
+
+// ── Upload ────────────────────────────────────────────────────────────────
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('ov');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
+dz.addEventListener('click',function(){inpFile.click();});
+inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.target.files[0]);});
+
+function loadFile(f){
+  if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
+  origBlob=f;croppedBlob=null;faceResult=null;
+  $('dz-hint').textContent='✓ Đang phân tích…';
+  setTab(1);
+  resetDetectUI();
+  detectFace(f);
+}
+
+// ── Camera ────────────────────────────────────────────────────────────────
+btnCam.addEventListener('click',function(){camSec.style.display='block';startCam();});
+btnCamX.addEventListener('click',stopCam);
+btnFlip.addEventListener('click',function(){facing=facing==='user'?'environment':'user';stopCam();startCam();});
+btnCap.addEventListener('click',function(){
+  camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
+  camCnv.getContext('2d').drawImage(camVid,0,0);
+  camCnv.toBlob(function(b){stopCam();loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));},'image/jpeg',.95);
+});
+function startCam(){
+  navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
+    .then(function(s){camStream=s;camVid.srcObject=s;})
+    .catch(function(e){alert('Không mở được camera: '+e.message);});
+}
+function stopCam(){
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  camSec.style.display='none';
+}
+
+// ── Reset UI ──────────────────────────────────────────────────────────────
+function resetDetectUI(){
+  detectGrid.style.display='none';
+  cropPreview.style.display='none';
+  faceActs.style.display='none';
+  setProgress(0,'Đang chuẩn bị…');
+  faceTtl.textContent='🔍 Đang nhận diện khuôn mặt…';
+  faceSub.textContent='AI đang phân tích ảnh';
+  infoBox.style.display='block';
+}
+
+// ── NHẬN DIỆN KHUÔN MẶT ─────────────────────────────────────────────────
+function detectFace(blob){
+  if(!aiReady){
+    setProgress(5,'Chờ AI model tải xong…');
+    var t=setInterval(function(){
+      if(aiReady){clearInterval(t);runDetect(blob);}
+    },400);
+    return;
+  }
+  runDetect(blob);
+}
+
+function getCenter(pts){
+  var sx=0,sy=0;
+  for(var i=0;i<pts.length;i++){sx+=pts[i].x;sy+=pts[i].y;}
+  return {x:sx/pts.length, y:sy/pts.length};
+}
+
+function runDetect(blob){
+  var url=URL.createObjectURL(blob);
+  var img=new Image();
+
+  img.onload=function(){
+    setProgress(20,'Đang load ảnh…');
+
+    // Vẽ ảnh lên canvas detect (scale vừa khung)
+    var maxW=480, maxH=360;
+    var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
+    cnvDetect.width  = Math.round(img.naturalWidth  * scale);
+    cnvDetect.height = Math.round(img.naturalHeight * scale);
+    var ctx=cnvDetect.getContext('2d');
+    ctx.drawImage(img, 0, 0, cnvDetect.width, cnvDetect.height);
+
+    setProgress(40,'AI đang tìm khuôn mặt…');
+
+    // face-api.js nhận canvas, scale=1 vì đã vẽ lên canvas đúng size
+    faceapi.detectSingleFace(
+      cnvDetect,
+      new faceapi.TinyFaceDetectorOptions({inputSize:512, scoreThreshold:0.35})
+    ).withFaceLandmarks(true)
+    .then(function(result){
+      setProgress(70,'Đang phân tích kết quả…');
+
+      if(!result){
+        faceTtl.textContent='❌ Không phát hiện khuôn mặt';
+        faceSub.textContent='Vui lòng dùng ảnh chân dung rõ mặt, đủ sáng, nhìn thẳng vào camera';
+        setProgress(0,'');
+        faceActs.style.display='flex';
+        return;
+      }
+
+      // Lưu kết quả — detection box trên canvas (đã scale)
+      var box   = result.detection.box;   // tọa độ trên cnvDetect (đã scale)
+      var lm    = result.landmarks;
+      var score = result.detection.score;
+
+      // Tính các điểm quan trọng (trên cnvDetect)
+      var leftEyePts  = lm.getLeftEye();
+      var rightEyePts = lm.getRightEye();
+      var lEye = getCenter(leftEyePts);
+      var rEye = getCenter(rightEyePts);
+
+      // Góc nghiêng mặt
+      var angle = Math.atan2(rEye.y - lEye.y, rEye.x - lEye.x) * 180 / Math.PI;
+
+      // Điểm cằm (landmark 8 trong 68-point)
+      var chin = lm.positions[8];
+      // Điểm đỉnh trán (ước lượng từ box top)
+      var foreheadY = box.y;
+
+      // Chiều cao đầu thực tế (pixels trên cnvDetect)
+      var headH = chin.y - foreheadY;
+      // Thêm 20% headH phía trên (tóc/trán)
+      var headTopY    = foreheadY - headH * 0.20;
+      var headBottomY = chin.y;
+      var totalHeadH  = headBottomY - headTopY;
+
+      // Lưu faceResult ĐÃ SCALE về tọa độ ảnh GỐC
+      faceResult = {
+        img          : img,
+        scale        : scale,
+        angle        : angle,
+        score        : score,
+        // Tọa độ GỐC (chia lại scale)
+        box          : {x:box.x/scale, y:box.y/scale, w:box.width/scale, h:box.height/scale},
+        lEye         : {x:lEye.x/scale, y:lEye.y/scale},
+        rEye         : {x:rEye.x/scale, y:rEye.y/scale},
+        chin         : {x:chin.x/scale, y:chin.y/scale},
+        headTopY     : headTopY/scale,
+        totalHeadH   : totalHeadH/scale,
+        faceCenterX  : (box.x + box.width/2)/scale,
+        landmarks    : lm.positions.length,
+      };
+
+      setProgress(90,'Đang vẽ kết quả…');
+
+      // Vẽ overlay lên cnvDetect
+      drawDetectOverlay(ctx, result, lEye, rEye, chin, angle, scale);
+
+      // Hiện thống kê
+      detectGrid.style.display='grid';
+      setStat('fi-found','✓ Phát hiện được','ok');
+      setStat('fi-score',(score*100).toFixed(1)+'%', score>0.8?'ok':score>0.6?'warn':'err');
+      setStat('fi-size', Math.round(box.width/scale)+'×'+Math.round(box.height/scale)+' px','');
+      setStat('fi-angle', angle.toFixed(1)+'°', Math.abs(angle)<5?'ok':Math.abs(angle)<15?'warn':'err');
+      setStat('fi-ratio', (box.height/cnvDetect.height*100).toFixed(0)+'% chiều cao','');
+      setStat('fi-lm', lm.positions.length+' điểm mốc','ok');
+      setStat('fi-align', ckAlign.checked?'Sẽ xoay '+angle.toFixed(1)+'°':'Không xoay','');
+
+      // Tự động tạo ảnh thẻ
+      autoCrop(faceResult, false);
+      setProgress(100,'✅ Hoàn tất!');
+
+      faceTtl.textContent='✅ Nhận diện thành công — khuôn mặt đã được căn chỉnh!';
+      faceSub.textContent='Kiểm tra ảnh thẻ phía dưới rồi nhấn Tiếp theo';
+      faceActs.style.display='flex';
+      infoBox.style.display='none';
+    })
+    .catch(function(e){
+      faceTtl.textContent='❌ Lỗi AI: '+e.message;
+      faceSub.textContent='';
+      setProgress(0,'');
+      faceActs.style.display='flex';
+    });
   };
-
-  // ── Tabs ──
-  function setTab(n){
-    for(var i=0;i<4;i++){
-      var t=$('s'+i), p=$('p'+i);
-      t.className='step'+(i<n?' done':i===n?' on':'');
-      p.className='pnl'+(i===n?' on':'');
-    }
-  }
-
-  // ── Ping backend ──
-  function ping(){
-    fetch(window.API_BASE+'/health')
-      .then(function(r){return r.json();})
-      .then(function(){badgeSV.textContent='Server ✓';badgeSV.className='badge ok';})
-      .catch(function(){badgeSV.textContent='Server offline';badgeSV.className='badge err';});
-  }
-
-  // ── Tải model face-api.js ──
-  var MODEL_URL='https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-
-  function loadModels(){
-    badgeAI.textContent='Đang tải AI…';
-    badgeAI.className='badge spin';
-
-    Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
-    ]).then(function(){
-      aiReady=true;
-      badgeAI.textContent='AI sẵn sàng ✓';
-      badgeAI.className='badge ok';
-      console.log('[AnhThe] face-api models loaded');
-    }).catch(function(e){
-      badgeAI.textContent='AI lỗi — thử lại';
-      badgeAI.className='badge err';
-      console.error('[AnhThe] model load error:', e);
-    });
-  }
-
-  // ── Upload ──
-  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
-  dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
-  dz.addEventListener('drop',function(e){
-    e.preventDefault();dz.classList.remove('ov');
-    if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);
-  });
-  dz.addEventListener('click',function(){inpFile.click();});
-  inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.target.files[0]);});
-
-  function loadFile(f){
-    if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
-    origBlob=f;
-    $('dz-hint').textContent='✓ Đang phân tích khuôn mặt…';
-    setTab(1);
-    detectFace(f);
-  }
-
-  // ── Camera ──
-  btnCam.addEventListener('click',function(){camSec.style.display='block';startCam();});
-  btnCamX.addEventListener('click',stopCam);
-  btnFlip.addEventListener('click',function(){facing=facing==='user'?'environment':'user';stopCam();startCam();});
-  btnCap.addEventListener('click',function(){
-    camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
-    camCnv.getContext('2d').drawImage(camVid,0,0);
-    camCnv.toBlob(function(b){
-      stopCam();
-      loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));
-    },'image/jpeg',.95);
-  });
-
-  function startCam(){
-    navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
-      .then(function(s){camStream=s;camVid.srcObject=s;})
-      .catch(function(e){alert('Không mở được camera: '+e.message);});
-  }
-  function stopCam(){
-    if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
-    camSec.style.display='none';
-  }
-
-  // ── NHẬN DIỆN KHUÔN MẶT ──
-  function setProgress(pct, msg){
-    barFill.style.width=pct+'%';
-    barLbl.textContent=msg;
-  }
-
-  function detectFace(blob){
-    faceTitle.textContent='🔍 Đang nhận diện khuôn mặt…';
-    faceSub.textContent='AI đang phân tích ảnh';
-    faceResultGrid.style.display='none';
-    cnvCropWrap.style.display='none';
-    faceActs.style.display='none';
-    setProgress(10,'Đang tải ảnh…');
-
-    // Chờ AI sẵn sàng
-    if(!aiReady){
-      setProgress(5,'Chờ AI tải xong…');
-      var waited=0;
-      var waiter=setInterval(function(){
-        waited+=500;
-        if(aiReady){clearInterval(waiter);runDetect(blob);}
-        else if(waited>20000){
-          clearInterval(waiter);
-          showError('Không tải được AI model. Kiểm tra kết nối mạng.');
-        }
-      },500);
-      return;
-    }
-    runDetect(blob);
-  }
-
-  function runDetect(blob){
-    var url=URL.createObjectURL(blob);
-    var img=new Image();
-    img.onload=function(){
-      setProgress(30,'Đang phát hiện khuôn mặt…');
-
-      // Vẽ ảnh gốc lên cnvDetect
-      var maxW=500, maxH=380;
-      var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
-      cnvDetect.width=Math.round(img.naturalWidth*scale);
-      cnvDetect.height=Math.round(img.naturalHeight*scale);
-      var ctx=cnvDetect.getContext('2d');
-      ctx.drawImage(img,0,0,cnvDetect.width,cnvDetect.height);
-
-      setProgress(50,'AI đang tìm khuôn mặt…');
-
-      // Chạy face detection
-      faceapi.detectSingleFace(
-        cnvDetect,
-        new faceapi.TinyFaceDetectorOptions({inputSize:416, scoreThreshold:0.4})
-      ).withFaceLandmarks(true).then(function(result){
-
-        setProgress(80,'Phân tích kết quả…');
-
-        if(!result){
-          showError('Không phát hiện khuôn mặt. Vui lòng dùng ảnh chân dung rõ mặt, đủ sáng.');
-          return;
-        }
-
-        faceData={
-          detection: result.detection,
-          landmarks: result.landmarks,
-          scale: scale,
-          origImg: img,
-          origW: img.naturalWidth,
-          origH: img.naturalHeight,
-        };
-
-        setProgress(100,'Nhận diện thành công!');
-        showFaceResult(result, ctx, scale, img);
-
-      }).catch(function(e){
-        showError('Lỗi AI: '+e.message);
-      });
-    };
-    img.onerror=function(){showError('Không đọc được file ảnh.');};
-    img.src=url;
-  }
-
-  function showError(msg){
-    faceTitle.textContent='❌ '+msg;
-    faceSub.textContent='';
-    setProgress(0,'');
+  img.onerror=function(){
+    faceTtl.textContent='❌ Không đọc được file ảnh';
     faceActs.style.display='flex';
-  }
+  };
+  img.src=url;
+}
 
-  function showFaceResult(result, ctx, scale, origImg){
-    var det=result.detection;
-    var lm=result.landmarks;
-    var box=det.box;
+function drawDetectOverlay(ctx, result, lEye, rEye, chin, angle, scale){
+  var box=result.detection.box;
+  var lm=result.landmarks;
 
-    // Vẽ bounding box
-    ctx.strokeStyle='#3b82f6';
-    ctx.lineWidth=2;
-    ctx.strokeRect(box.x*scale, box.y*scale, box.width*scale, box.height*scale);
+  // Bounding box
+  ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.strokeRect(box.x, box.y, box.width, box.height);
 
-    // Vẽ 68 điểm mốc
-    var pts=lm.positions;
-    ctx.fillStyle='#f59e0b';
-    pts.forEach(function(p){
-      ctx.beginPath();
-      ctx.arc(p.x*scale, p.y*scale, 2, 0, Math.PI*2);
-      ctx.fill();
-    });
+  // Label
+  ctx.fillStyle='#3b82f6';ctx.fillRect(box.x, box.y-22, 110, 22);
+  ctx.fillStyle='#fff';ctx.font='bold 12px monospace';
+  ctx.fillText('FACE '+(result.detection.score*100).toFixed(0)+'%', box.x+5, box.y-6);
 
-    // Tính góc khuôn mặt (từ 2 mắt)
-    var leftEye = lm.getLeftEye();
-    var rightEye = lm.getRightEye();
-    var lEyeCenter = getCenter(leftEye);
-    var rEyeCenter = getCenter(rightEye);
-    var angle = Math.atan2(rEyeCenter.y-lEyeCenter.y, rEyeCenter.x-lEyeCenter.x)*180/Math.PI;
-
-    // Vẽ đường nối 2 mắt
-    ctx.strokeStyle='#10b981';
-    ctx.lineWidth=2;
-    ctx.beginPath();
-    ctx.moveTo(lEyeCenter.x*scale, lEyeCenter.y*scale);
-    ctx.lineTo(rEyeCenter.x*scale, rEyeCenter.y*scale);
-    ctx.stroke();
-
-    // Tỷ lệ khuôn mặt
-    var faceRatioH = box.height/origImg.naturalHeight;
-    var faceRatioW = box.width/origImg.naturalWidth;
-
-    // Cập nhật thông tin
-    faceResultGrid.style.display='grid';
-    $('fi-detected').textContent='✓ Có khuôn mặt';
-    $('fi-detected').className='face-stat-val ok';
-    $('fi-score').textContent=(det.score*100).toFixed(1)+'%';
-    $('fi-score').className='face-stat-val '+(det.score>0.8?'ok':'warn');
-    $('fi-eye-l').textContent='('+Math.round(lEyeCenter.x)+', '+Math.round(lEyeCenter.y)+')';
-    $('fi-eye-r').textContent='('+Math.round(rEyeCenter.x)+', '+Math.round(rEyeCenter.y)+')';
-    $('fi-angle').textContent=angle.toFixed(1)+'°';
-    $('fi-angle').className='face-stat-val '+(Math.abs(angle)<5?'ok':Math.abs(angle)<15?'warn':'err');
-    $('fi-size').textContent=Math.round(box.width)+' × '+Math.round(box.height)+' px';
-    $('fi-ratio').textContent=(faceRatioH*100).toFixed(0)+'% chiều cao';
-    $('fi-align').className='face-stat-val ok';
-    $('fi-align').textContent='Đang căn chỉnh…';
-
-    // Lưu thêm dữ liệu
-    faceData.angle=angle;
-    faceData.lEye=lEyeCenter;
-    faceData.rEye=rEyeCenter;
-    faceData.box=box;
-
-    // Tự động căn chỉnh và crop
-    setTimeout(function(){
-      autoCropFace(faceData);
-    }, 300);
-
-    faceTitle.textContent='✅ Phát hiện khuôn mặt thành công!';
-    faceSub.textContent='AI đã xác định '+pts.length+' điểm mốc khuôn mặt';
-    faceActs.style.display='flex';
-  }
-
-  function getCenter(pts){
-    var sx=0,sy=0;
-    pts.forEach(function(p){sx+=p.x;sy+=p.y;});
-    return {x:sx/pts.length, y:sy/pts.length};
-  }
-
-  // ── TỰ ĐỘNG CROP KHUÔN MẶT ──
-  function autoCropFace(fd){
-    var sz=SIZES[selSize.value]||SIZES.the_3x4;
-    var img=fd.origImg;
-    var box=fd.box;
-    var angle=fd.angle;
-    var doAlign=ckAlign.checked;
-
-    // Tạo canvas tạm để xoay ảnh
-    var tmpCnv=document.createElement('canvas');
-    tmpCnv.width=img.naturalWidth;
-    tmpCnv.height=img.naturalHeight;
-    var tmpCtx=tmpCnv.getContext('2d');
-
-    if(doAlign && Math.abs(angle)>0.5){
-      // Xoay ảnh để thẳng khuôn mặt
-      var cx=box.x+box.width/2;
-      var cy=box.y+box.height/2;
-      tmpCtx.translate(cx,cy);
-      tmpCtx.rotate(-angle*Math.PI/180);
-      tmpCtx.translate(-cx,-cy);
-    }
-    tmpCtx.drawImage(img,0,0);
-
-    // Tính vùng crop dựa trên khuôn mặt
-    // Quy tắc ảnh thẻ: khuôn mặt chiếm ~55-70% chiều cao, mắt ở ~40-45% từ trên
-    var faceH=box.height;
-    var targetFaceRatio=sz.faceRatio;   // khuôn mặt chiếm bao nhiêu % chiều cao ảnh thẻ
-    var eyeFromTop=sz.eyeFromTop;        // mắt ở vị trí bao nhiêu % từ trên
-
-    // Tính crop height: faceH / targetFaceRatio
-    var cropH=Math.round(faceH/targetFaceRatio);
-    var cropW=Math.round(cropH*(sz.w/sz.h));
-
-    // Tâm khuôn mặt (theo chiều ngang)
-    var faceCenterX=box.x+box.width/2;
-    // Vị trí mắt (theo chiều dọc) — dùng để đặt mắt đúng vị trí
-    var eyeY=(fd.lEye.y+fd.rEye.y)/2;
-    // cropTop: eyeY ở vị trí eyeFromTop trong crop
-    var cropTop=Math.round(eyeY - cropH*eyeFromTop);
-    var cropLeft=Math.round(faceCenterX - cropW/2);
-
-    // Đảm bảo trong giới hạn ảnh
-    cropLeft=Math.max(0, Math.min(cropLeft, img.naturalWidth-cropW));
-    cropTop=Math.max(0, Math.min(cropTop, img.naturalHeight-cropH));
-    if(cropW>img.naturalWidth) cropW=img.naturalWidth;
-    if(cropH>img.naturalHeight) cropH=img.naturalHeight;
-
-    // Vẽ crop lên cnvCrop
-    cnvCrop.width=sz.w;
-    cnvCrop.height=sz.h;
-    var cropCtx=cnvCrop.getContext('2d');
-    cropCtx.drawImage(tmpCnv, cropLeft,cropTop,cropW,cropH, 0,0,sz.w,sz.h);
-
-    // Hiện preview
-    cnvCropWrap.style.display='block';
-    cropLabel.textContent='Ảnh đã căn chỉnh · '+sz.w+'×'+sz.h+' px · '+sz.label;
-    $('fi-align').textContent=doAlign?'Đã xoay '+angle.toFixed(1)+'°':'Không xoay';
-
-    // Chuyển thành blob
-    cnvCrop.toBlob(function(b){
-      croppedBlob=b;
-    },'image/png');
-  }
-
-  $('btn-to-set').addEventListener('click',function(){ setTab(2); });
-  $('btn-retry').addEventListener('click',function(){
-    origBlob=croppedBlob=faceData=null;
-    $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
-    setTab(0);
-  });
-  btnBack.addEventListener('click',function(){ setTab(1); });
-
-  // Cập nhật crop khi đổi kích thước
-  selSize.addEventListener('change',function(){
-    if(faceData) autoCropFace(faceData);
-  });
-  ckAlign.addEventListener('change',function(){
-    if(faceData) autoCropFace(faceData);
+  // 68 landmarks
+  ctx.fillStyle='rgba(245,158,11,.8)';
+  lm.positions.forEach(function(p){
+    ctx.beginPath();ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fill();
   });
 
-  // ── Swatches ──
-  document.querySelectorAll('.sw').forEach(function(sw){
-    sw.addEventListener('click',function(){
-      document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
-      sw.classList.add('on');
-      selBg.value=sw.dataset.c;
-    });
+  // Đường nối 2 mắt
+  ctx.strokeStyle='#10b981';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(lEye.x,lEye.y);ctx.lineTo(rEye.x,rEye.y);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Điểm mắt
+  [lEye,rEye].forEach(function(p){
+    ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();
   });
 
-  // ── Process ──
-  btnProc.addEventListener('click',function(){
-    var blob=croppedBlob||origBlob;
-    if(!blob){alert('Chưa có ảnh!');return;}
-    btnProc.disabled=true;
-    procBar.style.display='block';
-    procFill.style.width='20%';
-    procLbl.textContent='Đang gửi lên server…';
+  // Điểm cằm
+  ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(chin.x,chin.y,4,0,Math.PI*2);ctx.fill();
 
-    var form=new FormData();
-    form.append('file', blob, 'photo.png');
-    form.append('size_key', selSize.value);
-    form.append('bg_color', selBg.value);
-    form.append('enhance', ckEnh.checked?'true':'false');
-    form.append('output_fmt', selFmt.value);
+  // Đường trục dọc khuôn mặt
+  var cx=box.x+box.width/2;
+  ctx.strokeStyle='rgba(139,92,246,.6)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cx,box.y);ctx.lineTo(cx,box.y+box.height);ctx.stroke();
+  ctx.setLineDash([]);
+}
 
-    procFill.style.width='60%';
-    fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
-      .then(function(r){return r.json();})
-      .then(function(d){
-        procFill.style.width='100%';
-        if(!d.success) throw new Error(d.detail||'Lỗi server');
-        var mime=d.format==='png'?'image/png':'image/jpeg';
-        resURL='data:'+mime+';base64,'+d.image_b64;
-        resImg.src=resURL;
-        resMeta.textContent=d.width+' × '+d.height+' px · '+d.size_label;
-        btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
-        buildSheet(resURL,d);
-        setTab(3);
-      })
-      .catch(function(e){
-        // Fallback: xử lý local
-        procLbl.textContent='Server không phản hồi, xử lý local…';
-        processLocal();
-      })
-      .finally(function(){
-        btnProc.disabled=false;
-        procBar.style.display='none';
-        procFill.style.width='0%';
-      });
-  });
+// ── TỰ ĐỘNG CĂN CHỈNH VÀ CROP ───────────────────────────────────────────
+function autoCrop(fd, silent){
+  var sz = SIZES[selSize.value] || SIZES.the_3x4;
+  var img = fd.img;
+  var doAlign = ckAlign.checked;
 
-  function processLocal(){
-    if(!cnvCrop.width){alert('Chưa có ảnh đã căn chỉnh!');return;}
-    var sz=SIZES[selSize.value]||SIZES.the_3x4;
-    var bgColors={white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],red:[204,0,0],gray:[200,200,200]};
-    var bg=bgColors[selBg.value]||[255,255,255];
-    var cv=document.createElement('canvas');
-    cv.width=sz.w; cv.height=sz.h;
-    var ctx=cv.getContext('2d');
-    // Vẽ màu nền
-    ctx.fillStyle='rgb('+bg[0]+','+bg[1]+','+bg[2]+')';
-    ctx.fillRect(0,0,sz.w,sz.h);
-    // Vẽ ảnh đã crop
-    ctx.drawImage(cnvCrop,0,0,sz.w,sz.h);
-    resURL=cv.toDataURL('image/jpeg',.95);
-    resImg.src=resURL;
-    resMeta.textContent=sz.w+' × '+sz.h+' px · '+sz.label+' (local)';
-    btnDl1.onclick=function(){dlURL(resURL,'anh-the.jpg');};
-    buildSheet(resURL,{width:sz.w,height:sz.h});
-    setTab(3);
+  // ── Bước 1: Xoay ảnh để mặt thẳng ─────────────────────────────────
+  var srcCanvas = document.createElement('canvas');
+  srcCanvas.width  = img.naturalWidth;
+  srcCanvas.height = img.naturalHeight;
+  var srcCtx = srcCanvas.getContext('2d');
+
+  if(doAlign && Math.abs(fd.angle) > 0.5){
+    // Xoay quanh trung tâm khuôn mặt
+    var cx = fd.lEye.x + (fd.rEye.x - fd.lEye.x)/2;
+    var cy = fd.lEye.y + (fd.rEye.y - fd.lEye.y)/2;
+    srcCtx.save();
+    srcCtx.translate(cx, cy);
+    srcCtx.rotate(-fd.angle * Math.PI / 180);
+    srcCtx.translate(-cx, -cy);
+    srcCtx.drawImage(img, 0, 0);
+    srcCtx.restore();
+    setStat('fi-align','Đã xoay '+fd.angle.toFixed(1)+'°','ok');
+  } else {
+    srcCtx.drawImage(img, 0, 0);
+    setStat('fi-align', doAlign?'Mặt đã thẳng ('+fd.angle.toFixed(1)+'°)':'Không xoay','ok');
   }
 
-  // ── Tờ in ──
-  function buildSheet(src,d){
-    var img=new Image();
-    img.onload=function(){
-      var cols=4,rows=5,gap=8,mg=14;
-      var cw=d.width,ch=d.height;
-      var cv=document.createElement('canvas');
-      cv.width=mg*2+cols*cw+(cols-1)*gap;
-      cv.height=mg*2+rows*ch+(rows-1)*gap;
-      var ctx=cv.getContext('2d');
-      ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
-      for(var r=0;r<rows;r++)
-        for(var c=0;c<cols;c++)
-          ctx.drawImage(img,mg+c*(cw+gap),mg+r*(ch+gap),cw,ch);
-      sheetURL=cv.toDataURL('image/jpeg',.95);
-      sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:260px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
-      btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
-    };
-    img.src=src;
-  }
+  // ── Bước 2: Tính vùng crop chuẩn ảnh thẻ ──────────────────────────
+  // Mục tiêu:
+  //   - Chiều cao đầu (headTopY → chin) chiếm faceHeadRatio*100% chiều cao ảnh thẻ
+  //   - Đường mắt ở eyeLine*100% từ trên ảnh thẻ
+  //   - Khuôn mặt căn giữa theo chiều ngang
+  //   - Thêm headroom phía trên
 
-  function dlURL(url,name){var a=document.createElement('a');a.href=url;a.download=name;a.click();}
+  // Chiều cao đầu trong ảnh gốc
+  var headH   = fd.totalHeadH;
+  var headTopY= fd.headTopY;
 
-  btnRst.addEventListener('click',function(){
-    origBlob=croppedBlob=resURL=sheetURL=faceData=null;
-    $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
-    setTab(0);
-  });
+  // Scale: headH phải = faceHeadRatio * cropH
+  var cropH = headH / sz.faceHeadRatio;
+  var cropW = cropH * (sz.w / sz.h);
 
-  // ── Init ──
-  ping();
+  // Vị trí mắt trong ảnh gốc (sau khi có thể đã xoay)
+  // Tâm mắt ở eyeLine từ top của crop
+  var eyeMidY = (fd.lEye.y + fd.rEye.y) / 2;
+  var cropTopFromEye  = eyeMidY - sz.eyeLine * cropH;
+
+  // Tâm ngang
+  var faceCX = fd.faceCenterX;
+  var cropLeft = faceCX - cropW / 2;
+
+  // Đảm bảo không ra ngoài ảnh gốc
+  cropLeft = Math.max(0, Math.min(cropLeft, img.naturalWidth - cropW));
+  var cropTop = Math.max(0, Math.min(cropTopFromEye, img.naturalHeight - cropH));
+
+  // Nếu crop vượt ra ngoài ảnh, điều chỉnh
+  if(cropW > img.naturalWidth){cropW=img.naturalWidth;cropLeft=0;}
+  if(cropH > img.naturalHeight){cropH=img.naturalHeight;cropTop=0;}
+
+  // ── Bước 3: Vẽ lên cnvCrop ─────────────────────────────────────────
+  cnvCrop.width  = sz.w;
+  cnvCrop.height = sz.h;
+  var outCtx = cnvCrop.getContext('2d');
+
+  // Nền màu nhạt (sẽ được thêm màu nền thật ở bước sau)
+  outCtx.fillStyle = '#e8e8e8';
+  outCtx.fillRect(0, 0, sz.w, sz.h);
+
+  // Vẽ ảnh đã crop
+  outCtx.drawImage(srcCanvas,
+    Math.round(cropLeft), Math.round(cropTop),
+    Math.round(cropW),    Math.round(cropH),
+    0, 0, sz.w, sz.h
+  );
+
+  // Vẽ đường guide (mờ)
+  var eyeY_out = sz.eyeLine * sz.h;
+  outCtx.strokeStyle='rgba(59,130,246,.3)';outCtx.lineWidth=1;outCtx.setLineDash([4,4]);
+  outCtx.beginPath();outCtx.moveTo(0,eyeY_out);outCtx.lineTo(sz.w,eyeY_out);outCtx.stroke();
+  outCtx.setLineDash([]);
+
+  // Hiện preview
+  cropPreview.style.display='block';
+  var eyePct = Math.round(sz.eyeLine*100);
+  cropLbl.textContent = sz.w+'×'+sz.h+' px · '+sz.label+' · Mắt ở '+eyePct+'% từ trên';
+  setStat('fi-eyepos', eyePct+'% từ trên', Math.abs(eyePct-42)<5?'ok':'warn');
+
+  // Chuyển sang blob
+  cnvCrop.toBlob(function(b){croppedBlob=b;},'image/png');
+}
+
+// Reload crop khi đổi kích thước
+selSize.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
+ckAlign.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
+
+$('btn-to-set').addEventListener('click',function(){setTab(2);});
+$('btn-retry').addEventListener('click',function(){
+  origBlob=croppedBlob=faceResult=null;
+  $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
   setTab(0);
-  loadModels();
+});
+btnBack.addEventListener('click',function(){setTab(1);});
+
+// ── Swatches ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.sw').forEach(function(sw){
+  sw.addEventListener('click',function(){
+    document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
+    sw.classList.add('on');
+    selBg.value=sw.dataset.c;
+  });
+});
+
+// ── Tạo ảnh thẻ (gửi lên server) ─────────────────────────────────────────
+btnProc.addEventListener('click',function(){
+  var blob=croppedBlob||origBlob;
+  if(!blob){alert('Chưa có ảnh! Vui lòng quay lại bước nhận diện.');return;}
+  btnProc.disabled=true;
+  procBar.style.display='block';
+  procFill.style.width='20%';
+  procLbl.textContent='Đang gửi lên server…';
+
+  var form=new FormData();
+  form.append('file',blob,'photo.png');
+  form.append('size_key',selSize.value);
+  form.append('bg_color',selBg.value);
+  form.append('enhance',ckEnh.checked?'true':'false');
+  form.append('output_fmt',selFmt.value);
+
+  procFill.style.width='60%';
+  fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      procFill.style.width='100%';
+      if(!d.success)throw new Error(d.detail||'Lỗi server');
+      var mime=d.format==='png'?'image/png':'image/jpeg';
+      resURL='data:'+mime+';base64,'+d.image_b64;
+      resImg.src=resURL;
+      resMeta.textContent=d.width+'×'+d.height+'px · '+d.size_label;
+      btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
+      buildSheet(resURL,d);
+      setTab(3);
+    })
+    .catch(function(e){
+      procLbl.textContent='Server không phản hồi — đang xử lý local…';
+      processLocal();
+    })
+    .finally(function(){
+      btnProc.disabled=false;
+      procBar.style.display='none';
+      procFill.style.width='0%';
+    });
+});
+
+// Xử lý local khi server offline
+function processLocal(){
+  if(!cnvCrop.width){alert('Vui lòng quay lại bước nhận diện!');return;}
+  var sz=SIZES[selSize.value]||SIZES.the_3x4;
+  var bgColors={white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],red:[204,0,0],gray:[200,200,200]};
+  var bg=bgColors[selBg.value]||[255,255,255];
+
+  var cv=document.createElement('canvas');
+  cv.width=sz.w; cv.height=sz.h;
+  var ctx=cv.getContext('2d');
+
+  // Vẽ màu nền
+  ctx.fillStyle='rgb('+bg[0]+','+bg[1]+','+bg[2]+')';
+  ctx.fillRect(0,0,sz.w,sz.h);
+
+  // Chụp lại cnvCrop nhưng bỏ đường guide, vẽ đè màu nền
+  ctx.drawImage(cnvCrop,0,0);
+
+  resURL=cv.toDataURL('image/jpeg',.95);
+  resImg.src=resURL;
+  resMeta.textContent=sz.w+'×'+sz.h+'px · '+sz.label+' (local)';
+  btnDl1.onclick=function(){dlURL(resURL,'anh-the.jpg');};
+  buildSheet(resURL,{width:sz.w,height:sz.h});
+  $('res-ttl').textContent='✅ Ảnh thẻ đã sẵn sàng! (xử lý local)';
+  setTab(3);
+}
+
+// ── Tờ in 4×5 ────────────────────────────────────────────────────────────
+function buildSheet(src,d){
+  var img=new Image();
+  img.onload=function(){
+    var cols=4,rows=5,gap=8,mg=14;
+    var cv=document.createElement('canvas');
+    cv.width=mg*2+cols*d.width+(cols-1)*gap;
+    cv.height=mg*2+rows*d.height+(rows-1)*gap;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    for(var r=0;r<rows;r++)
+      for(var c=0;c<cols;c++)
+        ctx.drawImage(img,mg+c*(d.width+gap),mg+r*(d.height+gap),d.width,d.height);
+    sheetURL=cv.toDataURL('image/jpeg',.95);
+    sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:260px;border-radius:6px;margin:0 auto .5rem;border:1px solid #30363d"/><p class="res-meta">Tờ in 4×5 ảnh · Giấy A4</p>';
+    btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
+  };
+  img.src=src;
+}
+
+function dlURL(url,name){var a=document.createElement('a');a.href=url;a.download=name;a.click();}
+
+btnRst.addEventListener('click',function(){
+  origBlob=croppedBlob=resURL=sheetURL=faceResult=null;
+  $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
+  $('res-ttl').textContent='✅ Ảnh thẻ đã sẵn sàng!';
+  setTab(0);
+});
+
+// ── Init ─────────────────────────────────────────────────────────────────
+ping();
+setTab(0);
+loadModels();
+
 })();
 </script>
 </body>
