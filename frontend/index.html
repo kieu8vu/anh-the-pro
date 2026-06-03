@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Ảnh Thẻ Pro — AI Photo Studio</title>
+  <title>Ảnh Thẻ Pro — AI Nhận Diện Khuôn Mặt</title>
   <meta name="theme-color" content="#1e293b"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -12,7 +12,7 @@
     :root{
       --bg0:#0d1117;--bg1:#161b22;--bg2:#1e2730;--bg3:#262f3d;
       --bd:#30363d;--ac:#3b82f6;--ac2:#60a5fa;--gold:#f59e0b;
-      --green:#10b981;--red:#ef4444;
+      --green:#10b981;--red:#ef4444;--purple:#8b5cf6;
       --t1:#e6edf3;--t2:#8b949e;--t3:#6e7681;
       --r:12px;--rs:8px;--fn:'Be Vietnam Pro',sans-serif;--fm:monospace;
     }
@@ -20,61 +20,99 @@
     body{font-family:var(--fn);background:var(--bg0);color:var(--t1);min-height:100vh}
     img{max-width:100%;display:block}
     button{cursor:pointer;font-family:inherit}
+
+    /* HEADER */
     .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px}
     .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
     .logo h1{font-size:1rem;font-weight:700}
     .logo p{font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
+    .badge-row{display:flex;gap:8px;align-items:center}
     .badge{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm)}
     .badge.ok{border-color:var(--green);color:var(--green)}
     .badge.err{border-color:var(--red);color:var(--red)}
     .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
-    .wrap{max-width:960px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
-    .hero{text-align:center;padding:1.75rem 0 1.25rem}
+    .badge.purple{border-color:var(--purple);color:var(--purple)}
+
+    /* LAYOUT */
+    .wrap{max-width:1000px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
+
+    /* HERO */
+    .hero{text-align:center;padding:1.5rem 0 1rem}
     .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
     .hero h2 em{font-style:normal;background:linear-gradient(135deg,var(--ac2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero p{color:var(--t2);margin-top:.5rem;font-size:.9rem}
+    .hero p{color:var(--t2);margin-top:.5rem;font-size:.88rem}
     .tags{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:.9rem}
     .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
     .tag.hi{border-color:var(--ac);color:var(--ac2)}
-    .tabs{display:flex;margin:1.75rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
-    .tab{flex:1;padding:11px 6px;text-align:center;font-size:.75rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s}
-    .tab:last-child{border-right:none}
-    .tab.on{background:var(--ac);color:#fff}
-    .tab.done{background:var(--bg2);color:var(--green)}
+    .tag.pu{border-color:var(--purple);color:var(--purple)}
+
+    /* STEPS */
+    .steps{display:flex;margin:1.5rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
+    .step{flex:1;padding:10px 4px;text-align:center;font-size:.72rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s;line-height:1.4}
+    .step:last-child{border-right:none}
+    .step.on{background:var(--ac);color:#fff}
+    .step.done{background:var(--bg2);color:var(--green)}
+
+    /* PANELS */
     .pnl{display:none;margin-top:1.25rem}
     .pnl.on{display:block}
-    .up-row{display:grid;grid-template-columns:1fr 84px;gap:10px}
-    @media(max-width:420px){.up-row{grid-template-columns:1fr}}
-    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2.25rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1)}
+
+    /* UPLOAD */
+    .up-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:500px){.up-grid{grid-template-columns:1fr}}
+    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1);min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center}
     .dz:hover,.dz.ov{border-color:var(--ac);background:rgba(59,130,246,.05)}
-    .dz-ico{font-size:2.2rem;margin-bottom:.6rem}
-    .dz-hint{color:var(--t2);font-size:.85rem}
-    .dz-sub{font-size:.68rem;color:var(--t3);margin-top:.35rem;font-family:var(--fm)}
-    .cam-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem .5rem;color:var(--t1);font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;transition:.18s}
-    .cam-btn:hover{border-color:var(--ac)}
+    .dz-ico{font-size:2rem;margin-bottom:.5rem}
+    .dz-hint{color:var(--t2);font-size:.83rem}
+    .dz-sub{font-size:.67rem;color:var(--t3);margin-top:.35rem;font-family:var(--fm)}
+    .cam-box-btn{background:var(--bg2);border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1rem;color:var(--t1);font-size:.83rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;transition:.18s;min-height:160px;cursor:pointer}
+    .cam-box-btn:hover{border-color:var(--ac)}
+
+    /* CAMERA */
     #cam-sec{display:none;margin-top:1rem}
-    .cam-box{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:400px;margin:0 auto}
+    .cam-wrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:420px;margin:0 auto}
     #cam-vid{width:100%;display:block}
     .cam-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-    .cam-oval{width:148px;height:188px;border:2px solid rgba(255,255,255,.6);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.38)}
-    .cam-tip{margin-top:.65rem;font-size:.65rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:3px 9px;border-radius:20px}
+    .cam-oval{width:148px;height:188px;border:3px solid rgba(59,130,246,.8);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45);animation:pulse-border 2s ease-in-out infinite}
+    .cam-tip{margin-top:.65rem;font-size:.65rem;color:rgba(255,255,255,.9);background:rgba(59,130,246,.6);padding:3px 10px;border-radius:20px}
     .cam-ctrls{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:12px}
     .cb{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .cb.big{width:52px;height:52px;background:#fff;color:#000;font-size:1.3rem}
-    .cb.sm{width:38px;height:38px;background:rgba(255,255,255,.18);color:#fff;font-size:.95rem}
-    #prev-orig{margin-top:1rem}
-    #prev-orig img{max-height:180px;border-radius:var(--r);margin:0 auto;border:1px solid var(--bd)}
-    .box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
-    .box-lbl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
-    .box-sub{font-size:.75rem;color:var(--t2);margin-bottom:.75rem}
-    .bar-wrap{margin-bottom:.5rem}
-    .bar-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
-    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ac),var(--gold));border-radius:2px;transition:width .25s}
+    .cb.big{width:56px;height:56px;background:#fff;color:#000;font-size:1.4rem}
+    .cb.sm{width:40px;height:40px;background:rgba(255,255,255,.18);color:#fff;font-size:1rem;backdrop-filter:blur(4px)}
+
+    /* FACE DETECT PANEL */
+    .face-panel{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
+    .face-title{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
+    .face-sub{font-size:.75rem;color:var(--t2);margin-bottom:.875rem}
+    .bar-wrap{margin-bottom:.75rem}
+    .bar-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--ac),var(--gold));border-radius:3px;transition:width .3s}
     .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
-    #cnv-nobg{border-radius:var(--rs);border:1px solid var(--bd);display:none;margin:1rem auto 0;max-height:210px;max-width:100%}
+
+    /* FACE RESULT GRID */
+    .face-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+    @media(max-width:540px){.face-result-grid{grid-template-columns:1fr}}
+    .face-orig-wrap{position:relative;border-radius:var(--rs);overflow:hidden;background:#000;border:1px solid var(--bd)}
+    #cnv-detect{width:100%;display:block}
+    .face-info-box{background:var(--bg2);border-radius:var(--rs);padding:1rem}
+    .face-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:.78rem}
+    .face-stat:last-child{border-bottom:none}
+    .face-stat-key{color:var(--t2)}
+    .face-stat-val{font-weight:600;font-family:var(--fm)}
+    .face-stat-val.ok{color:var(--green)}
+    .face-stat-val.warn{color:var(--gold)}
+    .face-stat-val.err{color:var(--red)}
+
+    /* CROP PREVIEW */
+    #cnv-crop-wrap{margin-top:1rem;text-align:center;display:none}
+    #cnv-crop{border-radius:var(--rs);border:1px solid var(--bd);max-height:220px;margin:0 auto}
+    .crop-label{font-size:.72rem;color:var(--t2);margin-top:5px;font-family:var(--fm)}
+
+    /* SETTINGS */
+    .set-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
     .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
-    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
+    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:.875rem}
     .fg{display:flex;flex-direction:column;gap:5px}
     .fl{font-size:.75rem;color:var(--t2);font-weight:500}
     select{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);padding:7px 10px;font-size:.83rem;cursor:pointer;width:100%}
@@ -87,40 +125,38 @@
     .sw[data-c="light_blue"]{background:#add8e6}
     .sw[data-c="red"]{background:#cc0000}
     .sw[data-c="gray"]{background:#c8c8c8}
-    .ck-row{display:flex;align-items:center;gap:7px;padding:6px 0}
+    .ck-row{display:flex;align-items:center;gap:7px;padding:5px 0}
     input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
-    .btn{padding:10px 22px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
-    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.28)}
+
+    /* BUTTONS */
+    .btn{padding:10px 20px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.3)}
     .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
     .btn.pri:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn.pu{background:var(--purple);color:#fff;border-color:var(--purple)}
+    .btn.pu:hover:not(:disabled){background:#7c3aed;transform:translateY(-1px)}
+    .btn.pu:disabled{opacity:.38;cursor:not-allowed}
     .btn.sec{background:var(--bg2);border-color:var(--bd);color:var(--t1)}
     .btn.sec:hover{background:var(--bg3)}
     .btn.gh{background:transparent;border-color:transparent;color:var(--t2)}
     .btn.gh:hover{color:var(--t1)}
     .act-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.1rem}
+
+    /* RESULT */
     .res-ttl{font-size:.9rem;font-weight:600;color:var(--green);margin-bottom:.9rem}
     .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
     @media(max-width:520px){.res-grid{grid-template-columns:1fr}}
     .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem;text-align:center}
-    .res-card img{max-height:250px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+    .res-card img{max-height:260px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
     .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
     #proc-bar{display:none;margin-top:.9rem}
 
-    /* Info box */
-    .info-box{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:var(--ac2);margin-bottom:1rem;line-height:1.6}
-    .info-box b{color:var(--t1)}
-
-    /* Slider */
-    .slider-row{display:flex;align-items:center;gap:10px;margin-top:8px}
-    input[type=range]{flex:1;accent-color:var(--ac);cursor:pointer}
-    .slider-val{font-size:.78rem;color:var(--t1);min-width:32px;text-align:right;font-family:var(--fm)}
-
-    /* Canvas preview */
-    .cnv-wrap{position:relative;margin:1rem auto 0;text-align:center}
-    #cnv-edit{border-radius:var(--rs);border:1px solid var(--bd);max-width:100%;max-height:220px;cursor:crosshair}
+    /* INFO BOX */
+    .info-box{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.3);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:#a78bfa;margin-bottom:1rem;line-height:1.6}
 
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-    footer{border-top:1px solid var(--bd);padding:1.1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
+    @keyframes pulse-border{0%,100%{box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 3px rgba(59,130,246,.8)}50%{box-shadow:0 0 0 9999px rgba(0,0,0,.45),0 0 0 6px rgba(59,130,246,.4)}}
+    footer{border-top:1px solid var(--bd);padding:1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
   </style>
 </head>
 <body>
@@ -130,53 +166,60 @@
     <div class="logo-ico">📸</div>
     <div>
       <h1>Ảnh Thẻ Pro</h1>
-      <p>AI chạy trên trình duyệt</p>
+      <p>AI nhận diện khuôn mặt</p>
     </div>
   </div>
-  <span id="badge" class="badge spin">Đang kết nối…</span>
+  <div class="badge-row">
+    <span id="badge-ai" class="badge spin">Đang tải AI…</span>
+    <span id="badge-sv" class="badge spin">Server…</span>
+  </div>
 </header>
 
 <main class="wrap">
   <div class="hero">
-    <h2>Ảnh Thẻ <em>Chuyên Nghiệp</em> — Miễn Phí</h2>
-    <p>Xóa nền thông minh · Chuẩn kích thước · Thay màu nền · Tờ in 4×5</p>
+    <h2>Ảnh Thẻ <em>Chuẩn Quy Định</em> — AI Tự Động</h2>
+    <p>Tự động nhận diện khuôn mặt · Căn chỉnh vị trí đúng tỷ lệ · Tạo ảnh thẻ chuẩn</p>
     <div class="tags">
-      <span class="tag hi">✂️ Xóa nền thông minh</span>
-      <span class="tag">📐 3×4, 4×6, Hộ chiếu…</span>
-      <span class="tag">🎨 Thay màu nền</span>
+      <span class="tag pu">🤖 AI nhận diện khuôn mặt</span>
+      <span class="tag pu">📐 Tự căn chỉnh vị trí</span>
+      <span class="tag hi">🎨 Thay màu nền</span>
+      <span class="tag">📋 3×4, 4×6, Hộ chiếu…</span>
       <span class="tag">🖨 Tờ in 4×5</span>
-      <span class="tag">🔒 Không upload lên server</span>
     </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab on" id="t0">① Chọn ảnh</div>
-    <div class="tab"    id="t1">② Xóa nền</div>
-    <div class="tab"    id="t2">③ Tùy chỉnh</div>
-    <div class="tab"    id="t3">④ Kết quả</div>
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step on"  id="s0">① Chọn ảnh</div>
+    <div class="step"     id="s1">② Nhận diện<br>khuôn mặt</div>
+    <div class="step"     id="s2">③ Tùy chỉnh</div>
+    <div class="step"     id="s3">④ Kết quả</div>
   </div>
 
   <!-- P0: UPLOAD -->
   <div class="pnl on" id="p0">
-    <div class="up-row">
+    <div class="up-grid">
       <div class="dz" id="dz">
         <div class="dz-ico">🖼</div>
-        <p class="dz-hint" id="dz-hint">Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
-        <p class="dz-sub">JPG · PNG · WEBP · tối đa 10MB</p>
+        <p class="dz-hint" id="dz-hint">Kéo thả ảnh hoặc nhấn để chọn</p>
+        <p class="dz-sub">JPG · PNG · WEBP · Nên dùng ảnh chân dung rõ mặt</p>
       </div>
-      <button class="cam-btn" id="btn-cam">
-        <span style="font-size:1.6rem">📷</span>
-        <span>Chụp<br>Camera</span>
+      <button class="cam-box-btn" id="btn-cam">
+        <span style="font-size:1.8rem">📷</span>
+        <span style="font-weight:500">Chụp Camera</span>
+        <span style="font-size:.72rem;color:var(--t2)">Tự động căn khuôn mặt</span>
       </button>
     </div>
     <input type="file" id="inp-file" accept="image/*" style="display:none">
+
+    <!-- Camera section -->
     <div id="cam-sec">
-      <div class="cam-box">
+      <div class="cam-wrap">
         <video id="cam-vid" autoplay playsinline muted></video>
         <canvas id="cam-cnv" style="display:none"></canvas>
         <div class="cam-ov">
           <div class="cam-oval"></div>
-          <p class="cam-tip">Nhìn thẳng · Đủ sáng · Không đội mũ</p>
+          <p class="cam-tip">Nhìn thẳng · Khuôn mặt vào vòng tròn · Đủ sáng</p>
         </div>
         <div class="cam-ctrls">
           <button class="cb sm" id="btn-flip">↺</button>
@@ -185,59 +228,80 @@
         </div>
       </div>
     </div>
-    <div id="prev-orig"></div>
   </div>
 
-  <!-- P1: XÓA NỀN -->
+  <!-- P1: NHẬN DIỆN KHUÔN MẶT -->
   <div class="pnl" id="p1">
-    <div class="box">
+    <div class="face-panel">
       <div class="info-box">
-        💡 <b>Hướng dẫn xóa nền:</b> Dùng thanh trượt để tinh chỉnh ngưỡng xóa nền tự động,
-        hoặc nhấn vào màu nền trong ảnh để xóa chính xác hơn.
-        Nền trắng/đơn sắc cho kết quả tốt nhất.
+        🤖 <strong>AI đang phân tích khuôn mặt:</strong> Phát hiện vị trí · Xác định 68 điểm mốc · 
+        Tính tỷ lệ đầu/khuôn mặt · Căn chỉnh về vị trí chuẩn ảnh thẻ · Xóa nền tự động
       </div>
-      <div class="box-lbl" id="rb-lbl">✂️ Xóa nền thông minh</div>
-      <div class="box-sub" id="rb-sub">Điều chỉnh ngưỡng xóa nền phù hợp với ảnh của bạn</div>
-
-      <div class="fg" style="margin-bottom:.75rem">
-        <label class="fl">Ngưỡng xóa nền (càng cao = xóa mạnh hơn)</label>
-        <div class="slider-row">
-          <input type="range" id="thresh-slider" min="0" max="80" value="30" step="1">
-          <span class="slider-val" id="thresh-val">30</span>
-        </div>
-      </div>
-
-      <div class="fg" style="margin-bottom:.75rem">
-        <label class="fl">Màu tham chiếu để xóa (nhấn vào ảnh để chọn tự động)</label>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
-          <div id="ref-color-box" style="width:32px;height:32px;border-radius:6px;border:1px solid var(--bd);background:#ffffff;cursor:pointer;flex-shrink:0" title="Nhấn vào ảnh để lấy màu"></div>
-          <span style="font-size:.75rem;color:var(--t2)">Nhấn vào vùng nền trong ảnh bên dưới để lấy màu tham chiếu</span>
-        </div>
-      </div>
-
+      <div class="face-title" id="face-title">🔍 Đang nhận diện khuôn mặt…</div>
+      <div class="face-sub"   id="face-sub">Vui lòng chờ AI phân tích</div>
       <div class="bar-wrap">
         <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
-        <div class="bar-lbl" id="bar-lbl">Sẵn sàng xử lý</div>
+        <div class="bar-lbl"  id="bar-lbl">Đang khởi tạo…</div>
       </div>
 
-      <div class="cnv-wrap">
-        <canvas id="cnv-edit" title="Nhấn vào vùng nền để lấy màu tham chiếu"></canvas>
+      <div class="face-result-grid" id="face-result-grid" style="display:none">
+        <!-- Canvas hiển thị kết quả nhận diện -->
+        <div class="face-orig-wrap">
+          <canvas id="cnv-detect"></canvas>
+        </div>
+        <!-- Thông tin khuôn mặt -->
+        <div class="face-info-box" id="face-info">
+          <div class="face-stat">
+            <span class="face-stat-key">Phát hiện khuôn mặt</span>
+            <span class="face-stat-val" id="fi-detected">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Độ tin cậy</span>
+            <span class="face-stat-val" id="fi-score">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Vị trí mắt trái</span>
+            <span class="face-stat-val" id="fi-eye-l">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Vị trí mắt phải</span>
+            <span class="face-stat-val" id="fi-eye-r">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Trục khuôn mặt</span>
+            <span class="face-stat-val" id="fi-angle">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Kích thước khuôn mặt</span>
+            <span class="face-stat-val" id="fi-size">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Tỷ lệ khuôn mặt/ảnh</span>
+            <span class="face-stat-val" id="fi-ratio">—</span>
+          </div>
+          <div class="face-stat">
+            <span class="face-stat-key">Căn chỉnh</span>
+            <span class="face-stat-val" id="fi-align">—</span>
+          </div>
+        </div>
       </div>
-      <p style="font-size:.68rem;color:var(--t3);margin-top:6px;text-align:center">↑ Nhấn vào vùng nền trong ảnh để lấy màu tham chiếu</p>
 
-      <canvas id="cnv-nobg" style="display:none"></canvas>
+      <!-- Preview ảnh đã căn chỉnh -->
+      <div id="cnv-crop-wrap">
+        <canvas id="cnv-crop"></canvas>
+        <p class="crop-label" id="crop-label">Ảnh đã căn chỉnh vị trí khuôn mặt</p>
+      </div>
 
-      <div class="act-row">
-        <button class="btn pri" id="btn-do-remove">✂️ Xóa nền</button>
-        <button class="btn sec" id="btn-to-set" style="display:none">Tiếp theo →</button>
-        <button class="btn gh"  id="btn-redo">↩ Chọn ảnh khác</button>
+      <div class="act-row" id="face-acts" style="display:none">
+        <button class="btn pu" id="btn-to-set">Tiếp theo — Tùy chỉnh →</button>
+        <button class="btn gh" id="btn-retry">↩ Chọn ảnh khác</button>
       </div>
     </div>
   </div>
 
   <!-- P2: SETTINGS -->
   <div class="pnl" id="p2">
-    <div class="box">
+    <div class="set-box">
       <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
       <div class="set-grid">
         <div class="fg">
@@ -282,15 +346,19 @@
             <input type="checkbox" id="ck-enh" checked>
             <label for="ck-enh" style="font-size:.83rem;cursor:pointer">Tăng cường chất lượng</label>
           </div>
+          <div class="ck-row">
+            <input type="checkbox" id="ck-align" checked>
+            <label for="ck-align" style="font-size:.83rem;cursor:pointer">Căn chỉnh góc khuôn mặt</label>
+          </div>
         </div>
       </div>
       <div class="act-row">
         <button class="btn pri" id="btn-proc">🚀 Tạo ảnh thẻ</button>
-        <button class="btn gh"  id="btn-back">← Xem lại xóa nền</button>
+        <button class="btn gh"  id="btn-back">← Xem lại nhận diện</button>
       </div>
       <div id="proc-bar">
         <div class="bar-track"><div class="bar-fill" id="proc-fill"></div></div>
-        <div class="bar-lbl">Đang xử lý trên server…</div>
+        <div class="bar-lbl" id="proc-lbl">Đang xử lý…</div>
       </div>
     </div>
   </div>
@@ -315,52 +383,86 @@
   </div>
 </main>
 
-<footer>Ảnh Thẻ Pro · Xóa nền Canvas API · Backend FastAPI + Pillow · Render + Netlify</footer>
+<footer>Ảnh Thẻ Pro · face-api.js AI · Backend FastAPI + Pillow · Render + Netlify</footer>
 
 <script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
 
+<!-- face-api.js từ CDN -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
 <script>
 (function(){
+  // ── DOM refs ──
   function $(i){return document.getElementById(i);}
-
   var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
   var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
   var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
-  var prevOrig=$('prev-orig');
-  var cnvEdit=$('cnv-edit'), cnvNobg=$('cnv-nobg');
-  var rbLbl=$('rb-lbl'), rbSub=$('rb-sub');
+  var faceTitle=$('face-title'), faceSub=$('face-sub');
   var barFill=$('bar-fill'), barLbl=$('bar-lbl');
-  var threshSlider=$('thresh-slider'), threshVal=$('thresh-val');
-  var refColorBox=$('ref-color-box');
-  var btnDoRemove=$('btn-do-remove'), btnToSet=$('btn-to-set'), btnRedo=$('btn-redo');
+  var faceResultGrid=$('face-result-grid');
+  var cnvDetect=$('cnv-detect'), cnvCrop=$('cnv-crop'), cnvCropWrap=$('cnv-crop-wrap');
+  var cropLabel=$('crop-label'), faceActs=$('face-acts');
   var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
-  var ckEnh=$('ck-enh'), btnProc=$('btn-proc'), btnBack=$('btn-back');
-  var procBar=$('proc-bar'), procFill=$('proc-fill');
+  var ckEnh=$('ck-enh'), ckAlign=$('ck-align');
+  var btnProc=$('btn-proc'), btnBack=$('btn-back');
+  var procBar=$('proc-bar'), procFill=$('proc-fill'), procLbl=$('proc-lbl');
   var resImg=$('res-img'), resMeta=$('res-meta'), sheetCard=$('sheet-card');
   var btnDl1=$('btn-dl1'), btnDl5=$('btn-dl5'), btnRst=$('btn-rst');
-  var badge=$('badge');
+  var badgeAI=$('badge-ai'), badgeSV=$('badge-sv');
 
-  var origBlob=null, nobgBlob=null, resURL=null, sheetURL=null;
+  var origBlob=null, croppedBlob=null, resURL=null, sheetURL=null;
   var camStream=null, facing='user';
-  var refColor={r:255,g:255,b:255}; // màu tham chiếu để xóa nền
-  var origImageData=null; // lưu pixel data gốc
+  var faceData=null; // kết quả nhận diện khuôn mặt
+  var aiReady=false;
+
+  // ── Kích thước ảnh thẻ chuẩn (px @ 300dpi) ──
+  var SIZES={
+    the_3x4:    {w:354, h:472,  label:'Ảnh thẻ 3×4 cm',    faceRatio:.55, eyeFromTop:.42},
+    the_4x6:    {w:472, h:709,  label:'Ảnh thẻ 4×6 cm',    faceRatio:.55, eyeFromTop:.42},
+    the_2x3:    {w:236, h:354,  label:'Ảnh thẻ 2×3 cm',    faceRatio:.55, eyeFromTop:.42},
+    chung_minh: {w:260, h:330,  label:'CCCD/CMND',          faceRatio:.6,  eyeFromTop:.42},
+    passport:   {w:413, h:531,  label:'Hộ chiếu 35×45mm',  faceRatio:.7,  eyeFromTop:.45},
+    visa_us:    {w:600, h:600,  label:'Visa Mỹ 2×2 inch',  faceRatio:.6,  eyeFromTop:.40},
+    visa_schengen:{w:413,h:531, label:'Visa Schengen',      faceRatio:.7,  eyeFromTop:.45},
+  };
 
   // ── Tabs ──
   function setTab(n){
     for(var i=0;i<4;i++){
-      var t=$('t'+i), p=$('p'+i);
-      t.className='tab'+(i<n?' done':i===n?' on':'');
+      var t=$('s'+i), p=$('p'+i);
+      t.className='step'+(i<n?' done':i===n?' on':'');
       p.className='pnl'+(i===n?' on':'');
     }
   }
-  function setBadge(msg,cls){badge.textContent=msg;badge.className='badge '+cls;}
 
   // ── Ping backend ──
   function ping(){
     fetch(window.API_BASE+'/health')
       .then(function(r){return r.json();})
-      .then(function(){setBadge('Server sẵn sàng ✓','ok');})
-      .catch(function(){setBadge('Server offline','err');});
+      .then(function(){badgeSV.textContent='Server ✓';badgeSV.className='badge ok';})
+      .catch(function(){badgeSV.textContent='Server offline';badgeSV.className='badge err';});
+  }
+
+  // ── Tải model face-api.js ──
+  var MODEL_URL='https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
+
+  function loadModels(){
+    badgeAI.textContent='Đang tải AI…';
+    badgeAI.className='badge spin';
+
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
+    ]).then(function(){
+      aiReady=true;
+      badgeAI.textContent='AI sẵn sàng ✓';
+      badgeAI.className='badge ok';
+      console.log('[AnhThe] face-api models loaded');
+    }).catch(function(e){
+      badgeAI.textContent='AI lỗi — thử lại';
+      badgeAI.className='badge err';
+      console.error('[AnhThe] model load error:', e);
+    });
   }
 
   // ── Upload ──
@@ -376,26 +478,9 @@
   function loadFile(f){
     if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
     origBlob=f;
-    var url=URL.createObjectURL(f);
-    prevOrig.innerHTML='<img src="'+url+'" alt="Ảnh gốc"/>';
-    $('dz-hint').textContent='✓ Đã chọn ảnh';
-    // Load ảnh vào canvas chỉnh sửa
-    var img=new Image();
-    img.onload=function(){
-      // Scale để vừa canvas preview (max 600px)
-      var maxW=600, maxH=400;
-      var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
-      cnvEdit.width=Math.round(img.naturalWidth*scale);
-      cnvEdit.height=Math.round(img.naturalHeight*scale);
-      var ctx=cnvEdit.getContext('2d');
-      ctx.drawImage(img,0,0,cnvEdit.width,cnvEdit.height);
-      origImageData=ctx.getImageData(0,0,cnvEdit.width,cnvEdit.height);
-      // Lấy màu góc trên trái làm màu tham chiếu mặc định
-      pickColorAt(0,0);
-      btnToSet.style.display='none';
-      setTab(1);
-    };
-    img.src=url;
+    $('dz-hint').textContent='✓ Đang phân tích khuôn mặt…';
+    setTab(1);
+    detectFace(f);
   }
 
   // ── Camera ──
@@ -405,8 +490,12 @@
   btnCap.addEventListener('click',function(){
     camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
     camCnv.getContext('2d').drawImage(camVid,0,0);
-    camCnv.toBlob(function(b){stopCam();loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));},'image/jpeg',.95);
+    camCnv.toBlob(function(b){
+      stopCam();
+      loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));
+    },'image/jpeg',.95);
   });
+
   function startCam(){
     navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
       .then(function(s){camStream=s;camVid.srcObject=s;})
@@ -417,99 +506,248 @@
     camSec.style.display='none';
   }
 
-  // ── Nhấn vào canvas để lấy màu tham chiếu ──
-  cnvEdit.addEventListener('click',function(e){
-    var rect=cnvEdit.getBoundingClientRect();
-    var x=Math.round((e.clientX-rect.left)*(cnvEdit.width/rect.width));
-    var y=Math.round((e.clientY-rect.top)*(cnvEdit.height/rect.height));
-    pickColorAt(x,y);
-    // Auto xóa nền
-    doRemoveBg();
-  });
-
-  function pickColorAt(x,y){
-    if(!origImageData)return;
-    var idx=(y*cnvEdit.width+x)*4;
-    var d=origImageData.data;
-    refColor={r:d[idx],g:d[idx+1],b:d[idx+2]};
-    refColorBox.style.background='rgb('+refColor.r+','+refColor.g+','+refColor.b+')';
+  // ── NHẬN DIỆN KHUÔN MẶT ──
+  function setProgress(pct, msg){
+    barFill.style.width=pct+'%';
+    barLbl.textContent=msg;
   }
 
-  // ── Slider ──
-  threshSlider.addEventListener('input',function(){
-    threshVal.textContent=this.value;
-    if(origImageData) doRemoveBg();
-  });
+  function detectFace(blob){
+    faceTitle.textContent='🔍 Đang nhận diện khuôn mặt…';
+    faceSub.textContent='AI đang phân tích ảnh';
+    faceResultGrid.style.display='none';
+    cnvCropWrap.style.display='none';
+    faceActs.style.display='none';
+    setProgress(10,'Đang tải ảnh…');
 
-  // ── Xóa nền bằng Color Distance (Canvas API) ──
-  btnDoRemove.addEventListener('click',doRemoveBg);
-
-  function colorDist(r1,g1,b1,r2,g2,b2){
-    return Math.sqrt((r1-r2)*(r1-r2)+(g1-g2)*(g1-g2)+(b1-b2)*(b1-b2));
+    // Chờ AI sẵn sàng
+    if(!aiReady){
+      setProgress(5,'Chờ AI tải xong…');
+      var waited=0;
+      var waiter=setInterval(function(){
+        waited+=500;
+        if(aiReady){clearInterval(waiter);runDetect(blob);}
+        else if(waited>20000){
+          clearInterval(waiter);
+          showError('Không tải được AI model. Kiểm tra kết nối mạng.');
+        }
+      },500);
+      return;
+    }
+    runDetect(blob);
   }
 
-  function doRemoveBg(){
-    if(!origImageData){alert('Chưa có ảnh!');return;}
-    barFill.style.width='30%';
-    barLbl.textContent='Đang xóa nền…';
+  function runDetect(blob){
+    var url=URL.createObjectURL(blob);
+    var img=new Image();
+    img.onload=function(){
+      setProgress(30,'Đang phát hiện khuôn mặt…');
 
+      // Vẽ ảnh gốc lên cnvDetect
+      var maxW=500, maxH=380;
+      var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
+      cnvDetect.width=Math.round(img.naturalWidth*scale);
+      cnvDetect.height=Math.round(img.naturalHeight*scale);
+      var ctx=cnvDetect.getContext('2d');
+      ctx.drawImage(img,0,0,cnvDetect.width,cnvDetect.height);
+
+      setProgress(50,'AI đang tìm khuôn mặt…');
+
+      // Chạy face detection
+      faceapi.detectSingleFace(
+        cnvDetect,
+        new faceapi.TinyFaceDetectorOptions({inputSize:416, scoreThreshold:0.4})
+      ).withFaceLandmarks(true).then(function(result){
+
+        setProgress(80,'Phân tích kết quả…');
+
+        if(!result){
+          showError('Không phát hiện khuôn mặt. Vui lòng dùng ảnh chân dung rõ mặt, đủ sáng.');
+          return;
+        }
+
+        faceData={
+          detection: result.detection,
+          landmarks: result.landmarks,
+          scale: scale,
+          origImg: img,
+          origW: img.naturalWidth,
+          origH: img.naturalHeight,
+        };
+
+        setProgress(100,'Nhận diện thành công!');
+        showFaceResult(result, ctx, scale, img);
+
+      }).catch(function(e){
+        showError('Lỗi AI: '+e.message);
+      });
+    };
+    img.onerror=function(){showError('Không đọc được file ảnh.');};
+    img.src=url;
+  }
+
+  function showError(msg){
+    faceTitle.textContent='❌ '+msg;
+    faceSub.textContent='';
+    setProgress(0,'');
+    faceActs.style.display='flex';
+  }
+
+  function showFaceResult(result, ctx, scale, origImg){
+    var det=result.detection;
+    var lm=result.landmarks;
+    var box=det.box;
+
+    // Vẽ bounding box
+    ctx.strokeStyle='#3b82f6';
+    ctx.lineWidth=2;
+    ctx.strokeRect(box.x*scale, box.y*scale, box.width*scale, box.height*scale);
+
+    // Vẽ 68 điểm mốc
+    var pts=lm.positions;
+    ctx.fillStyle='#f59e0b';
+    pts.forEach(function(p){
+      ctx.beginPath();
+      ctx.arc(p.x*scale, p.y*scale, 2, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // Tính góc khuôn mặt (từ 2 mắt)
+    var leftEye = lm.getLeftEye();
+    var rightEye = lm.getRightEye();
+    var lEyeCenter = getCenter(leftEye);
+    var rEyeCenter = getCenter(rightEye);
+    var angle = Math.atan2(rEyeCenter.y-lEyeCenter.y, rEyeCenter.x-lEyeCenter.x)*180/Math.PI;
+
+    // Vẽ đường nối 2 mắt
+    ctx.strokeStyle='#10b981';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(lEyeCenter.x*scale, lEyeCenter.y*scale);
+    ctx.lineTo(rEyeCenter.x*scale, rEyeCenter.y*scale);
+    ctx.stroke();
+
+    // Tỷ lệ khuôn mặt
+    var faceRatioH = box.height/origImg.naturalHeight;
+    var faceRatioW = box.width/origImg.naturalWidth;
+
+    // Cập nhật thông tin
+    faceResultGrid.style.display='grid';
+    $('fi-detected').textContent='✓ Có khuôn mặt';
+    $('fi-detected').className='face-stat-val ok';
+    $('fi-score').textContent=(det.score*100).toFixed(1)+'%';
+    $('fi-score').className='face-stat-val '+(det.score>0.8?'ok':'warn');
+    $('fi-eye-l').textContent='('+Math.round(lEyeCenter.x)+', '+Math.round(lEyeCenter.y)+')';
+    $('fi-eye-r').textContent='('+Math.round(rEyeCenter.x)+', '+Math.round(rEyeCenter.y)+')';
+    $('fi-angle').textContent=angle.toFixed(1)+'°';
+    $('fi-angle').className='face-stat-val '+(Math.abs(angle)<5?'ok':Math.abs(angle)<15?'warn':'err');
+    $('fi-size').textContent=Math.round(box.width)+' × '+Math.round(box.height)+' px';
+    $('fi-ratio').textContent=(faceRatioH*100).toFixed(0)+'% chiều cao';
+    $('fi-align').className='face-stat-val ok';
+    $('fi-align').textContent='Đang căn chỉnh…';
+
+    // Lưu thêm dữ liệu
+    faceData.angle=angle;
+    faceData.lEye=lEyeCenter;
+    faceData.rEye=rEyeCenter;
+    faceData.box=box;
+
+    // Tự động căn chỉnh và crop
     setTimeout(function(){
-      var thresh=parseInt(threshSlider.value)*1.5+20; // 0-80 → 20-140
-      var src=origImageData;
-      var w=cnvEdit.width, h=cnvEdit.height;
+      autoCropFace(faceData);
+    }, 300);
 
-      // Tạo canvas kết quả cùng kích thước
-      cnvNobg.width=w; cnvNobg.height=h;
-      var ctxOut=cnvNobg.getContext('2d');
-      var outData=ctxOut.createImageData(w,h);
-      var srcD=src.data, outD=outData.data;
-
-      var rr=refColor.r, rg=refColor.g, rb=refColor.b;
-
-      for(var i=0;i<srcD.length;i+=4){
-        var r=srcD[i], g=srcD[i+1], b=srcD[i+2];
-        var dist=colorDist(r,g,b,rr,rg,rb);
-        outD[i]=r; outD[i+1]=g; outD[i+2]=b;
-        // Alpha: nếu gần màu tham chiếu → trong suốt
-        if(dist<thresh){
-          outD[i+3]=0; // transparent
-        } else {
-          outD[i+3]=srcD[i+3]; // giữ nguyên
-        }
-      }
-      ctxOut.putImageData(outData,0,0);
-
-      // Cũng cập nhật canvas edit để xem trước (vẽ trên nền checker)
-      var ctxEdit=cnvEdit.getContext('2d');
-      var sz=16;
-      for(var y=0;y<h;y+=sz)
-        for(var x=0;x<w;x+=sz){
-          ctxEdit.fillStyle=((Math.floor(x/sz)+Math.floor(y/sz))%2===0)?'#aaa':'#eee';
-          ctxEdit.fillRect(x,y,sz,sz);
-        }
-      ctxEdit.drawImage(cnvNobg,0,0);
-
-      barFill.style.width='100%';
-      barLbl.textContent='✅ Xóa nền xong! Nhấn "Tiếp theo" hoặc điều chỉnh lại';
-      rbLbl.textContent='✅ Xóa nền hoàn tất';
-      btnToSet.style.display='inline-flex';
-
-      // Chuyển canvas thành blob
-      cnvNobg.toBlob(function(b){
-        nobgBlob=b;
-      },'image/png');
-
-    }, 50);
+    faceTitle.textContent='✅ Phát hiện khuôn mặt thành công!';
+    faceSub.textContent='AI đã xác định '+pts.length+' điểm mốc khuôn mặt';
+    faceActs.style.display='flex';
   }
 
-  btnToSet.addEventListener('click',function(){setTab(2);});
-  btnRedo.addEventListener('click',function(){
-    nobgBlob=null;origBlob=null;prevOrig.innerHTML='';origImageData=null;
-    $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
-    btnToSet.style.display='none';
+  function getCenter(pts){
+    var sx=0,sy=0;
+    pts.forEach(function(p){sx+=p.x;sy+=p.y;});
+    return {x:sx/pts.length, y:sy/pts.length};
+  }
+
+  // ── TỰ ĐỘNG CROP KHUÔN MẶT ──
+  function autoCropFace(fd){
+    var sz=SIZES[selSize.value]||SIZES.the_3x4;
+    var img=fd.origImg;
+    var box=fd.box;
+    var angle=fd.angle;
+    var doAlign=ckAlign.checked;
+
+    // Tạo canvas tạm để xoay ảnh
+    var tmpCnv=document.createElement('canvas');
+    tmpCnv.width=img.naturalWidth;
+    tmpCnv.height=img.naturalHeight;
+    var tmpCtx=tmpCnv.getContext('2d');
+
+    if(doAlign && Math.abs(angle)>0.5){
+      // Xoay ảnh để thẳng khuôn mặt
+      var cx=box.x+box.width/2;
+      var cy=box.y+box.height/2;
+      tmpCtx.translate(cx,cy);
+      tmpCtx.rotate(-angle*Math.PI/180);
+      tmpCtx.translate(-cx,-cy);
+    }
+    tmpCtx.drawImage(img,0,0);
+
+    // Tính vùng crop dựa trên khuôn mặt
+    // Quy tắc ảnh thẻ: khuôn mặt chiếm ~55-70% chiều cao, mắt ở ~40-45% từ trên
+    var faceH=box.height;
+    var targetFaceRatio=sz.faceRatio;   // khuôn mặt chiếm bao nhiêu % chiều cao ảnh thẻ
+    var eyeFromTop=sz.eyeFromTop;        // mắt ở vị trí bao nhiêu % từ trên
+
+    // Tính crop height: faceH / targetFaceRatio
+    var cropH=Math.round(faceH/targetFaceRatio);
+    var cropW=Math.round(cropH*(sz.w/sz.h));
+
+    // Tâm khuôn mặt (theo chiều ngang)
+    var faceCenterX=box.x+box.width/2;
+    // Vị trí mắt (theo chiều dọc) — dùng để đặt mắt đúng vị trí
+    var eyeY=(fd.lEye.y+fd.rEye.y)/2;
+    // cropTop: eyeY ở vị trí eyeFromTop trong crop
+    var cropTop=Math.round(eyeY - cropH*eyeFromTop);
+    var cropLeft=Math.round(faceCenterX - cropW/2);
+
+    // Đảm bảo trong giới hạn ảnh
+    cropLeft=Math.max(0, Math.min(cropLeft, img.naturalWidth-cropW));
+    cropTop=Math.max(0, Math.min(cropTop, img.naturalHeight-cropH));
+    if(cropW>img.naturalWidth) cropW=img.naturalWidth;
+    if(cropH>img.naturalHeight) cropH=img.naturalHeight;
+
+    // Vẽ crop lên cnvCrop
+    cnvCrop.width=sz.w;
+    cnvCrop.height=sz.h;
+    var cropCtx=cnvCrop.getContext('2d');
+    cropCtx.drawImage(tmpCnv, cropLeft,cropTop,cropW,cropH, 0,0,sz.w,sz.h);
+
+    // Hiện preview
+    cnvCropWrap.style.display='block';
+    cropLabel.textContent='Ảnh đã căn chỉnh · '+sz.w+'×'+sz.h+' px · '+sz.label;
+    $('fi-align').textContent=doAlign?'Đã xoay '+angle.toFixed(1)+'°':'Không xoay';
+
+    // Chuyển thành blob
+    cnvCrop.toBlob(function(b){
+      croppedBlob=b;
+    },'image/png');
+  }
+
+  $('btn-to-set').addEventListener('click',function(){ setTab(2); });
+  $('btn-retry').addEventListener('click',function(){
+    origBlob=croppedBlob=faceData=null;
+    $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
     setTab(0);
   });
-  btnBack.addEventListener('click',function(){setTab(1);});
+  btnBack.addEventListener('click',function(){ setTab(1); });
+
+  // Cập nhật crop khi đổi kích thước
+  selSize.addEventListener('change',function(){
+    if(faceData) autoCropFace(faceData);
+  });
+  ckAlign.addEventListener('change',function(){
+    if(faceData) autoCropFace(faceData);
+  });
 
   // ── Swatches ──
   document.querySelectorAll('.sw').forEach(function(sw){
@@ -520,30 +758,28 @@
     });
   });
 
-  // ── Process (gửi lên backend) ──
+  // ── Process ──
   btnProc.addEventListener('click',function(){
-    if(!nobgBlob){
-      // Nếu chưa xóa nền, dùng ảnh gốc
-      if(!origBlob){alert('Chưa có ảnh!');return;}
-      nobgBlob=origBlob;
-    }
+    var blob=croppedBlob||origBlob;
+    if(!blob){alert('Chưa có ảnh!');return;}
     btnProc.disabled=true;
     procBar.style.display='block';
-    procFill.style.width='30%';
+    procFill.style.width='20%';
+    procLbl.textContent='Đang gửi lên server…';
 
     var form=new FormData();
-    form.append('file',nobgBlob,'nobg.png');
-    form.append('size_key',selSize.value);
-    form.append('bg_color',selBg.value);
-    form.append('enhance',ckEnh.checked?'true':'false');
-    form.append('output_fmt',selFmt.value);
+    form.append('file', blob, 'photo.png');
+    form.append('size_key', selSize.value);
+    form.append('bg_color', selBg.value);
+    form.append('enhance', ckEnh.checked?'true':'false');
+    form.append('output_fmt', selFmt.value);
 
     procFill.style.width='60%';
     fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
       .then(function(r){return r.json();})
       .then(function(d){
         procFill.style.width='100%';
-        if(!d.success)throw new Error(d.detail||'Lỗi server');
+        if(!d.success) throw new Error(d.detail||'Lỗi server');
         var mime=d.format==='png'?'image/png':'image/jpeg';
         resURL='data:'+mime+';base64,'+d.image_b64;
         resImg.src=resURL;
@@ -553,12 +789,9 @@
         setTab(3);
       })
       .catch(function(e){
-        // Nếu server offline, thử xử lý local
-        if(e.message.indexOf('fetch')!==-1||e.message.indexOf('Failed')!==-1){
-          processLocal();
-        } else {
-          alert('Lỗi: '+e.message);
-        }
+        // Fallback: xử lý local
+        procLbl.textContent='Server không phản hồi, xử lý local…';
+        processLocal();
       })
       .finally(function(){
         btnProc.disabled=false;
@@ -567,48 +800,28 @@
       });
   });
 
-  // Xử lý local khi server offline
   function processLocal(){
-    if(!cnvNobg.width){alert('Vui lòng xóa nền trước!');return;}
-    // Ghép màu nền + resize đơn giản
-    var sizes={
-      the_3x4:{w:354,h:472,label:'Ảnh thẻ 3×4 cm'},
-      the_4x6:{w:472,h:709,label:'Ảnh thẻ 4×6 cm'},
-      the_2x3:{w:236,h:354,label:'Ảnh thẻ 2×3 cm'},
-      chung_minh:{w:260,h:330,label:'CCCD/CMND'},
-      passport:{w:413,h:531,label:'Hộ chiếu'},
-      visa_us:{w:600,h:600,label:'Visa Mỹ'},
-      visa_schengen:{w:413,h:531,label:'Visa Schengen'}
-    };
-    var bgColors={
-      white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],
-      red:[204,0,0],gray:[200,200,200]
-    };
-    var sz=sizes[selSize.value]||sizes.the_3x4;
+    if(!cnvCrop.width){alert('Chưa có ảnh đã căn chỉnh!');return;}
+    var sz=SIZES[selSize.value]||SIZES.the_3x4;
+    var bgColors={white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],red:[204,0,0],gray:[200,200,200]};
     var bg=bgColors[selBg.value]||[255,255,255];
-
     var cv=document.createElement('canvas');
     cv.width=sz.w; cv.height=sz.h;
     var ctx=cv.getContext('2d');
+    // Vẽ màu nền
     ctx.fillStyle='rgb('+bg[0]+','+bg[1]+','+bg[2]+')';
     ctx.fillRect(0,0,sz.w,sz.h);
-
-    // Scale + crop center
-    var sw=cnvNobg.width, sh=cnvNobg.height;
-    var scale=Math.max(sz.w/sw, sz.h/sh);
-    var dw=Math.round(sw*scale), dh=Math.round(sh*scale);
-    var dx=Math.round((sz.w-dw)/2), dy=Math.round((sz.h-dh)/2);
-    ctx.drawImage(cnvNobg,dx,dy,dw,dh);
-
+    // Vẽ ảnh đã crop
+    ctx.drawImage(cnvCrop,0,0,sz.w,sz.h);
     resURL=cv.toDataURL('image/jpeg',.95);
     resImg.src=resURL;
-    resMeta.textContent=sz.w+' × '+sz.h+' px · '+sz.label+' (xử lý local)';
+    resMeta.textContent=sz.w+' × '+sz.h+' px · '+sz.label+' (local)';
     btnDl1.onclick=function(){dlURL(resURL,'anh-the.jpg');};
     buildSheet(resURL,{width:sz.w,height:sz.h});
     setTab(3);
   }
 
-  // ── Sheet 4×5 ──
+  // ── Tờ in ──
   function buildSheet(src,d){
     var img=new Image();
     img.onload=function(){
@@ -623,26 +836,24 @@
         for(var c=0;c<cols;c++)
           ctx.drawImage(img,mg+c*(cw+gap),mg+r*(ch+gap),cw,ch);
       sheetURL=cv.toDataURL('image/jpeg',.95);
-      sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:250px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
+      sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:260px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
       btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
     };
     img.src=src;
   }
 
-  function dlURL(url,name){
-    var a=document.createElement('a');a.href=url;a.download=name;a.click();
-  }
+  function dlURL(url,name){var a=document.createElement('a');a.href=url;a.download=name;a.click();}
 
   btnRst.addEventListener('click',function(){
-    origBlob=nobgBlob=resURL=sheetURL=origImageData=null;
-    prevOrig.innerHTML='';
-    $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
-    btnToSet.style.display='none';
+    origBlob=croppedBlob=resURL=sheetURL=faceData=null;
+    $('dz-hint').textContent='Kéo thả ảnh hoặc nhấn để chọn';
     setTab(0);
   });
 
+  // ── Init ──
   ping();
   setTab(0);
+  loadModels();
 })();
 </script>
 </body>
