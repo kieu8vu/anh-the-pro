@@ -4,6 +4,8 @@ python-multipart==0.0.17
 Pillow==10.4.0
 numpy==1.26.4
 opencv-python-headless==4.10.0.84
+reportlab==4.2.5
+requests==2.32.3
 rembg==2.0.75
 onnxruntime==1.20.1
 pooch
