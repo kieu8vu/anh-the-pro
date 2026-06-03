@@ -5,24 +5,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Ảnh Thẻ Pro — AI Photo Studio</title>
   <meta name="theme-color" content="#1e293b"/>
-  <link rel="manifest" href="/manifest.json"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root{
       --bg0:#0d1117;--bg1:#161b22;--bg2:#1e2730;--bg3:#262f3d;
       --bd:#30363d;--ac:#3b82f6;--ac2:#60a5fa;--gold:#f59e0b;
       --green:#10b981;--red:#ef4444;
       --t1:#e6edf3;--t2:#8b949e;--t3:#6e7681;
-      --r:12px;--rs:8px;--fn:'Be Vietnam Pro',sans-serif;--fm:'Space Mono',monospace;
+      --r:12px;--rs:8px;--fn:'Be Vietnam Pro',sans-serif;--fm:monospace;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--fn);background:var(--bg0);color:var(--t1);min-height:100vh}
     img{max-width:100%;display:block}
     button{cursor:pointer;font-family:inherit}
 
-    /* HEADER */
     .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px}
     .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -33,10 +31,7 @@
     .badge.err{border-color:var(--red);color:var(--red)}
     .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
 
-    /* LAYOUT */
     .wrap{max-width:960px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
-
-    /* HERO */
     .hero{text-align:center;padding:1.75rem 0 1.25rem}
     .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
     .hero h2 em{font-style:normal;background:linear-gradient(135deg,var(--ac2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -45,18 +40,15 @@
     .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
     .tag.hi{border-color:var(--ac);color:var(--ac2)}
 
-    /* TABS */
     .tabs{display:flex;margin:1.75rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
     .tab{flex:1;padding:11px 6px;text-align:center;font-size:.75rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s}
     .tab:last-child{border-right:none}
     .tab.on{background:var(--ac);color:#fff}
     .tab.done{background:var(--bg2);color:var(--green)}
 
-    /* PANELS */
     .pnl{display:none;margin-top:1.25rem}
     .pnl.on{display:block}
 
-    /* UPLOAD */
     .up-row{display:grid;grid-template-columns:1fr 84px;gap:10px}
     @media(max-width:420px){.up-row{grid-template-columns:1fr}}
     .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2.25rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1)}
@@ -67,7 +59,6 @@
     .cam-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:1rem .5rem;color:var(--t1);font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;transition:.18s}
     .cam-btn:hover{border-color:var(--ac)}
 
-    /* CAMERA */
     #cam-sec{display:none;margin-top:1rem}
     .cam-box{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:400px;margin:0 auto}
     #cam-vid{width:100%;display:block}
@@ -79,11 +70,9 @@
     .cb.big{width:52px;height:52px;background:#fff;color:#000;font-size:1.3rem}
     .cb.sm{width:38px;height:38px;background:rgba(255,255,255,.18);color:#fff;font-size:.95rem}
 
-    /* ORIG PREVIEW */
     #prev-orig{margin-top:1rem}
     #prev-orig img{max-height:180px;border-radius:var(--r);margin:0 auto;border:1px solid var(--bd)}
 
-    /* REMOVE BG PANEL */
     .rb-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
     .rb-lbl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
     .rb-sub{font-size:.75rem;color:var(--t2);margin-bottom:.75rem}
@@ -93,7 +82,6 @@
     .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
     #cnv-nobg{border-radius:var(--rs);border:1px solid var(--bd);display:none;margin:1rem auto 0;max-height:210px;max-width:100%}
 
-    /* SETTINGS */
     .set-box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
     .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
     .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
@@ -112,7 +100,6 @@
     .ck-row{display:flex;align-items:center;gap:7px;padding:6px 0}
     input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
 
-    /* BUTTONS */
     .btn{padding:10px 22px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
     .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 16px rgba(59,130,246,.28)}
     .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
@@ -123,22 +110,32 @@
     .btn.gh:hover{color:var(--t1)}
     .act-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.1rem}
 
-    /* RESULT */
     .res-ttl{font-size:.9rem;font-weight:600;color:var(--green);margin-bottom:.9rem}
     .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
     @media(max-width:520px){.res-grid{grid-template-columns:1fr}}
     .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem;text-align:center}
     .res-card img{max-height:250px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
     .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
-
-    /* PROC PROGRESS */
     #proc-bar{display:none;margin-top:.9rem}
 
+    /* Loading overlay */
+    #lib-loading{position:fixed;inset:0;background:rgba(13,17,23,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
+    #lib-loading.hide{display:none}
+    .lib-spinner{width:48px;height:48px;border:3px solid var(--bg3);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+    .lib-txt{font-size:.875rem;color:var(--t2)}
+
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes spin{to{transform:rotate(360deg)}}
     footer{border-top:1px solid var(--bd);padding:1.1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
   </style>
 </head>
 <body>
+
+<!-- Loading overlay khi tải thư viện AI -->
+<div id="lib-loading">
+  <div class="lib-spinner"></div>
+  <div class="lib-txt">Đang tải thư viện AI xóa nền…</div>
+</div>
 
 <header class="hdr">
   <div class="logo">
@@ -164,15 +161,14 @@
     </div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
-    <div class="tab on"  id="t0">① Chọn ảnh</div>
-    <div class="tab"     id="t1">② Xóa nền AI</div>
-    <div class="tab"     id="t2">③ Tùy chỉnh</div>
-    <div class="tab"     id="t3">④ Kết quả</div>
+    <div class="tab on" id="t0">① Chọn ảnh</div>
+    <div class="tab"    id="t1">② Xóa nền AI</div>
+    <div class="tab"    id="t2">③ Tùy chỉnh</div>
+    <div class="tab"    id="t3">④ Kết quả</div>
   </div>
 
-  <!-- P0: UPLOAD -->
+  <!-- P0 -->
   <div class="pnl on" id="p0">
     <div class="up-row">
       <div class="dz" id="dz">
@@ -186,7 +182,6 @@
       </button>
     </div>
     <input type="file" id="inp-file" accept="image/*" style="display:none">
-
     <div id="cam-sec">
       <div class="cam-box">
         <video id="cam-vid" autoplay playsinline muted></video>
@@ -202,11 +197,10 @@
         </div>
       </div>
     </div>
-
     <div id="prev-orig"></div>
   </div>
 
-  <!-- P1: XÓA NỀN -->
+  <!-- P1 -->
   <div class="pnl" id="p1">
     <div class="rb-box">
       <div class="rb-lbl" id="rb-lbl">🤖 AI đang xóa nền…</div>
@@ -223,7 +217,7 @@
     </div>
   </div>
 
-  <!-- P2: SETTINGS -->
+  <!-- P2 -->
   <div class="pnl" id="p2">
     <div class="set-box">
       <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
@@ -283,7 +277,7 @@
     </div>
   </div>
 
-  <!-- P3: RESULT -->
+  <!-- P3 -->
   <div class="pnl" id="p3">
     <p class="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
     <div class="res-grid">
@@ -303,18 +297,73 @@
   </div>
 </main>
 
-<footer>Ảnh Thẻ Pro · AI WebAssembly xóa nền · Backend FastAPI + Pillow · Render + Netlify</footer>
+<footer>Ảnh Thẻ Pro · AI WebAssembly · FastAPI + Pillow · Render + Netlify</footer>
 
-<!-- CONFIG — đổi URL nếu backend thay đổi -->
 <script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
 
-<!-- Load thư viện AI xóa nền từ unpkg (stable, không cần publicPath) -->
-<script src="https://unpkg.com/@imgly/background-removal@1.4.5/dist/background-removal.js"></script>
+<!-- Tải thư viện AI từ nhiều CDN dự phòng -->
+<script>
+(function(){
+  var CDNS = [
+    'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/background-removal.js',
+    'https://unpkg.com/@imgly/background-removal@1.4.5/dist/background-removal.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/onnxruntime-web/1.14.0/ort.min.js' // fallback marker
+  ];
+
+  function hideLoader(){ document.getElementById('lib-loading').classList.add('hide'); }
+
+  function checkLoaded(){
+    // Thư viện expose qua window.BackgroundRemoval hoặc tên module khác
+    var lib = window.BackgroundRemoval;
+    if(lib && (lib.removeBackground || lib.default)){
+      window.__bgLib = lib.removeBackground || lib.default;
+      hideLoader();
+      console.log('[AnhThe] AI lib loaded OK');
+      return true;
+    }
+    return false;
+  }
+
+  function loadScript(url, cb){
+    var s = document.createElement('script');
+    s.src = url;
+    s.onload = function(){ setTimeout(function(){ cb(checkLoaded()); }, 100); };
+    s.onerror = function(){ cb(false); };
+    document.head.appendChild(s);
+  }
+
+  function tryLoad(idx){
+    if(idx >= 2){ // chỉ thử 2 CDN thật
+      hideLoader();
+      console.warn('[AnhThe] Không tải được thư viện AI từ CDN');
+      document.getElementById('lib-loading').innerHTML =
+        '<div style="color:#ef4444;font-size:.9rem;text-align:center;padding:2rem">' +
+        '⚠️ Không tải được thư viện AI<br><br>' +
+        '<button onclick="location.reload()" style="padding:8px 20px;background:#3b82f6;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem">🔄 Tải lại trang</button>' +
+        '</div>';
+      document.getElementById('lib-loading').classList.remove('hide');
+      return;
+    }
+    console.log('[AnhThe] Thử CDN ' + idx + ': ' + CDNS[idx]);
+    loadScript(CDNS[idx], function(ok){
+      if(ok){ console.log('[AnhThe] CDN ' + idx + ' OK'); }
+      else   { tryLoad(idx + 1); }
+    });
+  }
+
+  // Bắt đầu load sau DOM ready
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ tryLoad(0); });
+  } else {
+    tryLoad(0);
+  }
+})();
+</script>
 
 <script>
 (function(){
-  // ── refs ──
-  function $(i){return document.getElementById(i)}
+  function $(i){ return document.getElementById(i); }
+
   var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
   var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
   var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
@@ -331,7 +380,6 @@
   var origBlob=null, nobgBlob=null, resURL=null, sheetURL=null;
   var camStream=null, facing='user';
 
-  // ── tabs ──
   function setTab(n){
     for(var i=0;i<4;i++){
       var t=$('t'+i), p=$('p'+i);
@@ -340,57 +388,56 @@
     }
   }
 
-  // ── badge ──
-  function setBadge(msg,cls){badge.textContent=msg;badge.className='badge '+cls;}
+  function setBadge(msg,cls){ badge.textContent=msg; badge.className='badge '+cls; }
 
-  // ── ping ──
+  // Ping backend
   function ping(){
     fetch(window.API_BASE+'/health')
-      .then(function(r){return r.json();})
-      .then(function(){setBadge('Server sẵn sàng ✓','ok');})
-      .catch(function(){setBadge('Server offline','err');});
+      .then(function(r){ return r.json(); })
+      .then(function(){ setBadge('Server sẵn sàng ✓','ok'); })
+      .catch(function(){ setBadge('Server offline','err'); });
   }
 
-  // ── upload ──
-  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
-  dz.addEventListener('dragleave',function(){dz.classList.remove('ov');});
+  // Upload
+  dz.addEventListener('dragover',function(e){ e.preventDefault(); dz.classList.add('ov'); });
+  dz.addEventListener('dragleave',function(){ dz.classList.remove('ov'); });
   dz.addEventListener('drop',function(e){
-    e.preventDefault();dz.classList.remove('ov');
+    e.preventDefault(); dz.classList.remove('ov');
     if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
   });
-  dz.addEventListener('click',function(){inpFile.click();});
-  inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.target.files[0]);});
+  dz.addEventListener('click',function(){ inpFile.click(); });
+  inpFile.addEventListener('change',function(e){ if(e.target.files[0]) loadFile(e.target.files[0]); });
 
   function loadFile(f){
     if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
     origBlob=f;
     var url=URL.createObjectURL(f);
     prevOrig.innerHTML='<img src="'+url+'" alt="Ảnh gốc"/>';
-    $('dz-hint').textContent='✓ Đã chọn — đang xử lý…';
-    setTimeout(startRemoveBg,350);
+    $('dz-hint').textContent='✓ Đã chọn ảnh';
+    setTimeout(startRemoveBg, 350);
   }
 
-  // ── camera ──
-  btnCam.addEventListener('click',function(){camSec.style.display='block';startCam();});
-  btnCamX.addEventListener('click',stopCam);
-  btnFlip.addEventListener('click',function(){facing=facing==='user'?'environment':'user';stopCam();startCam();});
+  // Camera
+  btnCam.addEventListener('click',function(){ camSec.style.display='block'; startCam(); });
+  btnCamX.addEventListener('click', stopCam);
+  btnFlip.addEventListener('click',function(){ facing=facing==='user'?'environment':'user'; stopCam(); startCam(); });
   btnCap.addEventListener('click',function(){
-    camCnv.width=camVid.videoWidth;camCnv.height=camVid.videoHeight;
+    camCnv.width=camVid.videoWidth; camCnv.height=camVid.videoHeight;
     camCnv.getContext('2d').drawImage(camVid,0,0);
-    camCnv.toBlob(function(b){stopCam();loadFile(new File([b],'cam.jpg',{type:'image/jpeg'}));},'image/jpeg',.95);
+    camCnv.toBlob(function(b){ stopCam(); loadFile(new File([b],'cam.jpg',{type:'image/jpeg'})); },'image/jpeg',.95);
   });
 
   function startCam(){
     navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1280},height:{ideal:720}},audio:false})
-      .then(function(s){camStream=s;camVid.srcObject=s;})
-      .catch(function(e){alert('Không mở được camera: '+e.message);});
+      .then(function(s){ camStream=s; camVid.srcObject=s; })
+      .catch(function(e){ alert('Không mở được camera: '+e.message); });
   }
   function stopCam(){
-    if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+    if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
     camSec.style.display='none';
   }
 
-  // ── xóa nền AI ──
+  // Xóa nền AI
   function startRemoveBg(){
     setTab(1);
     barFill.style.width='0%';
@@ -400,15 +447,26 @@
     rbActs.style.display='none';
     cnvNobg.style.display='none';
 
-    // Kiểm tra thư viện đã load chưa
-    var lib = window.BackgroundRemoval || (window['@imgly/background-removal']);
-    if(!lib || !lib.removeBackground){
-      rbLbl.textContent='❌ Lỗi: Không tải được thư viện AI';
-      rbSub.textContent='Vui lòng tải lại trang (F5)';
-      rbActs.style.display='flex';
-      return;
+    // Chờ thư viện load xong (tối đa 30 giây)
+    var waited=0;
+    function waitForLib(){
+      var fn = window.__bgLib;
+      if(fn){
+        doRemoveBg(fn);
+      } else if(waited < 30000){
+        waited+=500;
+        barLbl.textContent='Đang tải thư viện AI… ('+Math.round(waited/1000)+'s)';
+        setTimeout(waitForLib, 500);
+      } else {
+        rbLbl.textContent='❌ Không tải được thư viện AI';
+        rbSub.textContent='Kiểm tra kết nối mạng và tải lại trang (F5)';
+        rbActs.style.display='flex';
+      }
     }
+    waitForLib();
+  }
 
+  function doRemoveBg(removeBgFn){
     var cfg={
       progress:function(key,cur,tot){
         var pct=tot>0?Math.round(cur/tot*100):0;
@@ -417,7 +475,7 @@
       }
     };
 
-    lib.removeBackground(origBlob,cfg).then(function(blob){
+    removeBgFn(origBlob, cfg).then(function(blob){
       nobgBlob=blob;
       var url=URL.createObjectURL(blob);
       var img=new Image();
@@ -436,7 +494,7 @@
       };
       img.src=url;
       barFill.style.width='100%';
-      barLbl.textContent='Xóa nền hoàn tất!';
+      barLbl.textContent='✅ Xóa nền hoàn tất!';
       rbLbl.textContent='✅ Xóa nền thành công!';
       rbSub.textContent='Kiểm tra kết quả rồi nhấn Tiếp theo';
       rbActs.style.display='flex';
@@ -449,40 +507,40 @@
     });
   }
 
-  $('btn-to-set').addEventListener('click',function(){setTab(2);});
+  $('btn-to-set').addEventListener('click',function(){ setTab(2); });
   $('btn-redo').addEventListener('click',function(){
-    nobgBlob=null;origBlob=null;prevOrig.innerHTML='';
+    nobgBlob=null; origBlob=null; prevOrig.innerHTML='';
     $('dz-hint').textContent='Kéo thả ảnh vào đây hoặc nhấn để chọn';
     setTab(0);
   });
-  btnBack.addEventListener('click',function(){setTab(1);});
+  btnBack.addEventListener('click',function(){ setTab(1); });
 
-  // ── swatches ──
+  // Swatches
   document.querySelectorAll('.sw').forEach(function(sw){
     sw.addEventListener('click',function(){
-      document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
+      document.querySelectorAll('.sw').forEach(function(s){ s.classList.remove('on'); });
       sw.classList.add('on');
       selBg.value=sw.dataset.c;
     });
   });
 
-  // ── process ──
+  // Process
   btnProc.addEventListener('click',function(){
-    if(!nobgBlob){alert('Chưa có ảnh xóa nền!');return;}
+    if(!nobgBlob){ alert('Chưa có ảnh xóa nền!'); return; }
     btnProc.disabled=true;
     procBar.style.display='block';
     procFill.style.width='30%';
 
     var form=new FormData();
-    form.append('file',nobgBlob,'nobg.png');
-    form.append('size_key',selSize.value);
-    form.append('bg_color',selBg.value);
-    form.append('enhance',ckEnh.checked?'true':'false');
-    form.append('output_fmt',selFmt.value);
+    form.append('file', nobgBlob, 'nobg.png');
+    form.append('size_key', selSize.value);
+    form.append('bg_color', selBg.value);
+    form.append('enhance', ckEnh.checked?'true':'false');
+    form.append('output_fmt', selFmt.value);
 
     procFill.style.width='60%';
     fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
-      .then(function(r){return r.json();})
+      .then(function(r){ return r.json(); })
       .then(function(d){
         procFill.style.width='100%';
         if(!d.success) throw new Error(d.detail||'Lỗi server');
@@ -490,11 +548,11 @@
         resURL='data:'+mime+';base64,'+d.image_b64;
         resImg.src=resURL;
         resMeta.textContent=d.width+' × '+d.height+' px · '+d.size_label;
-        btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
+        btnDl1.onclick=function(){ dlURL(resURL,'anh-the.'+d.format); };
         buildSheet(resURL,d);
         setTab(3);
       })
-      .catch(function(e){alert('Lỗi xử lý: '+e.message);})
+      .catch(function(e){ alert('Lỗi xử lý: '+e.message); })
       .finally(function(){
         btnProc.disabled=false;
         procBar.style.display='none';
@@ -502,7 +560,6 @@
       });
   });
 
-  // ── sheet ──
   function buildSheet(src,d){
     var img=new Image();
     img.onload=function(){
@@ -512,22 +569,19 @@
       cv.width=mg*2+cols*cw+(cols-1)*gap;
       cv.height=mg*2+rows*ch+(rows-1)*gap;
       var ctx=cv.getContext('2d');
-      ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
       for(var r=0;r<rows;r++)
         for(var c=0;c<cols;c++)
           ctx.drawImage(img,mg+c*(cw+gap),mg+r*(ch+gap),cw,ch);
       sheetURL=cv.toDataURL('image/jpeg',.95);
-      sheetCard.innerHTML='<img src="'+sheetURL+'" alt="Tờ in" style="max-height:250px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
-      btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
+      sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:250px;border-radius:6px;margin:0 auto .5rem;"/><p class="res-meta">Tờ in 4×5 ảnh</p>';
+      btnDl5.onclick=function(){ dlURL(sheetURL,'to-in-anh-the.jpg'); };
     };
     img.src=src;
   }
 
-  function dlURL(url,name){
-    var a=document.createElement('a');a.href=url;a.download=name;a.click();
-  }
+  function dlURL(url,name){ var a=document.createElement('a'); a.href=url; a.download=name; a.click(); }
 
-  // ── reset ──
   btnRst.addEventListener('click',function(){
     origBlob=nobgBlob=resURL=sheetURL=null;
     prevOrig.innerHTML='';
@@ -535,7 +589,6 @@
     setTab(0);
   });
 
-  // ── init ──
   ping();
   setTab(0);
 })();
