@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Ảnh Thẻ Pro — AI Tự Động</title>
+  <title>Ảnh Thẻ Pro — Chuẩn Quốc Tế ICAO</title>
   <meta name="theme-color" content="#1e293b"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -18,139 +18,137 @@
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--fn);background:var(--bg0);color:var(--t1);min-height:100vh}
-    img{max-width:100%;display:block}
-    button{cursor:pointer;font-family:inherit}
+    img{max-width:100%;display:block}button{cursor:pointer;font-family:inherit}
 
-    .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+    .hdr{background:#0f172a;border-bottom:1px solid var(--bd);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
     .logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-    .logo-ico{width:38px;height:38px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-    .logo h1{font-size:1rem;font-weight:700}
-    .logo p{font-size:.65rem;color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
-    .badges{display:flex;gap:8px;flex-wrap:wrap}
-    .badge{font-size:.7rem;padding:3px 10px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);white-space:nowrap}
+    .logo-ico{width:36px;height:36px;background:linear-gradient(135deg,var(--ac),var(--gold));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+    .logo h1{font-size:.95rem;font-weight:700}
+    .logo p{font-size:.62rem;color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
+    .badges{display:flex;gap:7px;flex-wrap:wrap}
+    .badge{font-size:.68rem;padding:3px 9px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);font-family:var(--fm);white-space:nowrap}
     .badge.ok{border-color:var(--green);color:var(--green)}
     .badge.err{border-color:var(--red);color:var(--red)}
     .badge.spin{border-color:var(--ac2);color:var(--ac2);animation:blink 1.2s infinite}
 
-    .wrap{max-width:1000px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
-
-    .hero{text-align:center;padding:1.5rem 0 1rem}
-    .hero h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;letter-spacing:-.03em}
+    .wrap{max-width:1040px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+    .hero{text-align:center;padding:1.25rem 0 .875rem}
+    .hero h2{font-size:clamp(1.3rem,3.5vw,1.85rem);font-weight:700;letter-spacing:-.03em}
     .hero h2 em{font-style:normal;background:linear-gradient(135deg,var(--ac2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero p{color:var(--t2);margin-top:.5rem;font-size:.88rem}
-    .tags{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:.9rem}
-    .tag{font-size:.7rem;padding:3px 11px;border-radius:20px;border:1px solid var(--bd);color:var(--t2);background:var(--bg1)}
-    .tag.hi{border-color:var(--ac);color:var(--ac2)}
-    .tag.pu{border-color:var(--purple);color:#a78bfa}
+    .hero p{color:var(--t2);margin-top:.4rem;font-size:.85rem}
 
-    .steps{display:flex;margin:1.5rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
+    .steps{display:flex;margin:1.25rem 0 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
     .step{flex:1;padding:10px 4px;text-align:center;font-size:.72rem;font-weight:500;color:var(--t2);background:var(--bg1);border-right:1px solid var(--bd);transition:.15s;line-height:1.4}
     .step:last-child{border-right:none}
     .step.on{background:var(--ac);color:#fff}
     .step.done{background:var(--bg2);color:var(--green)}
 
-    .pnl{display:none;margin-top:1.25rem}
-    .pnl.on{display:block}
+    .pnl{display:none;margin-top:1.1rem}.pnl.on{display:block}
 
     /* UPLOAD */
-    .up-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:500px){.up-grid{grid-template-columns:1fr}}
-    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1);min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
+    .up-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:480px){.up-grid{grid-template-columns:1fr}}
+    .dz{border:2px dashed var(--bd);border-radius:var(--r);padding:1.75rem 1.25rem;text-align:center;cursor:pointer;transition:.18s;background:var(--bg1);min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem}
     .dz:hover,.dz.ov{border-color:var(--ac);background:rgba(59,130,246,.05)}
-    .dz-ico{font-size:2rem}
-    .dz-hint{color:var(--t2);font-size:.83rem}
-    .dz-sub{font-size:.67rem;color:var(--t3);font-family:var(--fm)}
-    .cam-btn{background:var(--bg2);border:2px dashed var(--bd);border-radius:var(--r);padding:2rem 1rem;color:var(--t1);font-size:.83rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:160px;cursor:pointer;transition:.18s}
+    .dz-ico{font-size:1.9rem}
+    .dz-hint{color:var(--t2);font-size:.82rem}
+    .dz-sub{font-size:.66rem;color:var(--t3);font-family:var(--fm)}
+    .cam-btn{background:var(--bg2);border:2px dashed var(--bd);border-radius:var(--r);padding:1.5rem 1rem;color:var(--t1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:100%;min-height:150px;cursor:pointer;transition:.18s}
     .cam-btn:hover{border-color:var(--ac)}
 
-    /* CAMERA */
-    #cam-sec{display:none;margin-top:1rem}
-    .cam-wrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:420px;margin:0 auto}
+    #cam-sec{display:none;margin-top:.875rem}
+    .cam-wrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;max-width:400px;margin:0 auto}
     #cam-vid{width:100%;display:block}
     .cam-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-    .cam-oval{width:150px;height:195px;border:3px solid rgba(59,130,246,.85);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
-    .cam-tip{margin-top:.65rem;font-size:.65rem;color:rgba(255,255,255,.9);background:rgba(59,130,246,.6);padding:3px 10px;border-radius:20px}
-    .cam-ctrls{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:12px}
+    .cam-oval{width:145px;height:185px;border:3px solid rgba(59,130,246,.85);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
+    .cam-tip{margin-top:.6rem;font-size:.64rem;color:rgba(255,255,255,.9);background:rgba(59,130,246,.6);padding:3px 9px;border-radius:20px}
+    .cam-ctrls{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:10px}
     .cb{border:none;border-radius:50%;display:flex;align-items:center;justify-content:center}
-    .cb.big{width:56px;height:56px;background:#fff;color:#000;font-size:1.4rem}
-    .cb.sm{width:40px;height:40px;background:rgba(255,255,255,.18);color:#fff;font-size:1rem;backdrop-filter:blur(4px)}
+    .cb.big{width:52px;height:52px;background:#fff;color:#000;font-size:1.3rem}
+    .cb.sm{width:38px;height:38px;background:rgba(255,255,255,.18);color:#fff;font-size:.9rem;backdrop-filter:blur(4px)}
 
-    /* BOX CHUNG */
-    .box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.25rem}
-    .box-ttl{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
-    .box-sub{font-size:.75rem;color:var(--t2);margin-bottom:.875rem}
+    .box{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:1.1rem}
+    .box-ttl{font-size:.875rem;font-weight:600;margin-bottom:.2rem}
+    .box-sub{font-size:.73rem;color:var(--t2);margin-bottom:.75rem}
 
-    /* PROGRESS */
-    .bar-wrap{margin-bottom:.75rem}
-    .bar-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
-    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--ac),var(--gold));border-radius:3px;transition:width .3s}
-    .bar-lbl{font-size:.68rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
+    .bar-wrap{margin-bottom:.65rem}
+    .bar-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--ac),var(--gold));border-radius:2px;transition:width .3s}
+    .bar-lbl{font-size:.67rem;color:var(--t2);margin-top:3px;font-family:var(--fm)}
 
-    /* DETECT LAYOUT */
-    .detect-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-    @media(max-width:580px){.detect-grid{grid-template-columns:1fr}}
-
-    .cnv-box{position:relative;border-radius:var(--rs);overflow:hidden;background:#111;border:1px solid var(--bd)}
+    .detect-grid{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-top:.875rem}
+    @media(max-width:560px){.detect-grid{grid-template-columns:1fr}}
+    .cnv-box{border-radius:var(--rs);overflow:hidden;background:#000;border:1px solid var(--bd)}
     #cnv-detect{width:100%;display:block}
-
-    .stats-box{background:var(--bg2);border-radius:var(--rs);padding:.875rem;display:flex;flex-direction:column;gap:0}
-    .stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:.78rem}
+    .stats{background:var(--bg2);border-radius:var(--rs);padding:.75rem;display:flex;flex-direction:column}
+    .stat{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd);font-size:.75rem}
     .stat:last-child{border-bottom:none}
-    .stat-k{color:var(--t2);font-size:.72rem}
-    .stat-v{font-weight:600;font-family:var(--fm);font-size:.78rem}
-    .stat-v.ok{color:var(--green)}
-    .stat-v.warn{color:var(--gold)}
-    .stat-v.err{color:var(--red)}
+    .sk{color:var(--t2);font-size:.7rem}
+    .sv{font-weight:600;font-family:var(--fm);font-size:.75rem}
+    .sv.ok{color:var(--green)}.sv.warn{color:var(--gold)}.sv.err{color:var(--red)}
 
-    /* PREVIEW CROP */
-    .crop-preview{margin-top:1rem;text-align:center}
-    .crop-label{font-size:.72rem;color:var(--t2);margin-top:5px;font-family:var(--fm)}
-    #cnv-crop{border-radius:var(--rs);border:2px solid var(--bd);display:block;margin:0 auto;max-height:240px;max-width:100%}
-    .crop-guide{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
-    .guide-pill{font-size:.68rem;padding:2px 9px;border-radius:20px;background:var(--bg2);border:1px solid var(--bd);color:var(--t3)}
+    .crop-preview{margin-top:.875rem;text-align:center;display:none}
+    #cnv-crop{border-radius:var(--rs);border:2px solid var(--bd);display:block;margin:0 auto;max-height:220px;max-width:100%}
+    .crop-lbl{font-size:.7rem;color:var(--t2);margin-top:4px;font-family:var(--fm)}
+
+    /* COUNTRY SELECTOR */
+    .country-section{margin-bottom:1rem}
+    .country-section h3{font-size:.75rem;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+    .region-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.75rem}
+    .rtab{padding:4px 12px;border-radius:20px;border:1px solid var(--bd);font-size:.72rem;cursor:pointer;background:var(--bg2);color:var(--t2);transition:.15s}
+    .rtab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+    .country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+    .ccard{background:var(--bg2);border:1.5px solid var(--bd);border-radius:var(--rs);padding:8px 10px;cursor:pointer;transition:.18s}
+    .ccard:hover{border-color:var(--ac);background:var(--bg3)}
+    .ccard.on{border-color:var(--ac);background:rgba(59,130,246,.1)}
+    .ccard-flag{font-size:1.25rem;margin-bottom:3px}
+    .ccard-name{font-size:.75rem;font-weight:600;color:var(--t1)}
+    .ccard-size{font-size:.65rem;color:var(--t2);font-family:var(--fm)}
+    .ccard-bg{font-size:.62rem;color:var(--t3);margin-top:2px}
+
+    /* SPEC BOX */
+    .spec-box{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:.875rem;font-size:.78rem}
+    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+    .spec-row{display:flex;gap:6px;padding:3px 0;font-size:.74rem}
+    .spec-k{color:var(--t2);flex-shrink:0;min-width:90px}
+    .spec-v{color:var(--t1);font-weight:500}
+    .spec-note{margin-top:6px;padding-top:6px;border-top:1px solid rgba(59,130,246,.2);font-size:.71rem;color:var(--ac2);line-height:1.5}
 
     /* SETTINGS */
-    .set-ttl{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:1rem}
-    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.9rem}
-    .fg{display:flex;flex-direction:column;gap:5px}
-    .fl{font-size:.75rem;color:var(--t2);font-weight:500}
-    select{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);padding:7px 10px;font-size:.83rem;cursor:pointer;width:100%}
+    .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:.875rem}
+    .fg{display:flex;flex-direction:column;gap:4px}
+    .fl{font-size:.73rem;color:var(--t2);font-weight:500}
+    select{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);color:var(--t1);padding:7px 10px;font-size:.82rem;cursor:pointer;width:100%}
     .sw-row{display:flex;gap:6px;flex-wrap:wrap}
-    .sw{width:28px;height:28px;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:.15s;flex-shrink:0}
+    .sw{width:26px;height:26px;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:.15s;flex-shrink:0}
     .sw:hover{transform:scale(1.15)}
     .sw.on{border-color:var(--ac2);box-shadow:0 0 0 2px var(--ac)}
-    .sw[data-c="white"]{background:#fff}
-    .sw[data-c="blue"]{background:#4372c4}
-    .sw[data-c="light_blue"]{background:#add8e6}
-    .sw[data-c="red"]{background:#cc0000}
-    .sw[data-c="gray"]{background:#c8c8c8}
-    .ck-row{display:flex;align-items:center;gap:7px;padding:5px 0}
-    input[type=checkbox]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer}
+    .ck-row{display:flex;align-items:center;gap:6px;padding:4px 0}
+    input[type=checkbox]{width:14px;height:14px;accent-color:var(--ac);cursor:pointer}
 
-    /* BTN */
-    .btn{padding:10px 20px;border-radius:var(--rs);font-size:.85rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:6px}
-    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 14px rgba(59,130,246,.3)}
+    /* BG preview */
+    .bg-preview{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--bd);flex-shrink:0}
+
+    .btn{padding:9px 18px;border-radius:var(--rs);font-size:.83rem;font-weight:600;border:1px solid transparent;transition:.18s;display:inline-flex;align-items:center;gap:5px}
+    .btn.pri{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 14px rgba(59,130,246,.25)}
     .btn.pri:hover:not(:disabled){background:#2563eb;transform:translateY(-1px)}
-    .btn.pri:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn.pri:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
     .btn.sec{background:var(--bg2);border-color:var(--bd);color:var(--t1)}
     .btn.sec:hover{background:var(--bg3)}
     .btn.gh{background:transparent;border-color:transparent;color:var(--t2)}
     .btn.gh:hover{color:var(--t1)}
-    .act-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:1.1rem}
+    .act-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:.875rem}
 
-    /* RESULT */
-    .res-ttl{font-size:.9rem;font-weight:600;color:var(--green);margin-bottom:.9rem}
-    .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
-    @media(max-width:520px){.res-grid{grid-template-columns:1fr}}
-    .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem;text-align:center}
-    .res-card img{max-height:260px;border-radius:6px;margin:0 auto .5rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-    .res-meta{font-size:.68rem;color:var(--t2);font-family:var(--fm)}
-
-    #proc-bar{display:none;margin-top:.9rem}
-    .info-box{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.25);border-radius:var(--rs);padding:10px 14px;font-size:.78rem;color:#a78bfa;margin-bottom:1rem;line-height:1.6}
+    .res-ttl{font-size:.875rem;font-weight:600;color:var(--green);margin-bottom:.875rem}
+    .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:500px){.res-grid{grid-template-columns:1fr}}
+    .res-card{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:.875rem;text-align:center}
+    .res-card img{max-height:250px;border-radius:5px;margin:0 auto .5rem;box-shadow:0 4px 18px rgba(0,0,0,.4)}
+    .res-meta{font-size:.67rem;color:var(--t2);font-family:var(--fm)}
+    #proc-bar{display:none;margin-top:.75rem}
 
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-    footer{border-top:1px solid var(--bd);padding:1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--t3)}
+    footer{border-top:1px solid var(--bd);padding:.875rem 1.5rem;text-align:center;font-size:.67rem;color:var(--t3)}
   </style>
 </head>
 <body>
@@ -160,7 +158,7 @@
     <div class="logo-ico">📸</div>
     <div>
       <h1>Ảnh Thẻ Pro</h1>
-      <p>AI tự động căn chỉnh khuôn mặt</p>
+      <p>Chuẩn Quốc Tế ICAO 9303</p>
     </div>
   </div>
   <div class="badges">
@@ -171,21 +169,14 @@
 
 <main class="wrap">
   <div class="hero">
-    <h2>Ảnh Thẻ <em>Chuẩn Quy Định</em> — AI Tự Động</h2>
-    <p>Upload ảnh bất kỳ → AI nhận diện khuôn mặt → Căn chỉnh đúng vị trí → Tạo ảnh thẻ chuẩn</p>
-    <div class="tags">
-      <span class="tag pu">🤖 AI nhận diện 68 điểm mốc</span>
-      <span class="tag pu">📐 Căn khuôn mặt đúng tỷ lệ chuẩn</span>
-      <span class="tag hi">🎨 Thêm màu nền tự động</span>
-      <span class="tag">📋 3×4, 4×6, Hộ chiếu, CCCD…</span>
-      <span class="tag">🖨 Tờ in 4×5</span>
-    </div>
+    <h2>Ảnh Thẻ <em>Chuẩn Quốc Tế</em> — AI Tự Động</h2>
+    <p>Chuẩn ICAO 9303 · 30+ quốc gia · Nhận diện khuôn mặt · Căn chỉnh đúng vị trí</p>
   </div>
 
   <div class="steps">
     <div class="step on" id="s0">① Chọn ảnh</div>
-    <div class="step"    id="s1">② Nhận diện<br>& Căn chỉnh</div>
-    <div class="step"    id="s2">③ Tùy chỉnh</div>
+    <div class="step"    id="s1">② Nhận diện AI</div>
+    <div class="step"    id="s2">③ Chọn quốc gia<br>& Tùy chỉnh</div>
     <div class="step"    id="s3">④ Kết quả</div>
   </div>
 
@@ -198,9 +189,9 @@
         <p class="dz-sub">JPG · PNG · WEBP · Ảnh chân dung rõ mặt</p>
       </div>
       <button class="cam-btn" id="btn-cam">
-        <span style="font-size:1.8rem">📷</span>
-        <span style="font-weight:600">Chụp Camera</span>
-        <span style="font-size:.72rem;color:var(--t2)">AI tự căn khuôn mặt</span>
+        <span style="font-size:1.7rem">📷</span>
+        <span style="font-weight:600;font-size:.85rem">Chụp Camera</span>
+        <span style="font-size:.7rem;color:var(--t2)">AI tự căn khuôn mặt</span>
       </button>
     </div>
     <input type="file" id="inp-file" accept="image/*" style="display:none">
@@ -208,10 +199,7 @@
       <div class="cam-wrap">
         <video id="cam-vid" autoplay playsinline muted></video>
         <canvas id="cam-cnv" style="display:none"></canvas>
-        <div class="cam-ov">
-          <div class="cam-oval"></div>
-          <p class="cam-tip">Khuôn mặt vào vòng tròn · Nhìn thẳng · Đủ sáng</p>
-        </div>
+        <div class="cam-ov"><div class="cam-oval"></div><p class="cam-tip">Khuôn mặt vào vòng tròn · Nhìn thẳng · Đủ sáng</p></div>
         <div class="cam-ctrls">
           <button class="cb sm" id="btn-flip">↺</button>
           <button class="cb big" id="btn-cap">📷</button>
@@ -221,71 +209,64 @@
     </div>
   </div>
 
-  <!-- P1: NHẬN DIỆN & CĂN CHỈNH -->
+  <!-- P1: NHẬN DIỆN -->
   <div class="pnl" id="p1">
     <div class="box">
-      <div class="info-box" id="info-box">
-        🤖 <strong>AI đang phân tích:</strong> Phát hiện khuôn mặt → Xác định 68 điểm mốc → Đo góc nghiêng → Tự động xoay thẳng → Căn đúng tỷ lệ chuẩn ảnh thẻ
-      </div>
       <div class="box-ttl" id="face-ttl">🔍 Đang nhận diện khuôn mặt…</div>
-      <div class="box-sub" id="face-sub">Vui lòng chờ AI phân tích</div>
+      <div class="box-sub" id="face-sub">AI đang phân tích — vui lòng chờ</div>
       <div class="bar-wrap">
         <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
-        <div class="bar-lbl"  id="bar-lbl">Khởi tạo…</div>
+        <div class="bar-lbl" id="bar-lbl">Khởi tạo…</div>
       </div>
-
-      <!-- Kết quả nhận diện -->
       <div class="detect-grid" id="detect-grid" style="display:none">
-        <div class="cnv-box">
-          <canvas id="cnv-detect"></canvas>
-        </div>
-        <div class="stats-box">
-          <div class="stat"><span class="stat-k">Phát hiện khuôn mặt</span><span class="stat-v" id="fi-found">—</span></div>
-          <div class="stat"><span class="stat-k">Độ tin cậy AI</span><span class="stat-v" id="fi-score">—</span></div>
-          <div class="stat"><span class="stat-k">Kích thước khuôn mặt</span><span class="stat-v" id="fi-size">—</span></div>
-          <div class="stat"><span class="stat-k">Góc nghiêng khuôn mặt</span><span class="stat-v" id="fi-angle">—</span></div>
-          <div class="stat"><span class="stat-k">Tỷ lệ mặt/ảnh</span><span class="stat-v" id="fi-ratio">—</span></div>
-          <div class="stat"><span class="stat-k">Điểm mốc landmark</span><span class="stat-v" id="fi-lm">—</span></div>
-          <div class="stat"><span class="stat-k">Căn chỉnh tự động</span><span class="stat-v" id="fi-align">—</span></div>
-          <div class="stat"><span class="stat-k">Vị trí mắt trong ảnh thẻ</span><span class="stat-v" id="fi-eyepos">—</span></div>
+        <div class="cnv-box"><canvas id="cnv-detect"></canvas></div>
+        <div class="stats">
+          <div class="stat"><span class="sk">Phát hiện khuôn mặt</span><span class="sv" id="fi-found">—</span></div>
+          <div class="stat"><span class="sk">Độ tin cậy AI</span><span class="sv" id="fi-score">—</span></div>
+          <div class="stat"><span class="sk">Góc nghiêng mặt</span><span class="sv" id="fi-angle">—</span></div>
+          <div class="stat"><span class="sk">IED (khoảng cách mắt)</span><span class="sv" id="fi-ied">—</span></div>
+          <div class="stat"><span class="sk">Chiều cao đầu (ước lượng)</span><span class="sv" id="fi-headh">—</span></div>
+          <div class="stat"><span class="sk">Căn chỉnh tự động</span><span class="sv" id="fi-align">—</span></div>
         </div>
       </div>
-
-      <!-- Preview ảnh đã căn chỉnh -->
-      <div class="crop-preview" id="crop-preview" style="display:none">
+      <div class="crop-preview" id="crop-preview">
         <canvas id="cnv-crop"></canvas>
-        <p class="crop-label" id="crop-lbl">Đang tạo ảnh thẻ…</p>
-        <div class="crop-guide">
-          <span class="guide-pill">📐 Khuôn mặt căn giữa</span>
-          <span class="guide-pill">👁 Mắt đúng vị trí chuẩn</span>
-          <span class="guide-pill">↕ Tỷ lệ đầu/ảnh đúng tiêu chuẩn</span>
-        </div>
+        <p class="crop-lbl" id="crop-lbl">—</p>
       </div>
-
       <div class="act-row" id="face-acts" style="display:none">
-        <button class="btn pri" id="btn-to-set">Tiếp theo — Chọn kích thước →</button>
+        <button class="btn pri" id="btn-to-set">Tiếp → Chọn quốc gia</button>
         <button class="btn gh"  id="btn-retry">↩ Chọn ảnh khác</button>
       </div>
     </div>
   </div>
 
-  <!-- P2: SETTINGS -->
+  <!-- P2: CHỌN QUỐC GIA & TÙY CHỈNH -->
   <div class="pnl" id="p2">
     <div class="box">
-      <p class="set-ttl">⚙ Tùy chỉnh ảnh thẻ</p>
-      <div class="set-grid">
-        <div class="fg">
-          <label class="fl">📐 Loại ảnh thẻ</label>
-          <select id="sel-size">
-            <option value="the_3x4">Ảnh thẻ 3×4 cm (phổ thông)</option>
-            <option value="the_4x6">Ảnh thẻ 4×6 cm</option>
-            <option value="the_2x3">Ảnh thẻ 2×3 cm</option>
-            <option value="chung_minh">CCCD / CMND (22×28mm)</option>
-            <option value="passport">Hộ chiếu (35×45mm)</option>
-            <option value="visa_us">Visa Mỹ (2×2 inch)</option>
-            <option value="visa_schengen">Visa Schengen (35×45mm)</option>
-          </select>
+
+      <!-- CHỌN QUỐC GIA -->
+      <div class="country-section">
+        <h3>🌍 Chọn quốc gia / loại ảnh thẻ</h3>
+        <div class="region-tabs" id="region-tabs">
+          <button class="rtab on" data-r="vn">🇻🇳 Việt Nam</button>
+          <button class="rtab" data-r="asia">🌏 Châu Á</button>
+          <button class="rtab" data-r="eu">🇪🇺 Châu Âu</button>
+          <button class="rtab" data-r="amer">🌎 Châu Mỹ</button>
+          <button class="rtab" data-r="aus">🌏 Úc/NZ</button>
+          <button class="rtab" data-r="icao">📋 ICAO</button>
         </div>
+        <div class="country-grid" id="country-grid"></div>
+      </div>
+
+      <!-- SPEC HIỆN TẠI -->
+      <div class="spec-box" id="spec-box">
+        <div style="font-weight:600;margin-bottom:6px;font-size:.82rem" id="spec-title">—</div>
+        <div class="spec-grid" id="spec-grid"></div>
+        <div class="spec-note" id="spec-note"></div>
+      </div>
+
+      <!-- CÀI ĐẶT -->
+      <div class="set-grid">
         <div class="fg">
           <label class="fl">💾 Định dạng xuất</label>
           <select id="sel-fmt">
@@ -295,33 +276,26 @@
         </div>
         <div class="fg">
           <label class="fl">🎨 Màu nền</label>
-          <div class="sw-row">
-            <div class="sw on" data-c="white"      title="Trắng"></div>
-            <div class="sw"    data-c="blue"       title="Xanh dương"></div>
-            <div class="sw"    data-c="light_blue" title="Xanh nhạt"></div>
-            <div class="sw"    data-c="red"        title="Đỏ"></div>
-            <div class="sw"    data-c="gray"       title="Xám"></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="bg-preview" id="bg-preview"></div>
+            <select id="sel-bg" style="flex:1">
+              <option value="white">Trắng #FFFFFF</option>
+              <option value="light_grey">Xám nhạt #F0F0F0</option>
+              <option value="light_blue">Xanh nhạt #D6E4F0</option>
+              <option value="blue">Xanh dương #4372C4</option>
+              <option value="red">Đỏ #CC0000</option>
+              <option value="custom">Tuỳ chỉnh…</option>
+            </select>
           </div>
-          <select id="sel-bg" style="display:none">
-            <option value="white">Trắng</option>
-            <option value="blue">Xanh dương</option>
-            <option value="light_blue">Xanh nhạt</option>
-            <option value="red">Đỏ</option>
-            <option value="gray">Xám</option>
-          </select>
+          <input type="color" id="bg-custom" value="#ffffff" style="display:none;width:100%;height:32px;border-radius:var(--rs);border:1px solid var(--bd);cursor:pointer;background:var(--bg2)"/>
         </div>
         <div class="fg">
-          <label class="fl">✨ Tùy chọn nâng cao</label>
-          <div class="ck-row">
-            <input type="checkbox" id="ck-enh" checked>
-            <label for="ck-enh" style="font-size:.83rem;cursor:pointer">Tăng cường chất lượng</label>
-          </div>
-          <div class="ck-row">
-            <input type="checkbox" id="ck-align" checked>
-            <label for="ck-align" style="font-size:.83rem;cursor:pointer">Tự động xoay thẳng mặt</label>
-          </div>
+          <label class="fl">✨ Tùy chọn</label>
+          <div class="ck-row"><input type="checkbox" id="ck-enh" checked><label for="ck-enh" style="font-size:.81rem;cursor:pointer">Tăng cường chất lượng</label></div>
+          <div class="ck-row"><input type="checkbox" id="ck-align" checked><label for="ck-align" style="font-size:.81rem;cursor:pointer">Tự động xoay thẳng mặt</label></div>
         </div>
       </div>
+
       <div class="act-row">
         <button class="btn pri" id="btn-proc">🚀 Tạo ảnh thẻ</button>
         <button class="btn gh"  id="btn-back">← Xem lại nhận diện</button>
@@ -333,73 +307,254 @@
     </div>
   </div>
 
-  <!-- P3: RESULT -->
+  <!-- P3: KẾT QUẢ -->
   <div class="pnl" id="p3">
     <p class="res-ttl" id="res-ttl">✅ Ảnh thẻ đã sẵn sàng!</p>
     <div class="res-grid">
-      <div class="res-card">
-        <img id="res-img" src="" alt="Ảnh thẻ">
-        <p class="res-meta" id="res-meta"></p>
-      </div>
-      <div class="res-card" id="sheet-card">
-        <p class="res-meta">Đang tạo tờ in…</p>
-      </div>
+      <div class="res-card"><img id="res-img" src="" alt="Ảnh thẻ"><p class="res-meta" id="res-meta"></p></div>
+      <div class="res-card" id="sheet-card"><p class="res-meta">Đang tạo tờ in…</p></div>
     </div>
     <div class="act-row">
       <button class="btn pri" id="btn-dl1">⬇ Tải ảnh đơn</button>
-      <button class="btn sec" id="btn-dl5">🖨 Tải tờ in 4×5</button>
+      <button class="btn sec" id="btn-dl5">🖨 Tải tờ in (nhiều ảnh)</button>
       <button class="btn gh"  id="btn-rst">↩ Làm lại từ đầu</button>
     </div>
   </div>
 </main>
 
-<footer>Ảnh Thẻ Pro · face-api.js AI · FastAPI + Pillow · Render + Netlify</footer>
+<footer>Ảnh Thẻ Pro · Chuẩn ICAO 9303 · face-api.js · FastAPI + Pillow · Render + Netlify</footer>
 
 <script>window.API_BASE = "https://anh-the-pro.onrender.com";</script>
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-
 <script>
 (function(){
 'use strict';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATABASE TIÊU CHUẨN ẢNH THẺ THEO QUỐC GIA (Nguồn: ICAO 9303, gov sites)
+// ═══════════════════════════════════════════════════════════════════════════
+// headRatio: tỷ lệ chiều cao ĐẦU (đỉnh→cằm) / chiều cao ảnh thẻ
+// eyeLine: vị trí đường mắt từ TRÊN xuống (% chiều cao ảnh)
+// Cơ sở ICAO: mắt nằm trong dải 56-69% từ DƯỚI = 31-44% từ trên
+// ═══════════════════════════════════════════════════════════════════════════
+var COUNTRIES = {
+  // ── VIỆT NAM ──────────────────────────────────────────────────────────
+  vn_cccd:    {flag:'🇻🇳',name:'CCCD/CMND',region:'vn',
+    w_mm:22,h_mm:28, w_px:260,h_px:330,
+    headRatio:0.72, eyeLine:0.42,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, minKB:null, maxKB:null,
+    note:'Nền trắng. Ảnh chụp trong vòng 6 tháng. Nhìn thẳng, miệng khép. Không đội mũ (trừ tôn giáo). Không đeo kính trắng.'},
+  vn_3x4:     {flag:'🇻🇳',name:'Ảnh 3×4 cm',region:'vn',
+    w_mm:30,h_mm:40, w_px:354,h_px:472,
+    headRatio:0.72, eyeLine:0.42,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Tiêu chuẩn phổ thông Việt Nam. Nền trắng hoặc xám nhạt.'},
+  vn_4x6:     {flag:'🇻🇳',name:'Ảnh 4×6 cm',region:'vn',
+    w_mm:40,h_mm:60, w_px:472,h_px:709,
+    headRatio:0.72, eyeLine:0.42,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Dùng cho hộ chiếu Việt Nam, visa. Nền trắng.'},
+  vn_passport:{flag:'🇻🇳',name:'Hộ chiếu VN',region:'vn',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Hộ chiếu Việt Nam chuẩn ICAO. Nền trắng đồng nhất. Mặt chiếm 70-80% chiều cao.'},
+
+  // ── HOA KỲ ────────────────────────────────────────────────────────────
+  us_passport:{flag:'🇺🇸',name:'US Passport',region:'amer',
+    w_mm:51,h_mm:51, w_px:600,h_px:600,
+    headRatio:0.65, eyeLine:0.40,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, minKB:null, maxKB:240,
+    note:'Đầu từ cằm đến đỉnh: 25–35mm (50–69% chiều cao). Nền trắng thuần. Không kính (từ 2016). File JPEG dưới 240KB.'},
+  us_visa:    {flag:'🇺🇸',name:'US Visa',region:'amer',
+    w_mm:51,h_mm:51, w_px:600,h_px:600,
+    headRatio:0.65, eyeLine:0.40,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, maxKB:240,
+    note:'Giống US Passport. 51×51mm, nền trắng, đầu 50-69%.'},
+
+  // ── ANH / UK ──────────────────────────────────────────────────────────
+  uk_passport:{flag:'🇬🇧',name:'UK Passport',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'light_grey', bgHex:'#F0F0F0',
+    dpi:300, minKB:null, maxKB:10240,
+    note:'Nền XÁM NHẠT (không phải trắng). Đầu 29–34mm. Mắt nhìn thẳng. Biểu cảm trung tính. File JPEG.'},
+
+  // ── LIÊN MINH CHÂU ÂU (SCHENGEN) ────────────────────────────────────
+  eu_passport:{flag:'🇪🇺',name:'EU / Schengen',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.44,
+    bg:'light_grey', bgHex:'#F0F0F0',
+    dpi:300,
+    note:'Chuẩn chung Schengen. Đầu 32–36mm. Nền trắng hoặc xám nhạt (tùy nước). Đọc lưu ý riêng từng nước.'},
+  de_passport:{flag:'🇩🇪',name:'Đức',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.76, eyeLine:0.44,
+    bg:'light_grey', bgHex:'#EFEFEF',
+    dpi:300,
+    note:'Nền xám nhạt (không trắng). Không kính từ 11/2024. Đầu 32–36mm.'},
+  fr_passport:{flag:'🇫🇷',name:'Pháp',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.76, eyeLine:0.44,
+    bg:'light_grey', bgHex:'#F0F0F0',
+    dpi:300,
+    note:'Nền xám nhạt hoặc xanh nhạt. Không trắng thuần. Đầu 32–36mm. Không kính.'},
+  it_passport:{flag:'🇮🇹',name:'Ý',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Nền trắng. Đầu 32–36mm.'},
+  es_passport:{flag:'🇪🇸',name:'Tây Ban Nha',region:'eu',
+    w_mm:32,h_mm:26, w_px:378,h_px:307,
+    headRatio:0.75, eyeLine:0.42,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Kích thước đặc biệt 32×26mm. Nền trắng.'},
+  nl_passport:{flag:'🇳🇱',name:'Hà Lan',region:'eu',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.76, eyeLine:0.44,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Nền trắng hoặc xám nhạt. Đầu 32–36mm.'},
+
+  // ── CANADA ───────────────────────────────────────────────────────────
+  ca_passport:{flag:'🇨🇦',name:'Canada',region:'amer',
+    w_mm:50,h_mm:70, w_px:591,h_px:827,
+    headRatio:0.68, eyeLine:0.40,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300,
+    note:'Kích thước LỚN NHẤT 50×70mm. Đầu 31–36mm từ cằm. Nền trắng hoặc kem nhạt.'},
+
+  // ── NHẬT BẢN ─────────────────────────────────────────────────────────
+  jp_passport:{flag:'🇯🇵',name:'Nhật Bản',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300,
+    note:'Nền trắng hoặc xám nhạt. Đầu chiếm 70–80%. Biểu cảm TRUNG TÍNH tuyệt đối. Không kính. JPEG min 600×600px.'},
+  jp_visa:    {flag:'🇯🇵',name:'Visa Nhật',region:'asia',
+    w_mm:45,h_mm:45, w_px:531,h_px:531,
+    headRatio:0.70, eyeLine:0.42,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'Vuông 45×45mm. Nền trắng. Chụp trong 6 tháng.'},
+
+  // ── HÀN QUỐC ─────────────────────────────────────────────────────────
+  kr_passport:{flag:'🇰🇷',name:'Hàn Quốc',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, maxKB:700,
+    note:'Nền trắng. Đầu 32–36mm. Không kính. File max 700KB.'},
+
+  // ── TRUNG QUỐC ───────────────────────────────────────────────────────
+  cn_visa:    {flag:'🇨🇳',name:'Visa TQ',region:'asia',
+    w_mm:33,h_mm:48, w_px:390,h_px:567,
+    headRatio:0.72, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, minKB:40, maxKB:120,
+    note:'Kích thước ĐẶC BIỆT 33×48mm. Mặt rộng 15–22mm, cao 28–33mm. JPEG 40–120KB (rất nghiêm ngặt).'},
+  cn_id:      {flag:'🇨🇳',name:'China ID',region:'asia',
+    w_mm:26,h_mm:32, w_px:307,h_px:378,
+    headRatio:0.78, eyeLine:0.44,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'26×32mm. Nền trắng. Mặt chiếm 78% chiều cao.'},
+
+  // ── ẤN ĐỘ ────────────────────────────────────────────────────────────
+  in_passport:{flag:'🇮🇳',name:'Ấn Độ',region:'asia',
+    w_mm:51,h_mm:51, w_px:600,h_px:600,
+    headRatio:0.65, eyeLine:0.40,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, minKB:10, maxKB:300,
+    note:'Vuông 51×51mm như US. Nền TRẮNG THUẦN (off-white bị từ chối). Mặt 60–70%. Không kính. File 10–300KB.'},
+
+  // ── SINGAPORE ─────────────────────────────────────────────────────────
+  sg_passport:{flag:'🇸🇬',name:'Singapore',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, maxKB:60,
+    note:'Nền trắng. File JPEG tối đa 60KB (nghiêm ngặt nhất). Đầu 32–36mm.'},
+
+  // ── THÁI LAN ──────────────────────────────────────────────────────────
+  th_passport:{flag:'🇹🇭',name:'Thái Lan',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'35×45mm. Nền trắng. Chuẩn ICAO.'},
+
+  // ── PHILIPPINES ───────────────────────────────────────────────────────
+  ph_passport:{flag:'🇵🇭',name:'Philippines',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'35×45mm. Nền trắng hoặc xám nhạt.'},
+
+  // ── ÚC / NEW ZEALAND ─────────────────────────────────────────────────
+  au_passport:{flag:'🇦🇺',name:'Úc',region:'aus',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, minKB:80, maxKB:5120,
+    note:'Nền trắng thuần. Đầu 32–36mm. JPEG 80KB–5MB. Không kính.'},
+  nz_passport:{flag:'🇳🇿',name:'New Zealand',region:'aus',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'35×45mm. Nền trắng hoặc kem nhạt. Chuẩn ICAO.'},
+
+  // ── UAE / TRUNG ĐÔNG ──────────────────────────────────────────────────
+  ae_visa:    {flag:'🇦🇪',name:'UAE / Dubai',region:'asia',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300, note:'35×45mm. Nền trắng. Mặt chiếm 70–80%. Không kính tối màu.'},
+
+  // ── ICAO CHUNG ────────────────────────────────────────────────────────
+  icao_std:   {flag:'🌐',name:'ICAO 9303 Chuẩn',region:'icao',
+    w_mm:35,h_mm:45, w_px:413,h_px:531,
+    headRatio:0.75, eyeLine:0.43,
+    bg:'white', bgHex:'#FFFFFF',
+    dpi:300,
+    note:'Tiêu chuẩn ICAO Doc 9303. Đầu 70–80% chiều cao. Mắt trong dải 56–69% từ dưới lên. Nền đồng màu sáng. Không kính. Biểu cảm trung tính.'},
+};
+
+var BG_COLORS = {
+  white:      {hex:'#FFFFFF', label:'Trắng'},
+  light_grey: {hex:'#F0F0F0', label:'Xám nhạt'},
+  light_blue: {hex:'#D6E4F0', label:'Xanh nhạt'},
+  blue:       {hex:'#4372C4', label:'Xanh dương'},
+  red:        {hex:'#CC0000', label:'Đỏ'},
+};
 
 // ── Refs ──────────────────────────────────────────────────────────────────
 function $(id){ return document.getElementById(id); }
 var dz=$('dz'), inpFile=$('inp-file'), btnCam=$('btn-cam');
 var camSec=$('cam-sec'), camVid=$('cam-vid'), camCnv=$('cam-cnv');
 var btnCap=$('btn-cap'), btnFlip=$('btn-flip'), btnCamX=$('btn-cam-x');
-var faceTtl=$('face-ttl'), faceSub=$('face-sub'), infoBox=$('info-box');
+var faceTtl=$('face-ttl'), faceSub=$('face-sub');
 var barFill=$('bar-fill'), barLbl=$('bar-lbl');
 var detectGrid=$('detect-grid'), cnvDetect=$('cnv-detect');
 var cropPreview=$('crop-preview'), cnvCrop=$('cnv-crop'), cropLbl=$('crop-lbl');
 var faceActs=$('face-acts');
-var selSize=$('sel-size'), selFmt=$('sel-fmt'), selBg=$('sel-bg');
+var selFmt=$('sel-fmt'), selBg=$('sel-bg'), bgCustom=$('bg-custom'), bgPreview=$('bg-preview');
 var ckEnh=$('ck-enh'), ckAlign=$('ck-align');
 var btnProc=$('btn-proc'), btnBack=$('btn-back');
 var procBar=$('proc-bar'), procFill=$('proc-fill'), procLbl=$('proc-lbl');
 var resImg=$('res-img'), resMeta=$('res-meta'), sheetCard=$('sheet-card');
 var btnDl1=$('btn-dl1'), btnDl5=$('btn-dl5'), btnRst=$('btn-rst');
 var badgeAI=$('badge-ai'), badgeSV=$('badge-sv');
+var regionTabs=$('region-tabs'), countryGrid=$('country-grid');
+var specBox=$('spec-box'), specTitle=$('spec-title'), specGrid=$('spec-grid'), specNote=$('spec-note');
 
 // ── State ─────────────────────────────────────────────────────────────────
 var origBlob=null, croppedBlob=null, resURL=null, sheetURL=null;
 var camStream=null, facing='user';
 var aiReady=false, faceResult=null;
+var selectedCountry=COUNTRIES.vn_3x4;
+var currentRegion='vn';
 
-// ── Tiêu chuẩn ảnh thẻ ──────────────────────────────────────────────────
-// faceHeadRatio: tỷ lệ chiều cao ĐẦU (từ đỉnh đầu đến cằm) / chiều cao ảnh
-// eyeLine: vị trí đường mắt tính từ trên xuống (% chiều cao ảnh)
-// headroom: khoảng trống trên đỉnh đầu tính từ top (% chiều cao ảnh)
-var SIZES = {
-  the_3x4:     {w:354, h:472,  label:'Ảnh thẻ 3×4 cm',   faceHeadRatio:0.70, eyeLine:0.42, headroom:0.08},
-  the_4x6:     {w:472, h:709,  label:'Ảnh thẻ 4×6 cm',   faceHeadRatio:0.68, eyeLine:0.42, headroom:0.08},
-  the_2x3:     {w:236, h:354,  label:'Ảnh thẻ 2×3 cm',   faceHeadRatio:0.70, eyeLine:0.42, headroom:0.08},
-  chung_minh:  {w:260, h:330,  label:'CCCD/CMND',         faceHeadRatio:0.75, eyeLine:0.43, headroom:0.07},
-  passport:    {w:413, h:531,  label:'Hộ chiếu 35×45mm', faceHeadRatio:0.75, eyeLine:0.45, headroom:0.07},
-  visa_us:     {w:600, h:600,  label:'Visa Mỹ 2×2 inch', faceHeadRatio:0.65, eyeLine:0.40, headroom:0.10},
-  visa_schengen:{w:413,h:531,  label:'Visa Schengen',     faceHeadRatio:0.75, eyeLine:0.45, headroom:0.07},
-};
-
-// ── Tabs ──────────────────────────────────────────────────────────────────
+// ── Init ─────────────────────────────────────────────────────────────────
 function setTab(n){
   for(var i=0;i<4;i++){
     $('s'+i).className='step'+(i<n?' done':i===n?' on':'');
@@ -407,7 +562,7 @@ function setTab(n){
   }
 }
 function setProgress(pct,msg){ barFill.style.width=pct+'%'; barLbl.textContent=msg; }
-function setStat(id,val,cls){ $(id).textContent=val; $(id).className='stat-v'+(cls?' '+cls:''); }
+function setStat(id,val,cls){ $(id).textContent=val; $(id).className='sv'+(cls?' '+cls:''); }
 
 // ── Ping backend ──────────────────────────────────────────────────────────
 function ping(){
@@ -417,7 +572,7 @@ function ping(){
     .catch(function(){badgeSV.textContent='Offline';badgeSV.className='badge err';});
 }
 
-// ── Tải AI model ─────────────────────────────────────────────────────────
+// ── AI Models ─────────────────────────────────────────────────────────────
 var MODEL_URL='https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
 function loadModels(){
   badgeAI.textContent='Đang tải AI…';badgeAI.className='badge spin';
@@ -425,14 +580,84 @@ function loadModels(){
     faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
     faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
   ]).then(function(){
-    aiReady=true;
-    window.aiReady=true;
-    badgeAI.textContent='AI sẵn sàng ✓';badgeAI.className='badge ok';
+    aiReady=true;window.aiReady=true;
+    badgeAI.textContent='AI ✓';badgeAI.className='badge ok';
   }).catch(function(e){
     badgeAI.textContent='AI lỗi';badgeAI.className='badge err';
-    console.error('Model load error:',e);
   });
 }
+
+// ── Country grid ──────────────────────────────────────────────────────────
+function buildCountryGrid(region){
+  countryGrid.innerHTML='';
+  Object.keys(COUNTRIES).forEach(function(key){
+    var c=COUNTRIES[key];
+    if(c.region!==region) return;
+    var div=document.createElement('div');
+    div.className='ccard'+(selectedCountry===c?' on':'');
+    div.innerHTML='<div class="ccard-flag">'+c.flag+'</div>'
+      +'<div class="ccard-name">'+c.name+'</div>'
+      +'<div class="ccard-size">'+c.w_mm+'×'+c.h_mm+'mm</div>'
+      +'<div class="ccard-bg">Nền: '+BG_COLORS[c.bg].label+'</div>';
+    div.addEventListener('click',function(){selectCountry(key);});
+    countryGrid.appendChild(div);
+  });
+}
+
+function selectCountry(key){
+  selectedCountry=COUNTRIES[key];
+  buildCountryGrid(currentRegion);
+  renderSpec(selectedCountry);
+  setBgFromCountry(selectedCountry);
+  if(faceResult) autoCrop(faceResult);
+}
+
+function renderSpec(c){
+  specTitle.textContent=c.flag+' '+c.name+' — '+c.w_mm+'×'+c.h_mm+'mm ('+c.w_px+'×'+c.h_px+'px @ '+c.dpi+'dpi)';
+  var rows=[
+    ['Kích thước in',c.w_mm+'×'+c.h_mm+' mm'],
+    ['Pixel (300dpi)',c.w_px+'×'+c.h_px+' px'],
+    ['Nền khuyến nghị',BG_COLORS[c.bg]?BG_COLORS[c.bg].label:c.bg],
+    ['Tỷ lệ đầu/ảnh',Math.round(c.headRatio*100)+'%'],
+    ['Vị trí mắt',Math.round(c.eyeLine*100)+'% từ trên'],
+    ['Dung lượng',(c.minKB?c.minKB+'KB – ':'')+( c.maxKB?'max '+c.maxKB+'KB':'Không giới hạn')],
+  ];
+  specGrid.innerHTML=rows.map(function(r){
+    return '<div class="spec-row"><span class="spec-k">'+r[0]+'</span><span class="spec-v">'+r[1]+'</span></div>';
+  }).join('');
+  specNote.textContent=c.note||'';
+}
+
+function setBgFromCountry(c){
+  selBg.value=c.bg in BG_COLORS?c.bg:'white';
+  updateBgPreview();
+  if(faceResult) autoCrop(faceResult);
+}
+
+function updateBgPreview(){
+  var hex;
+  if(selBg.value==='custom'){
+    bgCustom.style.display='block';
+    hex=bgCustom.value;
+  }else{
+    bgCustom.style.display='none';
+    hex=BG_COLORS[selBg.value]?BG_COLORS[selBg.value].hex:'#FFFFFF';
+  }
+  bgPreview.style.background=hex;
+  bgPreview.style.borderColor=hex==='#FFFFFF'?'var(--bd)':hex;
+}
+selBg.addEventListener('change',function(){updateBgPreview();if(faceResult)autoCrop(faceResult);});
+bgCustom.addEventListener('input',function(){updateBgPreview();if(faceResult)autoCrop(faceResult);});
+
+// Region tabs
+regionTabs.querySelectorAll('.rtab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    regionTabs.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');
+    currentRegion=btn.dataset.r;
+    buildCountryGrid(currentRegion);
+  });
+});
 
 // ── Upload ────────────────────────────────────────────────────────────────
 dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('ov');});
@@ -443,10 +668,15 @@ inpFile.addEventListener('change',function(e){if(e.target.files[0])loadFile(e.ta
 
 function loadFile(f){
   if(!f.type.match(/^image\//)){alert('Vui lòng chọn file ảnh!');return;}
-  origBlob=f;croppedBlob=null;faceResult=null;
+  origBlob=f; croppedBlob=null; faceResult=null;
   $('dz-hint').textContent='✓ Đang phân tích…';
+  detectGrid.style.display='none';
+  cropPreview.style.display='none';
+  faceActs.style.display='none';
+  setProgress(0,'');
+  faceTtl.textContent='🔍 Đang nhận diện khuôn mặt…';
+  faceSub.textContent='AI đang phân tích — vui lòng chờ';
   setTab(1);
-  resetDetectUI();
   detectFace(f);
 }
 
@@ -469,294 +699,225 @@ function stopCam(){
   camSec.style.display='none';
 }
 
-// ── Reset UI ──────────────────────────────────────────────────────────────
-function resetDetectUI(){
-  detectGrid.style.display='none';
-  cropPreview.style.display='none';
-  faceActs.style.display='none';
-  setProgress(0,'Đang chuẩn bị…');
-  faceTtl.textContent='🔍 Đang nhận diện khuôn mặt…';
-  faceSub.textContent='AI đang phân tích ảnh';
-  infoBox.style.display='block';
+// ── NHẬN DIỆN KHUÔN MẶT ─────────────────────────────────────────────────
+function getCenter(pts){
+  var sx=0,sy=0;
+  for(var i=0;i<pts.length;i++){sx+=pts[i].x;sy+=pts[i].y;}
+  return{x:sx/pts.length,y:sy/pts.length};
 }
 
-// ── NHẬN DIỆN KHUÔN MẶT ─────────────────────────────────────────────────
 function detectFace(blob){
   if(!aiReady){
-    setProgress(5,'Chờ AI model tải xong…');
-    var t=setInterval(function(){
-      if(aiReady){clearInterval(t);runDetect(blob);}
-    },400);
+    setProgress(5,'Chờ AI model…');
+    var t=setInterval(function(){if(aiReady){clearInterval(t);runDetect(blob);}},400);
     return;
   }
   runDetect(blob);
 }
 
-function getCenter(pts){
-  var sx=0,sy=0;
-  for(var i=0;i<pts.length;i++){sx+=pts[i].x;sy+=pts[i].y;}
-  return {x:sx/pts.length, y:sy/pts.length};
-}
-
 function runDetect(blob){
   var url=URL.createObjectURL(blob);
   var img=new Image();
-
   img.onload=function(){
-    setProgress(20,'Đang load ảnh…');
+    setProgress(25,'Đang phân tích ảnh…');
 
-    // Vẽ ảnh lên canvas detect (scale vừa khung)
-    var maxW=480, maxH=360;
-    var scale=Math.min(maxW/img.naturalWidth, maxH/img.naturalHeight, 1);
-    cnvDetect.width  = Math.round(img.naturalWidth  * scale);
-    cnvDetect.height = Math.round(img.naturalHeight * scale);
+    // Vẽ lên canvas preview (scale nhỏ để detect)
+    var maxW=480,maxH=360;
+    var scale=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight,1);
+    cnvDetect.width =Math.round(img.naturalWidth *scale);
+    cnvDetect.height=Math.round(img.naturalHeight*scale);
     var ctx=cnvDetect.getContext('2d');
-    ctx.drawImage(img, 0, 0, cnvDetect.width, cnvDetect.height);
+    ctx.drawImage(img,0,0,cnvDetect.width,cnvDetect.height);
 
-    setProgress(40,'AI đang tìm khuôn mặt…');
+    setProgress(45,'AI đang tìm khuôn mặt…');
 
-    // face-api.js nhận canvas, scale=1 vì đã vẽ lên canvas đúng size
-    faceapi.detectSingleFace(
-      cnvDetect,
-      new faceapi.TinyFaceDetectorOptions({inputSize:512, scoreThreshold:0.35})
-    ).withFaceLandmarks(true)
-    .then(function(result){
-      setProgress(70,'Đang phân tích kết quả…');
+    faceapi.detectSingleFace(cnvDetect,
+      new faceapi.TinyFaceDetectorOptions({inputSize:512,scoreThreshold:0.35})
+    ).withFaceLandmarks(true).then(function(result){
+      setProgress(75,'Phân tích kết quả…');
 
       if(!result){
         faceTtl.textContent='❌ Không phát hiện khuôn mặt';
-        faceSub.textContent='Vui lòng dùng ảnh chân dung rõ mặt, đủ sáng, nhìn thẳng vào camera';
+        faceSub.textContent='Dùng ảnh chân dung rõ mặt, đủ sáng, nhìn thẳng';
         setProgress(0,'');
         faceActs.style.display='flex';
         return;
       }
 
-      // Lưu kết quả — detection box trên canvas (đã scale)
-      var box   = result.detection.box;   // tọa độ trên cnvDetect (đã scale)
-      var lm    = result.landmarks;
-      var score = result.detection.score;
+      var box=result.detection.box;
+      var lm=result.landmarks;
+      var score=result.detection.score;
 
-      // Tính các điểm quan trọng (trên cnvDetect)
-      var leftEyePts  = lm.getLeftEye();
-      var rightEyePts = lm.getRightEye();
-      var lEye = getCenter(leftEyePts);
-      var rEye = getCenter(rightEyePts);
+      var lEye=getCenter(lm.getLeftEye());
+      var rEye=getCenter(lm.getRightEye());
+      var chin=lm.positions[8]; // điểm cằm dưới
 
-      // Góc nghiêng mặt
-      var angle = Math.atan2(rEye.y - lEye.y, rEye.x - lEye.x) * 180 / Math.PI;
+      // Góc nghiêng qua vector 2 mắt
+      var angle=Math.atan2(rEye.y-lEye.y,rEye.x-lEye.x)*180/Math.PI;
 
-      // Điểm cằm (landmark 8 trong 68-point)
-      var chin = lm.positions[8];
-      // Điểm đỉnh trán (ước lượng từ box top)
-      var foreheadY = box.y;
+      // IED — khoảng cách pixel 2 mắt (trên cnvDetect đã scale)
+      var ied=Math.sqrt(Math.pow(rEye.x-lEye.x,2)+Math.pow(rEye.y-lEye.y,2));
 
-      // Chiều cao đầu thực tế (pixels trên cnvDetect)
-      var headH = chin.y - foreheadY;
-      // Thêm 20% headH phía trên (tóc/trán)
-      var headTopY    = foreheadY - headH * 0.20;
-      var headBottomY = chin.y;
-      var totalHeadH  = headBottomY - headTopY;
-
-      // Lưu faceResult ĐÃ SCALE về tọa độ ảnh GỐC
-      faceResult = {
-        img          : img,
-        scale        : scale,
-        angle        : angle,
-        score        : score,
-        // Tọa độ GỐC (chia lại scale)
-        box          : {x:box.x/scale, y:box.y/scale, w:box.width/scale, h:box.height/scale},
-        lEye         : {x:lEye.x/scale, y:lEye.y/scale},
-        rEye         : {x:rEye.x/scale, y:rEye.y/scale},
-        chin         : {x:chin.x/scale, y:chin.y/scale},
-        headTopY     : headTopY/scale,
-        totalHeadH   : totalHeadH/scale,
-        faceCenterX  : (box.x + box.width/2)/scale,
-        landmarks    : lm.positions.length,
+      // Chuyển về tọa độ ảnh GỐC
+      faceResult={
+        img:img, scale:scale, angle:angle, score:score,
+        ied:ied/scale,               // IED trên ảnh gốc
+        lEye:{x:lEye.x/scale,y:lEye.y/scale},
+        rEye:{x:rEye.x/scale,y:rEye.y/scale},
+        chin:{x:chin.x/scale,y:chin.y/scale},
+        eyeMidX:(lEye.x+rEye.x)/2/scale,
+        eyeMidY:(lEye.y+rEye.y)/2/scale,
+        landmarks:lm.positions.length,
       };
 
-      setProgress(90,'Đang vẽ kết quả…');
+      setProgress(90,'Vẽ kết quả…');
 
-      // Vẽ overlay lên cnvDetect
-      drawDetectOverlay(ctx, result, lEye, rEye, chin, angle, scale);
+      // Overlay trên cnvDetect
+      drawOverlay(ctx,result,lEye,rEye,chin,lm,scale);
 
-      // Hiện thống kê
       detectGrid.style.display='grid';
       setStat('fi-found','✓ Phát hiện được','ok');
-      setStat('fi-score',(score*100).toFixed(1)+'%', score>0.8?'ok':score>0.6?'warn':'err');
-      setStat('fi-size', Math.round(box.width/scale)+'×'+Math.round(box.height/scale)+' px','');
-      setStat('fi-angle', angle.toFixed(1)+'°', Math.abs(angle)<5?'ok':Math.abs(angle)<15?'warn':'err');
-      setStat('fi-ratio', (box.height/cnvDetect.height*100).toFixed(0)+'% chiều cao','');
-      setStat('fi-lm', lm.positions.length+' điểm mốc','ok');
-      setStat('fi-align', ckAlign.checked?'Sẽ xoay '+angle.toFixed(1)+'°':'Không xoay','');
+      setStat('fi-score',(score*100).toFixed(1)+'%',score>0.8?'ok':score>0.6?'warn':'err');
+      setStat('fi-angle',angle.toFixed(1)+'°',Math.abs(angle)<5?'ok':Math.abs(angle)<15?'warn':'err');
+      setStat('fi-ied',Math.round(faceResult.ied)+' px','');
+      // Ước lượng headH từ IED
+      var estHeadH=Math.round(faceResult.ied*1.8*1.55);
+      setStat('fi-headh',estHeadH+' px (ước lượng)','');
 
-      // Tự động tạo ảnh thẻ
-      autoCrop(faceResult, false);
+      autoCrop(faceResult);
       setProgress(100,'✅ Hoàn tất!');
-
-      faceTtl.textContent='✅ Nhận diện thành công — khuôn mặt đã được căn chỉnh!';
+      faceTtl.textContent='✅ Nhận diện thành công!';
       faceSub.textContent='Kiểm tra ảnh thẻ phía dưới rồi nhấn Tiếp theo';
       faceActs.style.display='flex';
-      infoBox.style.display='none';
-    })
-    .catch(function(e){
+    }).catch(function(e){
       faceTtl.textContent='❌ Lỗi AI: '+e.message;
-      faceSub.textContent='';
-      setProgress(0,'');
-      faceActs.style.display='flex';
+      setProgress(0,'');faceActs.style.display='flex';
     });
   };
-  img.onerror=function(){
-    faceTtl.textContent='❌ Không đọc được file ảnh';
-    faceActs.style.display='flex';
-  };
+  img.onerror=function(){faceTtl.textContent='❌ Không đọc được file ảnh';faceActs.style.display='flex';};
   img.src=url;
 }
 
-function drawDetectOverlay(ctx, result, lEye, rEye, chin, angle, scale){
+function drawOverlay(ctx,result,lEye,rEye,chin,lm,scale){
   var box=result.detection.box;
-  var lm=result.landmarks;
-
-  // Bounding box
+  // Box
   ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.setLineDash([]);
-  ctx.strokeRect(box.x, box.y, box.width, box.height);
-
+  ctx.strokeRect(box.x,box.y,box.width,box.height);
   // Label
-  ctx.fillStyle='#3b82f6';ctx.fillRect(box.x, box.y-22, 110, 22);
-  ctx.fillStyle='#fff';ctx.font='bold 12px monospace';
-  ctx.fillText('FACE '+(result.detection.score*100).toFixed(0)+'%', box.x+5, box.y-6);
-
-  // 68 landmarks
-  ctx.fillStyle='rgba(245,158,11,.8)';
-  lm.positions.forEach(function(p){
-    ctx.beginPath();ctx.arc(p.x,p.y,2,0,Math.PI*2);ctx.fill();
-  });
-
-  // Đường nối 2 mắt
+  ctx.fillStyle='#3b82f6';ctx.fillRect(box.x,box.y-20,100,20);
+  ctx.fillStyle='#fff';ctx.font='bold 11px monospace';
+  ctx.fillText('FACE '+(result.detection.score*100).toFixed(0)+'%',box.x+4,box.y-5);
+  // Landmarks
+  ctx.fillStyle='rgba(245,158,11,.75)';
+  lm.positions.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,Math.PI*2);ctx.fill();});
+  // Đường mắt
   ctx.strokeStyle='#10b981';ctx.lineWidth=2;ctx.setLineDash([4,3]);
   ctx.beginPath();ctx.moveTo(lEye.x,lEye.y);ctx.lineTo(rEye.x,rEye.y);ctx.stroke();
   ctx.setLineDash([]);
-
-  // Điểm mắt
+  // Mắt
   [lEye,rEye].forEach(function(p){
-    ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();
   });
-
-  // Điểm cằm
-  ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(chin.x,chin.y,4,0,Math.PI*2);ctx.fill();
-
-  // Đường trục dọc khuôn mặt
-  var cx=box.x+box.width/2;
-  ctx.strokeStyle='rgba(139,92,246,.6)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(cx,box.y);ctx.lineTo(cx,box.y+box.height);ctx.stroke();
-  ctx.setLineDash([]);
+  // Cằm
+  ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(chin.x,chin.y,3,0,Math.PI*2);ctx.fill();
 }
 
-// ── TỰ ĐỘNG CĂN CHỈNH VÀ CROP ───────────────────────────────────────────
+// ── CROP CHUẨN ẢNH THẺ (IED-based) ──────────────────────────────────────
 //
-// PHƯƠNG PHÁP: Dùng Inter-Eye Distance (IED) làm đơn vị tham chiếu.
-// face-api box.y KHÔNG phải đỉnh đầu thực — nằm giữa trán → sai khi dùng làm headH.
-// IED là khoảng cách 2 mắt, ổn định và chính xác hơn nhiều.
+//  IED (Inter-Eye Distance) là cơ sở tính toán:
 //
-//  IED  → faceH (mắt→cằm) = IED × 1.8
-//       → headH (đỉnh→cằm) = faceH × 1.55  (đỉnh đầu + tóc cao hơn mắt ~55%)
-//  cropH = headH / faceHeadRatio
-//  cropTop = eyeMidY − eyeLine × cropH
-//  cropLeft = eyeMidX − cropW / 2
+//  1. faceH (mắt→cằm) = IED × 1.8     (tỷ lệ khuôn mặt trung bình)
+//  2. headH (đỉnh→cằm) = faceH × 1.55  (đỉnh đầu + tóc ≈ 55% faceH phía trên mắt)
+//  3. cropH = headH / headRatio         (headH chiếm headRatio% ảnh thẻ)
+//  4. cropW = cropH × (w_px / h_px)
+//  5. cropTop  = eyeMidY − eyeLine × cropH
+//  6. cropLeft = eyeMidX − cropW / 2
+//
+//  Sau khi xoay ảnh thẳng qua góc angle (tâm = điểm giữa 2 mắt)
 // ─────────────────────────────────────────────────────────────────────────
-function autoCrop(fd, silent){
-  var sz = SIZES[selSize.value] || SIZES.the_3x4;
-  var img = fd.img;
-  var doAlign = ckAlign.checked;
+function autoCrop(fd){
+  var c=selectedCountry;
+  var img=fd.img;
+  var doAlign=ckAlign.checked;
 
-  // ── Bước 1: Xoay ảnh thẳng quanh trung điểm 2 mắt ──────────────────
-  var srcCanvas = document.createElement('canvas');
-  srcCanvas.width  = img.naturalWidth;
-  srcCanvas.height = img.naturalHeight;
-  var srcCtx = srcCanvas.getContext('2d');
+  // Màu nền
+  var bgHex;
+  if(selBg.value==='custom') bgHex=bgCustom.value;
+  else bgHex=(BG_COLORS[selBg.value]||{hex:'#FFFFFF'}).hex;
 
-  var eyeMidX = (fd.lEye.x + fd.rEye.x) / 2;
-  var eyeMidY = (fd.lEye.y + fd.rEye.y) / 2;
+  // ── Bước 1: Xoay ảnh ──────────────────────────────────────────────────
+  var srcCnv=document.createElement('canvas');
+  srcCnv.width=img.naturalWidth; srcCnv.height=img.naturalHeight;
+  var sCtx=srcCnv.getContext('2d');
+  var mx=fd.eyeMidX, my=fd.eyeMidY;
 
-  if(doAlign && Math.abs(fd.angle) > 0.3){
-    srcCtx.save();
-    srcCtx.translate(eyeMidX, eyeMidY);
-    srcCtx.rotate(-fd.angle * Math.PI / 180);
-    srcCtx.translate(-eyeMidX, -eyeMidY);
-    srcCtx.drawImage(img, 0, 0);
-    srcCtx.restore();
+  if(doAlign && Math.abs(fd.angle)>0.3){
+    sCtx.save();
+    sCtx.translate(mx,my);
+    sCtx.rotate(-fd.angle*Math.PI/180);
+    sCtx.translate(-mx,-my);
+    sCtx.drawImage(img,0,0);
+    sCtx.restore();
     setStat('fi-align','Đã xoay '+fd.angle.toFixed(1)+'°','ok');
-  } else {
-    srcCtx.drawImage(img, 0, 0);
-    setStat('fi-align', doAlign?'Mặt thẳng ('+fd.angle.toFixed(1)+'°)':'Không xoay','ok');
+  }else{
+    sCtx.drawImage(img,0,0);
+    setStat('fi-align',doAlign?'Mặt thẳng':'Không xoay','ok');
   }
 
-  // ── Bước 2: Tính kích thước đầu qua IED ─────────────────────────────
-  var ied = Math.sqrt(
-    Math.pow(fd.rEye.x - fd.lEye.x, 2) +
-    Math.pow(fd.rEye.y - fd.lEye.y, 2)
-  );
-
-  // mắt → cằm ≈ IED × 1.8 (tỷ lệ khuôn mặt trung bình)
-  var faceH_eyeToChin = ied * 1.8;
-  // đỉnh đầu cao hơn đường mắt ≈ 55% (faceH_eyeToChin) — bao gồm tóc
-  var faceH_eyeToTop  = faceH_eyeToChin * 0.55;
+  // ── Bước 2: Tính crop từ IED ──────────────────────────────────────────
+  var ied=fd.ied;
+  var faceH_eyeToChin = ied * 1.8;    // mắt → cằm
+  var faceH_eyeToTop  = faceH_eyeToChin * 0.55; // đỉnh đầu → mắt (bao gồm tóc)
   var totalHeadH = faceH_eyeToChin + faceH_eyeToTop;
 
-  // ── Bước 3: Tính vùng crop theo tiêu chuẩn ảnh thẻ ─────────────────
-  // totalHeadH chiếm faceHeadRatio% chiều cao ảnh thẻ
-  var cropH = totalHeadH / sz.faceHeadRatio;
-  var cropW = cropH * (sz.w / sz.h);
+  // cropH để đầu chiếm headRatio%
+  var cropH = totalHeadH / c.headRatio;
+  var cropW = cropH * (c.w_px / c.h_px);
 
-  // Mắt ở eyeLine% từ trên ảnh thẻ
-  var cropTop  = eyeMidY - sz.eyeLine * cropH;
-  // Căn giữa ngang theo trung điểm 2 mắt
-  var cropLeft = eyeMidX - cropW / 2;
+  // Đặt đường mắt ở eyeLine% từ trên
+  var cropTop  = my - c.eyeLine * cropH;
+  var cropLeft = mx - cropW / 2;
 
-  // Clamp trong ảnh gốc
+  // Clamp
   cropLeft = Math.max(0, Math.min(cropLeft, img.naturalWidth  - cropW));
   cropTop  = Math.max(0, Math.min(cropTop,  img.naturalHeight - cropH));
-  if(cropW > img.naturalWidth) { cropW = img.naturalWidth;  cropLeft = 0; }
-  if(cropH > img.naturalHeight){ cropH = img.naturalHeight; cropTop  = 0; }
+  if(cropW > img.naturalWidth) { cropW=img.naturalWidth;  cropLeft=0; }
+  if(cropH > img.naturalHeight){ cropH=img.naturalHeight; cropTop=0; }
 
-  // ── Bước 4: Render ───────────────────────────────────────────────────
-  cnvCrop.width  = sz.w;
-  cnvCrop.height = sz.h;
-  var outCtx = cnvCrop.getContext('2d');
+  // ── Bước 3: Render ảnh thẻ ────────────────────────────────────────────
+  cnvCrop.width=c.w_px; cnvCrop.height=c.h_px;
+  var oCtx=cnvCrop.getContext('2d');
 
-  outCtx.fillStyle = '#ffffff';
-  outCtx.fillRect(0, 0, sz.w, sz.h);
+  // Nền màu theo quốc gia
+  oCtx.fillStyle=bgHex;
+  oCtx.fillRect(0,0,c.w_px,c.h_px);
 
-  outCtx.drawImage(
-    srcCanvas,
+  // Vẽ vùng crop đã resize lên kích thước ảnh thẻ
+  oCtx.drawImage(srcCnv,
     Math.round(cropLeft), Math.round(cropTop),
     Math.round(cropW),    Math.round(cropH),
-    0, 0, sz.w, sz.h
+    0, 0, c.w_px, c.h_px
   );
 
-  // Đường guide mắt
-  var eyeY_out = sz.eyeLine * sz.h;
-  outCtx.strokeStyle = 'rgba(59,130,246,.2)';
-  outCtx.lineWidth = 1; outCtx.setLineDash([4,4]);
-  outCtx.beginPath();
-  outCtx.moveTo(0, eyeY_out); outCtx.lineTo(sz.w, eyeY_out);
-  outCtx.stroke(); outCtx.setLineDash([]);
+  // Đường guide mắt (rất mờ)
+  var eyeYout=c.eyeLine*c.h_px;
+  oCtx.strokeStyle='rgba(59,130,246,.18)';
+  oCtx.lineWidth=1;oCtx.setLineDash([4,4]);
+  oCtx.beginPath();oCtx.moveTo(0,eyeYout);oCtx.lineTo(c.w_px,eyeYout);oCtx.stroke();
+  oCtx.setLineDash([]);
 
-  // Thông tin
-  cropPreview.style.display = 'block';
-  var eyePct  = Math.round(sz.eyeLine * 100);
-  var headPct = Math.round(sz.faceHeadRatio * 100);
-  cropLbl.textContent = sz.w+'×'+sz.h+' px · '+sz.label
-    +' · Đầu '+headPct+'% · Mắt ở '+eyePct+'%';
-  setStat('fi-eyepos', eyePct+'% từ trên', Math.abs(eyePct-42)<5?'ok':'warn');
+  // Hiện preview
+  cropPreview.style.display='block';
+  cropLbl.textContent=c.w_px+'×'+c.h_px+'px · '+c.name
+    +' · Đầu '+Math.round(c.headRatio*100)+'% · Mắt '+Math.round(c.eyeLine*100)+'%↓';
 
-  console.log('[AnhThe] IED='+Math.round(ied)+'px headH='+Math.round(totalHeadH)
-    +'px cropH='+Math.round(cropH)+'px cropW='+Math.round(cropW)+'px');
+  console.log('[AnhThe] IED='+Math.round(ied)+' headH='+Math.round(totalHeadH)
+    +' cropH='+Math.round(cropH)+' cropW='+Math.round(cropW));
 
-  cnvCrop.toBlob(function(b){ croppedBlob = b; }, 'image/png');
+  cnvCrop.toBlob(function(b){croppedBlob=b;},'image/png');
 }
-// Reload crop khi đổi kích thước
-selSize.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
-ckAlign.addEventListener('change',function(){if(faceResult)autoCrop(faceResult,true);});
+
+ckAlign.addEventListener('change',function(){if(faceResult)autoCrop(faceResult);});
 
 $('btn-to-set').addEventListener('click',function(){setTab(2);});
 $('btn-retry').addEventListener('click',function(){
@@ -766,28 +927,22 @@ $('btn-retry').addEventListener('click',function(){
 });
 btnBack.addEventListener('click',function(){setTab(1);});
 
-// ── Swatches ──────────────────────────────────────────────────────────────
-document.querySelectorAll('.sw').forEach(function(sw){
-  sw.addEventListener('click',function(){
-    document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});
-    sw.classList.add('on');
-    selBg.value=sw.dataset.c;
-  });
-});
-
-// ── Tạo ảnh thẻ (gửi lên server) ─────────────────────────────────────────
+// ── Process ───────────────────────────────────────────────────────────────
 btnProc.addEventListener('click',function(){
   var blob=croppedBlob||origBlob;
-  if(!blob){alert('Chưa có ảnh! Vui lòng quay lại bước nhận diện.');return;}
+  if(!blob){alert('Chưa có ảnh! Quay lại bước nhận diện.');return;}
   btnProc.disabled=true;
   procBar.style.display='block';
   procFill.style.width='20%';
   procLbl.textContent='Đang gửi lên server…';
 
+  var c=selectedCountry;
+  var bgKey=selBg.value==='custom'?'white':selBg.value;
+
   var form=new FormData();
   form.append('file',blob,'photo.png');
-  form.append('size_key',selSize.value);
-  form.append('bg_color',selBg.value);
+  form.append('size_key',getSizeKey(c));
+  form.append('bg_color',bgKey);
   form.append('enhance',ckEnh.checked?'true':'false');
   form.append('output_fmt',selFmt.value);
 
@@ -796,17 +951,17 @@ btnProc.addEventListener('click',function(){
     .then(function(r){return r.json();})
     .then(function(d){
       procFill.style.width='100%';
-      if(!d.success)throw new Error(d.detail||'Lỗi server');
+      if(!d.success) throw new Error(d.detail||'Lỗi server');
       var mime=d.format==='png'?'image/png':'image/jpeg';
       resURL='data:'+mime+';base64,'+d.image_b64;
       resImg.src=resURL;
-      resMeta.textContent=d.width+'×'+d.height+'px · '+d.size_label;
-      btnDl1.onclick=function(){dlURL(resURL,'anh-the.'+d.format);};
-      buildSheet(resURL,d);
+      resMeta.textContent=c.w_px+'×'+c.h_px+'px · '+c.name+' · '+c.w_mm+'×'+c.h_mm+'mm';
+      btnDl1.onclick=function(){dlURL(resURL,'anh-the-'+c.name+'.'+d.format);};
+      buildSheet(resURL,c);
       setTab(3);
     })
     .catch(function(e){
-      procLbl.textContent='Server không phản hồi — đang xử lý local…';
+      procLbl.textContent='Server không phản hồi — xử lý local…';
       processLocal();
     })
     .finally(function(){
@@ -816,49 +971,55 @@ btnProc.addEventListener('click',function(){
     });
 });
 
-// Xử lý local khi server offline
+function getSizeKey(c){
+  // Map về size key backend hiểu
+  if(c.w_mm===30&&c.h_mm===40) return 'the_3x4';
+  if(c.w_mm===40&&c.h_mm===60) return 'the_4x6';
+  if(c.w_mm===22&&c.h_mm===28) return 'chung_minh';
+  if(c.w_mm===35&&c.h_mm===45) return 'passport';
+  if(c.w_mm===51&&c.h_mm===51) return 'visa_us';
+  return 'passport';
+}
+
 function processLocal(){
-  if(!cnvCrop.width){alert('Vui lòng quay lại bước nhận diện!');return;}
-  var sz=SIZES[selSize.value]||SIZES.the_3x4;
-  var bgColors={white:[255,255,255],blue:[67,114,196],light_blue:[173,216,230],red:[204,0,0],gray:[200,200,200]};
-  var bg=bgColors[selBg.value]||[255,255,255];
-
+  if(!cnvCrop.width){alert('Chưa có ảnh crop!');return;}
+  var c=selectedCountry;
   var cv=document.createElement('canvas');
-  cv.width=sz.w; cv.height=sz.h;
+  cv.width=c.w_px;cv.height=c.h_px;
   var ctx=cv.getContext('2d');
-
-  // Vẽ màu nền
-  ctx.fillStyle='rgb('+bg[0]+','+bg[1]+','+bg[2]+')';
-  ctx.fillRect(0,0,sz.w,sz.h);
-
-  // Chụp lại cnvCrop nhưng bỏ đường guide, vẽ đè màu nền
   ctx.drawImage(cnvCrop,0,0);
-
   resURL=cv.toDataURL('image/jpeg',.95);
   resImg.src=resURL;
-  resMeta.textContent=sz.w+'×'+sz.h+'px · '+sz.label+' (local)';
-  btnDl1.onclick=function(){dlURL(resURL,'anh-the.jpg');};
-  buildSheet(resURL,{width:sz.w,height:sz.h});
-  $('res-ttl').textContent='✅ Ảnh thẻ đã sẵn sàng! (xử lý local)';
+  resMeta.textContent=c.w_px+'×'+c.h_px+'px · '+c.name+' (local)';
+  btnDl1.onclick=function(){dlURL(resURL,'anh-the-'+c.name+'.jpg');};
+  buildSheet(resURL,c);
+  $('res-ttl').textContent='✅ Ảnh thẻ sẵn sàng (xử lý local)';
   setTab(3);
 }
 
-// ── Tờ in 4×5 ────────────────────────────────────────────────────────────
-function buildSheet(src,d){
+function buildSheet(src,c){
   var img=new Image();
   img.onload=function(){
-    var cols=4,rows=5,gap=8,mg=14;
+    // Tính số ảnh vừa khổ A4 300dpi (2480x3508px)
+    var a4w=2480,a4h=3508,gap=30,margin=60;
+    var cols=Math.floor((a4w-margin*2+gap)/(c.w_px+gap));
+    var rows=Math.floor((a4h-margin*2+gap)/(c.h_px+gap));
+    cols=Math.max(1,Math.min(cols,8)); rows=Math.max(1,Math.min(rows,10));
+
+    var cvW=margin*2+cols*c.w_px+(cols-1)*gap;
+    var cvH=margin*2+rows*c.h_px+(rows-1)*gap;
     var cv=document.createElement('canvas');
-    cv.width=mg*2+cols*d.width+(cols-1)*gap;
-    cv.height=mg*2+rows*d.height+(rows-1)*gap;
+    cv.width=cvW;cv.height=cvH;
     var ctx=cv.getContext('2d');
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cvW,cvH);
     for(var r=0;r<rows;r++)
-      for(var c=0;c<cols;c++)
-        ctx.drawImage(img,mg+c*(d.width+gap),mg+r*(d.height+gap),d.width,d.height);
+      for(var col=0;col<cols;col++)
+        ctx.drawImage(img,margin+col*(c.w_px+gap),margin+r*(c.h_px+gap),c.w_px,c.h_px);
+
     sheetURL=cv.toDataURL('image/jpeg',.95);
-    sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:260px;border-radius:6px;margin:0 auto .5rem;border:1px solid #30363d"/><p class="res-meta">Tờ in 4×5 ảnh · Giấy A4</p>';
-    btnDl5.onclick=function(){dlURL(sheetURL,'to-in-anh-the.jpg');};
+    sheetCard.innerHTML='<img src="'+sheetURL+'" style="max-height:250px;border-radius:5px;margin:0 auto .5rem;border:1px solid #30363d"/>'
+      +'<p class="res-meta">Tờ in '+cols+'×'+rows+' ảnh · '+c.name+'</p>';
+    btnDl5.onclick=function(){dlURL(sheetURL,'to-in-'+c.name+'.jpg');};
   };
   img.src=src;
 }
@@ -872,10 +1033,13 @@ btnRst.addEventListener('click',function(){
   setTab(0);
 });
 
-// ── Init ─────────────────────────────────────────────────────────────────
+// ── Khởi chạy ─────────────────────────────────────────────────────────────
 ping();
 setTab(0);
 loadModels();
+buildCountryGrid('vn');
+renderSpec(selectedCountry);
+updateBgPreview();
 
 })();
 </script>
