@@ -379,12 +379,14 @@ input[type=file]{display:none}
       </div>
       <div class="result-info">
         <div class="result-badge">✅ Đạt chuẩn ICAO 9303</div>
+        <div id="bg-mode-badge" style="font-size:.72rem;color:var(--green);margin-bottom:.5rem"></div>
         <div class="result-country" id="res-country"></div>
         <div class="result-spec" id="res-spec"></div>
         <div class="result-standards" id="res-standards"></div>
         <div class="dl-row">
           <button class="btn btn-primary" id="btn-dl-full">⬇ Tải ảnh đơn</button>
-          <button class="btn btn-outline" id="btn-dl-sheet">🖨 Tải tờ in</button>
+          <button class="btn btn-outline" id="btn-dl-sheet">🖨 Tải tờ in (JPG)</button>
+          <button class="btn btn-outline" id="btn-dl-pdf" style="display:none">📄 Tải PDF A4</button>
           <button class="btn btn-ghost" id="btn-redo">↩ Làm lại</button>
         </div>
       </div>
@@ -856,15 +858,27 @@ function sendToServer(blob, c, hasFace){
   form.append('file',blob,'photo.png');
   form.append('size_key',getSizeKey(c));
   form.append('bg_color',selectedBgKey==='custom'?'white':selectedBgKey);
-  form.append('enhance','true');
+  form.append('bg_hex',selectedBgHex||'#ffffff');
+  form.append('enhance',document.getElementById('ck-enh')&&document.getElementById('ck-enh').checked?'true':'true');
   form.append('output_fmt','jpeg');
+  form.append('head_ratio',String(c.hr||0));
+  form.append('eye_line',String(c.el||0));
 
   fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
     .then(function(r){return r.json();})
     .then(function(d){
-      if(!d.success) throw new Error(d.detail);
-      var url='data:image/jpeg;base64,'+d.image_b64;
-      showResult(url,c,hasFace);
+      if(!d.success) throw new Error(d.detail||'Server error');
+      var mime=d.format==='png'?'image/png':'image/jpeg';
+      var url='data:'+mime+';base64,'+d.image_b64;
+      // Lưu PDF nếu có
+      if(d.pdf_b64){
+        window._lastPdfB64=d.pdf_b64;
+        window._lastPdfName='to-in-'+c.name+'.pdf';
+      }
+      // Cập nhật trạng thái AI
+      window._faceDetected=d.face_detected;
+      window._bgMode=d.bg_mode;
+      showResult(url,c,hasFace||d.face_detected);
     })
     .catch(function(){
       // Fallback local
@@ -915,8 +929,39 @@ function showResult(url, c, hasFace){
     // Download buttons
     btnDl1.onclick=btnDlFull.onclick=function(){dlURL(url,'anh-the-'+c.n+'.jpg');};
 
+    // Nút tải PDF
+    var btnPdf=$('btn-dl-pdf');
+    if(btnPdf){
+      if(window._lastPdfB64){
+        btnPdf.style.display='inline-flex';
+        btnPdf.onclick=function(){
+          var pdfBlob=b64ToBlob(window._lastPdfB64,'application/pdf');
+          var pdfUrl=URL.createObjectURL(pdfBlob);
+          dlURL(pdfUrl, window._lastPdfName||'to-in.pdf');
+        };
+      } else {
+        btnPdf.style.display='none';
+      }
+    }
+
+    // AI status badge
+    var bgModeEl=$('bg-mode-badge');
+    if(bgModeEl){
+      var bm=window._bgMode||'unknown';
+      var bmLabel=bm==='removebg_api'?'Remove.bg API ✓':bm==='rembg'?'rembg AI ✓':'GrabCut';
+      bgModeEl.textContent='Xóa nền: '+bmLabel;
+      bgModeEl.style.color=bm==='grabcut'?'var(--amber)':'var(--green)';
+    }
+
     setStep(2);
   }, 500);
+}
+
+function b64ToBlob(b64,type){
+  var bin=atob(b64);
+  var arr=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:type});
 }
 
 // ── Tờ in ─────────────────────────────────────────────────────────────────

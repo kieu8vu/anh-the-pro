@@ -359,7 +359,7 @@ async def process_photo(
     size_key:   str   = Form("the_3x4"),
     bg_color:   str   = Form("white"),
     bg_hex:     str   = Form(""),
-    enhance_on: bool  = Form(True),
+    enhance:    bool  = Form(True),
     output_fmt: str   = Form("jpeg"),
     head_ratio: float = Form(0.0),
     eye_line:   float = Form(0.0),
@@ -415,7 +415,7 @@ async def process_photo(
         result = icao_crop(img_bg, face, tw, th, hr, el)
 
         # ── 6. Enhance ───────────────────────────────────────────────
-        if enhance_on:
+        if enhance:
             result = enhance(result)
 
         # ── 7. Xuất PNG ──────────────────────────────────────────────
