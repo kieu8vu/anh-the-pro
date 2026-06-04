@@ -39,16 +39,28 @@ logger = logging.getLogger(__name__)
 # ── Remove.bg API key (set qua env var REMOVE_BG_KEY) ────────────────────────
 REMOVE_BG_KEY = os.environ.get("REMOVE_BG_KEY", "")
 
-# ── rembg (fallback 1) ────────────────────────────────────────────────────────
+# ── rembg (fallback 1) — lazy load để không block startup port binding ─────────
 REMBG_AVAILABLE = False
 REMBG_SESSION   = None
+
+def _init_rembg():
+    """Chạy trong background thread — không block uvicorn startup"""
+    global REMBG_AVAILABLE, REMBG_SESSION
+    try:
+        from rembg import remove as _r, new_session
+        REMBG_SESSION   = new_session("u2netp")
+        REMBG_AVAILABLE = True
+        logger.info("✓ rembg u2netp loaded (background thread)")
+    except Exception as e:
+        logger.warning(f"rembg not available: {e}")
+
+import threading as _threading
 try:
-    from rembg import remove as rembg_remove, new_session
-    REMBG_SESSION   = new_session("u2netp")
-    REMBG_AVAILABLE = True
-    logger.info("✓ rembg u2netp loaded")
-except Exception as e:
-    logger.warning(f"rembg unavailable: {e}")
+    import rembg as _rembg_pkg  # noqa — just check if importable
+    _threading.Thread(target=_init_rembg, daemon=True).start()
+    logger.info("rembg: loading u2netp in background...")
+except ImportError:
+    logger.warning("rembg package missing — GrabCut only mode")
 
 # ── OpenCV cascades ──────────────────────────────────────────────────────────
 _FACE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -56,6 +68,12 @@ _EYE  = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
 
 app = FastAPI(title="ID Photo Pro API v4", version="4.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("=== ID Photo Pro v4 starting up ===")
+    logger.info(f"OpenCV: {cv2.__version__}")
+    logger.info("Server ready — rembg loading in background if available")
 
 # ════════════════════════════════════════════════════════════════
 # DATABASE TIÊU CHUẨN ICAO (30+ quốc gia)
@@ -162,8 +180,9 @@ def remove_bg_removebg_api(pil_img):
 
 def remove_bg_rembg(pil_img):
     """rembg u2netp — fallback 1"""
-    if not REMBG_AVAILABLE: return None
+    if not REMBG_AVAILABLE or REMBG_SESSION is None: return None
     try:
+        from rembg import remove as rembg_remove
         result = rembg_remove(img_to_bytes(pil_img,"PNG"), session=REMBG_SESSION)
         return Image.open(io.BytesIO(result)).convert("RGBA")
     except Exception as e:
@@ -359,7 +378,7 @@ async def process_photo(
     size_key:   str   = Form("the_3x4"),
     bg_color:   str   = Form("white"),
     bg_hex:     str   = Form(""),
-    enhance:    bool  = Form(True),
+    do_enhance: bool  = Form(True),
     output_fmt: str   = Form("jpeg"),
     head_ratio: float = Form(0.0),
     eye_line:   float = Form(0.0),
@@ -415,7 +434,7 @@ async def process_photo(
         result = icao_crop(img_bg, face, tw, th, hr, el)
 
         # ── 6. Enhance ───────────────────────────────────────────────
-        if enhance:
+        if do_enhance:
             result = enhance(result)
 
         # ── 7. Xuất PNG ──────────────────────────────────────────────
