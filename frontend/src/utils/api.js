@@ -2,7 +2,7 @@
 // ============================================================
 
 // ⚠️  Đổi URL này thành domain Render.com của bạn sau Bước 3
-const API_BASE = window.API_BASE || "https://anh-the-pro-api.onrender.com";
+const API_BASE = window.API_BASE || "https://anh-the-pro.onrender.com";
 
 /**
  * Lấy danh sách kích thước ảnh thẻ chuẩn từ server

@@ -35,9 +35,13 @@ from reportlab.pdfgen import canvas as pdf_canvas
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+cv2.setNumThreads(1)
 
 # ── Remove.bg API key (set qua env var REMOVE_BG_KEY) ────────────────────────
 REMOVE_BG_KEY = os.environ.get("REMOVE_BG_KEY", "")
+ENABLE_REMBG = os.environ.get("ENABLE_REMBG", "").lower() in ("1", "true", "yes", "on")
+MAX_UPLOAD_BYTES = int(os.environ.get("MAX_UPLOAD_BYTES", str(8 * 1024 * 1024)))
+MAX_DIM = int(os.environ.get("MAX_IMAGE_DIM", "1600"))
 
 # ── rembg (fallback 1) — lazy load để không block startup port binding ─────────
 REMBG_AVAILABLE = False
@@ -54,13 +58,16 @@ def _init_rembg():
     except Exception as e:
         logger.warning(f"rembg not available: {e}")
 
-import threading as _threading
-try:
-    import rembg as _rembg_pkg  # noqa — just check if importable
-    _threading.Thread(target=_init_rembg, daemon=True).start()
-    logger.info("rembg: loading u2netp in background...")
-except ImportError:
-    logger.warning("rembg package missing — GrabCut only mode")
+if ENABLE_REMBG:
+    import threading as _threading
+    try:
+        import rembg as _rembg_pkg  # noqa - just check if importable
+        _threading.Thread(target=_init_rembg, daemon=True).start()
+        logger.info("rembg: loading u2netp in background...")
+    except ImportError:
+        logger.warning("rembg package missing - GrabCut only mode")
+else:
+    logger.info("rembg disabled by default; set ENABLE_REMBG=true to enable it")
 
 # ── OpenCV cascades ──────────────────────────────────────────────────────────
 _FACE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
@@ -362,6 +369,7 @@ async def health():
         "status":       "ok",
         "version":      "4.0.0",
         "remove_bg_api": bool(REMOVE_BG_KEY),
+        "rembg_enabled": ENABLE_REMBG,
         "rembg":        REMBG_AVAILABLE,
         "opencv":       cv2.__version__,
         "reportlab":    True,
@@ -378,7 +386,7 @@ async def process_photo(
     size_key:   str   = Form("the_3x4"),
     bg_color:   str   = Form("white"),
     bg_hex:     str   = Form(""),
-    do_enhance: bool  = Form(True),
+    do_enhance: bool  = Form(True, alias="enhance"),
     output_fmt: str   = Form("jpeg"),
     head_ratio: float = Form(0.0),
     eye_line:   float = Form(0.0),
@@ -403,10 +411,12 @@ async def process_photo(
 
     try:
         data = await file.read()
+        if len(data) > MAX_UPLOAD_BYTES:
+            raise HTTPException(413, f"File quá lớn, tối đa {MAX_UPLOAD_BYTES // (1024 * 1024)}MB")
+
         pil  = Image.open(io.BytesIO(data)).convert("RGB")
 
         # Giới hạn input
-        MAX_DIM=2400
         if max(pil.size)>MAX_DIM:
             r=MAX_DIM/max(pil.size)
             pil=pil.resize((int(pil.width*r),int(pil.height*r)),Image.LANCZOS)
@@ -458,6 +468,8 @@ async def process_photo(
             "rembg_used":    bg_mode in ("rembg","removebg_api"),
         })
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"process error: {e}", exc_info=True)
         raise HTTPException(500, f"Lỗi xử lý ảnh: {str(e)}")

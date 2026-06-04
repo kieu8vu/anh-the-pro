@@ -12,8 +12,12 @@ services:
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
-        value: "3.11.0"
-      - key: PORT
-        value: "8000"
+        value: "3.11.9"
+      - key: ENABLE_REMBG
+        value: "false"
+      - key: MAX_IMAGE_DIM
+        value: "1600"
+      - key: MAX_UPLOAD_BYTES
+        value: "8388608"
     # Tự động deploy khi push lên branch main
     autoDeploy: true

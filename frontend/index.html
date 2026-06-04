@@ -865,7 +865,14 @@ function sendToServer(blob, c, hasFace){
   form.append('eye_line',String(c.el||0));
 
   fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
-    .then(function(r){return r.json();})
+    .then(function(r){
+      return r.text().then(function(txt){
+        var d={};
+        try{d=txt?JSON.parse(txt):{};}catch(e){}
+        if(!r.ok) throw new Error(d.detail||('Server lỗi '+r.status));
+        return d;
+      });
+    })
     .then(function(d){
       if(!d.success) throw new Error(d.detail||'Server error');
       var mime=d.format==='png'?'image/png':'image/jpeg';
@@ -880,11 +887,11 @@ function sendToServer(blob, c, hasFace){
       window._bgMode=d.bg_mode;
       showResult(url,c,hasFace||d.face_detected);
     })
-    .catch(function(){
-      // Fallback local
-      var reader=new FileReader();
-      reader.onload=function(e){showResult(e.target.result,c,hasFace);};
-      reader.readAsDataURL(blob);
+    .catch(function(e){
+      chipSV.textContent='Server lỗi';
+      chipSV.className='chip chip-err';
+      alert('Server xử lý ảnh đang lỗi. Vui lòng thử lại sau.\n\nChi tiết: '+e.message);
+      setStep(0);
     });
 }
 
