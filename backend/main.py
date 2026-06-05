@@ -49,6 +49,17 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas as pdf_canvas
 from reportlab.lib.utils import ImageReader
+import json
+
+class NumpyEncoder(json.JSONEncoder):
+    """Convert numpy types → Python native để JSON serialize được."""
+    def default(self, obj):
+        import numpy as np
+        if isinstance(obj, np.bool_):   return bool(obj)
+        if isinstance(obj, np.integer): return int(obj)
+        if isinstance(obj, np.floating):return float(obj)
+        if isinstance(obj, np.ndarray): return obj.tolist()
+        return super().default(obj)
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -444,7 +455,7 @@ def icao_compliance_check(
     checks.append({
         "id": "resolution",
         "label": "Độ phân giải đủ (min 300×300px)",
-        "pass": W >= 300 and H >= 300,
+        "pass": bool(W >= 300 and H >= 300),
         "detail": f"{W}×{H}px"
     })
 
@@ -453,7 +464,7 @@ def icao_compliance_check(
     checks.append({
         "id": "aspect",
         "label": "Tỷ lệ khung hình đúng",
-        "pass": 0.4 < ratio < 2.0,
+        "pass": bool(0.4 < ratio < 2.0),
         "detail": f"{ratio:.2f}"
     })
 
@@ -461,7 +472,7 @@ def icao_compliance_check(
     checks.append({
         "id": "face",
         "label": "Phát hiện khuôn mặt",
-        "pass": face_detected,
+        "pass": bool(face_detected),
         "detail": "Có" if face_detected else "Không"
     })
 
@@ -470,7 +481,7 @@ def icao_compliance_check(
     checks.append({
         "id": "head_size",
         "label": "Tỷ lệ đầu ICAO (50-85%)",
-        "pass": hr_ok,
+        "pass": bool(hr_ok),
         "detail": f"{head_ratio*100:.0f}%"
     })
 
@@ -479,38 +490,38 @@ def icao_compliance_check(
     checks.append({
         "id": "eye_position",
         "label": "Vị trí mắt ICAO (31-48% từ trên)",
-        "pass": el_ok,
+        "pass": bool(el_ok),
         "detail": f"{eye_line*100:.0f}% từ trên"
     })
 
     # 6. Phân tích độ sáng (ICAO: không quá tối/sáng)
     gray = np.array(pil_img.convert("L"))
     mean_brightness = float(np.mean(gray))
-    brightness_ok = 80 < mean_brightness < 220
+    brightness_ok = bool(80 < mean_brightness < 220)
     checks.append({
         "id": "brightness",
         "label": "Độ sáng hợp lý (80-220/255)",
-        "pass": brightness_ok,
+        "pass": bool(brightness_ok),
         "detail": f"{mean_brightness:.0f}/255"
     })
 
     # 7. Độ tương phản
     std_brightness = float(np.std(gray))
-    contrast_ok = std_brightness > 20
+    contrast_ok = bool(std_brightness > 20)
     checks.append({
         "id": "contrast",
         "label": "Tương phản đủ (std>20)",
-        "pass": contrast_ok,
+        "pass": bool(contrast_ok),
         "detail": f"std={std_brightness:.1f}"
     })
 
     # 8. Độ sắc nét (Laplacian variance)
     lap_var = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-    sharpness_ok = lap_var > 50
+    sharpness_ok = bool(lap_var > 50)
     checks.append({
         "id": "sharpness",
         "label": "Ảnh đủ sắc nét (blur<threshold)",
-        "pass": sharpness_ok,
+        "pass": bool(sharpness_ok),
         "detail": f"score={lap_var:.0f}"
     })
 
@@ -521,22 +532,22 @@ def icao_compliance_check(
         pil_img.crop((0,H-30,30,H)),
         pil_img.crop((W-30,H-30,W,H)),
     ]
-    corner_means = [np.mean(np.array(c)) for c in corners]
-    bg_uniform = (max(corner_means) - min(corner_means)) < 60
+    corner_means = [float(np.mean(np.array(c))) for c in corners]
+    bg_uniform = bool((max(corner_means) - min(corner_means)) < 60)
     checks.append({
         "id": "background",
         "label": "Nền đồng màu (không loang)",
-        "pass": bg_uniform,
+        "pass": bool(bg_uniform),
         "detail": "Đồng màu" if bg_uniform else "Không đồng màu"
     })
 
     # 10. Màu nền sáng (ICAO yêu cầu nền sáng)
-    avg_corner = sum(corner_means)/len(corner_means)
-    bg_light = avg_corner > 160
+    avg_corner = float(sum(corner_means)/len(corner_means))
+    bg_light = bool(avg_corner > 160)
     checks.append({
         "id": "bg_color",
         "label": "Màu nền sáng (ICAO yêu cầu)",
-        "pass": bg_light,
+        "pass": bool(bg_light),
         "detail": f"avg={avg_corner:.0f}/255"
     })
 
@@ -545,19 +556,20 @@ def icao_compliance_check(
     checks.append({
         "id": "face_complete",
         "label": "Khuôn mặt đầy đủ, không bị cắt",
-        "pass": face_centered,
+        "pass": bool(face_centered),
         "detail": "OK" if face_centered else "Cần kiểm tra"
     })
 
     # 12. Định dạng ảnh màu (không trắng đen)
-    r_ch = np.mean(np.array(pil_img)[:,:,0])
-    g_ch = np.mean(np.array(pil_img)[:,:,1])
-    b_ch = np.mean(np.array(pil_img)[:,:,2])
-    is_color = max(abs(r_ch-g_ch), abs(g_ch-b_ch), abs(r_ch-b_ch)) > 8
+    arr = np.array(pil_img)
+    r_ch = float(np.mean(arr[:,:,0]))
+    g_ch = float(np.mean(arr[:,:,1]))
+    b_ch = float(np.mean(arr[:,:,2]))
+    is_color = bool(max(abs(r_ch-g_ch), abs(g_ch-b_ch), abs(r_ch-b_ch)) > 8)
     checks.append({
         "id": "color",
         "label": "Ảnh màu (không trắng đen)",
-        "pass": is_color,
+        "pass": bool(is_color),
         "detail": "Màu" if is_color else "Trắng đen"
     })
 
@@ -900,7 +912,8 @@ async def process_photo(
 
         logger.info(f"  ✓ Done img={len(img_bytes)//1024}KB pdf={len(pdf_bytes)//1024}KB")
 
-        return JSONResponse({
+        # Serialize với NumpyEncoder để handle numpy types
+        response_data = {
             "success":       True,
             "image_b64":     img_b64,
             "pdf_b64":       pdf_b64,
@@ -919,7 +932,8 @@ async def process_photo(
                 "formal_light": OUTFIT_CONFIGS["formal_light"]["name"],
                 "smart_casual": OUTFIT_CONFIGS["smart_casual"]["name"],
             }
-        })
+        }
+        return JSONResponse(content=json.loads(json.dumps(response_data, cls=NumpyEncoder)))
 
     except Exception as e:
         logger.error(f"process error: {e}", exc_info=True)
