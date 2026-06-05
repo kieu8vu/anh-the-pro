@@ -430,80 +430,69 @@ def _removebg_rembg(pil_img: Image.Image) -> Optional[Image.Image]:
 
 def _removebg_color_based(pil_img: Image.Image) -> Image.Image:
     """
-    Xóa nền dựa trên màu sắc (Color Distance + Flood Fill).
-    An toàn hơn GrabCut, hoạt động tốt với nền đơn sắc (xanh, xám, trắng).
-    
+    Xóa nền màu đơn sắc bằng LAB color distance.
+    Chỉ gọi khi nền đã được verify là đơn sắc (uniformity < 30).
+
     Thuật toán:
-    1. Lấy màu nền từ 4 góc ảnh (trung bình)
-    2. Tính color distance từng pixel đến màu nền
-    3. Pixel gần màu nền → transparent
-    4. Làm mịn mask bằng morphology + blur
+    1. Lấy màu nền từ 4 góc (trung bình)
+    2. LAB distance từng pixel vs màu nền
+    3. Threshold adaptive
+    4. Connected component → giữ foreground lớn nhất
+    5. Feather edges
     """
     img_np = to_cv(pil_img)
     H, W   = img_np.shape[:2]
-    
-    # Lấy màu nền từ 4 góc (mỗi góc 20x20 pixels)
-    s = 20
-    corners = [
-        img_np[0:s, 0:s],
-        img_np[0:s, W-s:W],
-        img_np[H-s:H, 0:s],
-        img_np[H-s:H, W-s:W],
+    s = max(15, min(30, W//15, H//15))
+
+    # Màu nền từ 4 góc
+    corners_px = [
+        img_np[0:s, 0:s], img_np[0:s, W-s:W],
+        img_np[H-s:H, 0:s], img_np[H-s:H, W-s:W],
     ]
-    bg_color = np.mean([c.reshape(-1,3).mean(axis=0) for c in corners], axis=0)
-    
-    # Tính color distance (LAB colorspace cho chính xác hơn)
+    bg_color = np.mean([c.reshape(-1,3).mean(axis=0) for c in corners_px], axis=0)
+
+    # LAB distance
     img_lab = cv2.cvtColor(img_np, cv2.COLOR_BGR2LAB).astype(np.float32)
-    bg_bgr  = np.uint8([[bg_color]])
+    bg_bgr  = np.clip(bg_color, 0, 255).astype(np.uint8).reshape(1,1,3)
     bg_lab  = cv2.cvtColor(bg_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)[0,0]
-    
-    # Euclidean distance trong LAB space
-    diff = img_lab - bg_lab
-    dist = np.sqrt(np.sum(diff**2, axis=2))
-    
-    # Threshold: điều chỉnh theo độ đồng nhất của nền
-    corner_stds = [np.std(c) for c in corners]
-    bg_uniformity = np.mean(corner_stds)
-    # Nền đồng màu → threshold thấp (xóa nhiều hơn)
-    # Nền phức tạp → threshold cao (xóa ít, an toàn hơn)
-    thresh = max(20, min(45, 30 + bg_uniformity * 0.5))
-    
-    # Tạo foreground mask
-    fg_mask = (dist > thresh).astype(np.uint8) * 255
-    
-    # Morphological operations để làm sạch
-    kernel_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7,7))
-    kernel_open  = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-    
-    # Đóng lỗ nhỏ trong foreground
-    fg_mask = cv2.morphologyEx(fg_mask, cv2.MORPH_CLOSE, kernel_close, iterations=3)
-    # Xóa noise nhỏ ở background
-    fg_mask = cv2.morphologyEx(fg_mask, cv2.MORPH_OPEN,  kernel_open,  iterations=1)
-    
-    # Lấy connected component lớn nhất (chính là người)
-    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(fg_mask)
-    if num_labels > 1:
-        # Label 0 là background, lấy component lớn nhất còn lại
-        largest = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
-        fg_mask = ((labels == largest) * 255).astype(np.uint8)
-    
-    # Feather edges: blur mask để transition mượt
-    fg_mask = cv2.GaussianBlur(fg_mask, (9,9), 0)
-    
-    # Tạo RGBA output
+    dist    = np.sqrt(np.sum((img_lab - bg_lab)**2, axis=2))
+
+    # Adaptive threshold: dựa trên std của các góc
+    corner_stds = [float(np.std(c)) for c in corners_px]
+    uniformity  = float(np.mean(corner_stds))
+    thresh = max(18, min(40, 25 + uniformity * 0.4))
+
+    # Foreground mask
+    fg = (dist > thresh).astype(np.uint8) * 255
+
+    # Morphology
+    ker_c = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9))
+    ker_o = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+    fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, ker_c, iterations=3)
+    fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN,  ker_o, iterations=1)
+
+    # Lấy component lớn nhất = người
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(fg)
+    if n > 1:
+        largest = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+        fg = ((labels == largest) * 255).astype(np.uint8)
+
+    # Kiểm tra: nếu foreground < 10% ảnh → xóa sai, giữ toàn bộ
+    fg_ratio = float(fg.sum()) / (255 * H * W)
+    if fg_ratio < 0.10:
+        logger.warning(f"  Color-based: fg too small ({fg_ratio:.1%}), keeping original")
+        fg = np.ones((H, W), np.uint8) * 255
+
+    fg = cv2.GaussianBlur(fg, (7,7), 0)
+
     rgba = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGBA)
-    rgba[:,:,3] = fg_mask
-    
-    logger.info(f"  ✓ Color-based BG removal (thresh={thresh:.1f}, bg_uniformity={bg_uniformity:.1f})")
+    rgba[:,:,3] = fg
+    logger.info(f"  ✓ Color-based (thresh={thresh:.1f}, fg={fg_ratio:.1%})")
     return Image.fromarray(rgba).convert("RGBA")
 
 def _removebg_keep_original(pil_img: Image.Image) -> Image.Image:
-    """
-    Fallback an toàn nhất: giữ nguyên ảnh (không xóa nền).
-    Tránh trường hợp xóa sai làm hỏng ảnh.
-    """
+    """Giữ nguyên ảnh, không xóa nền — fallback an toàn nhất."""
     logger.info("  ✓ Keep original (no bg removal)")
-    # Tạo RGBA với alpha=255 (không trong suốt)
     return pil_img.convert("RGBA")
 
 def remove_background(pil_img: Image.Image) -> Tuple[Image.Image, str]:
@@ -533,12 +522,12 @@ def remove_background(pil_img: Image.Image) -> Tuple[Image.Image, str]:
     corner_stds = [float(np.std(c)) for c in corners]
     bg_uniformity = float(np.mean(corner_stds))
     
-    if bg_uniformity < 30:
-        # Nền đơn sắc → color-based removal an toàn
+    if bg_uniformity < 40:
+        # Nền đơn sắc đủ → color-based removal
         r = _removebg_color_based(pil_img)
         return r, "color_based"
     else:
-        # Nền phức tạp → giữ nguyên, không xóa bừa
+        # Nền phức tạp → giữ nguyên
         r = _removebg_keep_original(pil_img)
         return r, "keep_original"
 

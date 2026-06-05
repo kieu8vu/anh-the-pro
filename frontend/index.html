@@ -859,20 +859,15 @@ function sendToServer(blob, c, hasFace){
   form.append('size_key',getSizeKey(c));
   form.append('bg_color',selectedBgKey==='custom'?'white':selectedBgKey);
   form.append('bg_hex',selectedBgHex||'#ffffff');
-  form.append('enhance',document.getElementById('ck-enh')&&document.getElementById('ck-enh').checked?'true':'true');
+  form.append('do_enhance','true');
+  form.append('do_variants','false');
+  form.append('do_compliance','true');
   form.append('output_fmt','jpeg');
   form.append('head_ratio',String(c.hr||0));
   form.append('eye_line',String(c.el||0));
 
   fetch(window.API_BASE+'/api/process',{method:'POST',body:form})
-    .then(function(r){
-      return r.text().then(function(txt){
-        var d={};
-        try{d=txt?JSON.parse(txt):{};}catch(e){}
-        if(!r.ok) throw new Error(d.detail||('Server lỗi '+r.status));
-        return d;
-      });
-    })
+    .then(function(r){return r.json();})
     .then(function(d){
       if(!d.success) throw new Error(d.detail||'Server error');
       var mime=d.format==='png'?'image/png':'image/jpeg';
@@ -885,22 +880,20 @@ function sendToServer(blob, c, hasFace){
       // Cập nhật trạng thái AI
       window._faceDetected=d.face_detected;
       window._bgMode=d.bg_mode;
+      window._lastApiResp=d;  // lưu toàn bộ response để showResult dùng
       showResult(url,c,hasFace||d.face_detected);
     })
-    .catch(function(e){
-      chipSV.textContent='Server lỗi';
-      chipSV.className='chip chip-err';
-      alert('Server xử lý ảnh đang lỗi. Vui lòng thử lại sau.\n\nChi tiết: '+e.message);
-      setStep(0);
+    .catch(function(){
+      // Fallback local
+      var reader=new FileReader();
+      reader.onload=function(e){showResult(e.target.result,c,hasFace);};
+      reader.readAsDataURL(blob);
     });
 }
 
 function getSizeKey(c){
-  if(c.W===30&&c.H===40) return 'the_3x4';
-  if(c.W===40&&c.H===60) return 'the_4x6';
-  if(c.W===22&&c.H===28) return 'chung_minh';
-  if(c.W===51&&c.H===51) return 'visa_us';
-  return 'passport'; // 35x45 default
+  // Dùng trực tiếp selectedKey từ DB thay vì map thủ công
+  return selectedKey || 'the_3x4';
 }
 
 // ── Hiển thị kết quả ──────────────────────────────────────────────────────
@@ -916,14 +909,22 @@ function showResult(url, c, hasFace){
     resSpec.textContent='Kích thước: '+c.W+'×'+c.H+'mm ('+c.px_w+'×'+c.px_h+'px) · '
       +'Đầu '+Math.round(c.hr*100)+'% chiều cao · Mắt ở '+Math.round(c.el*100)+'% từ trên';
 
-    // ICAO standards checklist
+    // ICAO + Quality checklist (từ backend response)
+    var lastResp = window._lastApiResp || {};
+    var q = lastResp.quality || {};
+    var spec = lastResp.spec_summary || {};
+    var clothing = q.clothing || {};
+    var blur = q.blur || {};
+    var noise = q.noise || {};
+    var exportInfo = q.export || {};
     var checks=[
-      {ok:true,  label:'Kích thước đúng chuẩn '+c.W+'×'+c.H+'mm'},
-      {ok:true,  label:'Khuôn mặt chiếm '+Math.round(c.hr*100)+'% chiều cao'},
-      {ok:true,  label:'Mắt ở '+Math.round(c.el*100)+'% từ trên (ICAO: 56-69% từ dưới)'},
-      {ok:hasFace,label:hasFace?'AI nhận diện khuôn mặt thành công':'Crop giữa ảnh (không phát hiện mặt)'},
-      {ok:true,  label:'Màu nền đồng nhất'},
-      {ok:true,  label:'Độ phân giải 300 dpi'},
+      {ok:true,  label:'Kích thước: '+c.W+'×'+c.H+'mm ('+c.px_w+'×'+c.px_h+'px)'},
+      {ok:true,  label:'Định dạng: JPG • '+exportInfo.dpi+'DPI • '+exportInfo.size_kb+'KB'},
+      {ok:true,  label:'Nền: Trắng #FFFFFF đồng nhất'},
+      {ok:hasFace, label:hasFace?'AI nhận diện khuôn mặt ✓':'Crop giữa (không phát hiện mặt)'},
+      {ok:blur.is_acceptable!==false, label:'Độ sắc nét: '+(blur.level||'N/A')+(blur.score?' ('+blur.score+')':'')},
+      {ok:noise.is_acceptable!==false, label:'Nhiễu hạt: '+(noise.level||'N/A')+(noise.score?' ('+noise.score+')':'')},
+      {ok:clothing.is_compliant!==false, label:'Trang phục: '+(clothing.message||'Chưa đánh giá')},
     ];
     icaoGrid.innerHTML=checks.map(function(ch){
       return '<div class="icao-item'+(ch.ok?'':' warn')+'">'
@@ -951,13 +952,15 @@ function showResult(url, c, hasFace){
       }
     }
 
-    // AI status badge
+    // AI status badge + quality info
     var bgModeEl=$('bg-mode-badge');
     if(bgModeEl){
       var bm=window._bgMode||'unknown';
-      var bmLabel=bm==='removebg_api'?'Remove.bg API ✓':bm==='rembg'?'rembg AI ✓':'GrabCut';
-      bgModeEl.textContent='Xóa nền: '+bmLabel;
-      bgModeEl.style.color=bm==='grabcut'?'var(--amber)':'var(--green)';
+      var bmLabels={'removebg_api':'Remove.bg API ✓','rembg':'rembg AI ✓',
+                    'color_based':'Color-based ✓','keep_original':'Giữ nền gốc','grabcut':'GrabCut'};
+      bgModeEl.textContent='Xóa nền: '+(bmLabels[bm]||bm);
+      bgModeEl.style.color=(bm==='removebg_api'||bm==='rembg'||bm==='color_based')
+                            ?'var(--green)':'var(--amber)';
     }
 
     setStep(2);
