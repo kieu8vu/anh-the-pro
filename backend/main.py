@@ -1,78 +1,48 @@
 """
-ID Photo Pro — Backend v6.0
+ID Photo Pro — Backend v7.0
 ════════════════════════════════════════════════════════════════════════
-Tính năng (theo PhotoGov standard):
+Engine chính: PicWish Advanced ID Photo API
+  - Face detection + ICAO crop + background removal trong 1 API call
+  - Chất lượng chuyên nghiệp, không cần local AI models
+  - Hỗ trợ 100+ quốc gia, outfit variants, beauty enhancement
 
-  1. ICAO-compliant face detection & alignment
-     - OpenCV Haar Cascade (frontal face + eyes)
-     - Tính góc nghiêng từ vector 2 mắt → xoay thẳng
-     - IED-based crop (Inter-Eye Distance) → đúng tỷ lệ ICAO
+Fallback (khi không có PICWISH_KEY):
+  - Remove.bg API → xóa nền AI + local crop
+  - rembg local → xóa nền local
+  - Color-based → nền đơn sắc
+  - Keep original → giữ nguyên
 
-  2. Background removal (3-tier fallback)
-     - Remove.bg API (chất lượng cao nhất)
-     - rembg u2netp ONNX (local, không cần API)
-     - GrabCut OpenCV (fallback cuối)
-
-  3. ICAO Compliance Check
-     - Kiểm tra 12 tiêu chí: head size, eye position, background,
-       lighting, sharpness, aspect ratio...
-     - Trả về compliance report chi tiết
-
-  4. Photo Variants — 4 biến thể outfit
-     - Original (giữ nguyên quần áo)
-     - Formal Dark (thêm jacket tối màu)
-     - Formal Light (thêm áo sáng màu)
-     - Smart Casual (cổ áo phù hợp)
-     Dùng thuật toán vùng cổ/vai để blend outfit
-
-  5. PDF A4 tờ in (như PhotoGov For-Print-A4.pdf)
-     - Lưới ảnh vừa khổ A4 landscape
-     - Đường kẻ cắt, header thông tin
-
-  Pipeline đúng thứ tự:
-    detect → straighten → ICAO crop → remove bg → add bg color
-    → enhance → compliance check → variants → PDF
+Endpoints:
+  POST /api/process  — xử lý ảnh thẻ
+  GET  /api/sizes    — danh sách kích thước
+  GET  /health       — health check
 ════════════════════════════════════════════════════════════════════════
 """
 
-import io, base64, logging, math, os
-from typing import Optional, Tuple, List, Dict
+import io, base64, logging, math, os, time, json
+from typing import Optional, Tuple, Dict
 
 import cv2
 import numpy as np
-import requests as http_requests
+import requests as http_req
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from PIL import Image, ImageEnhance, ImageFilter, ImageStat, ImageDraw
+from PIL import Image, ImageEnhance, ImageFilter
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas as pdf_canvas
 from reportlab.lib.utils import ImageReader
-import json
 
-class NumpyEncoder(json.JSONEncoder):
-    """Convert numpy types → Python native để JSON serialize được."""
-    def default(self, obj):
-        import numpy as np
-        if isinstance(obj, np.bool_):   return bool(obj)
-        if isinstance(obj, np.integer): return int(obj)
-        if isinstance(obj, np.floating):return float(obj)
-        if isinstance(obj, np.ndarray): return obj.tolist()
-        return super().default(obj)
-
-# ── Logging ──────────────────────────────────────────────────────────────────
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── Config ───────────────────────────────────────────────────────────────────
-REMOVE_BG_KEY = os.environ.get("REMOVE_BG_KEY", "")
-MAX_INPUT_DIM  = 2000
+# ── API Keys ──────────────────────────────────────────────────────────────────
+PICWISH_KEY    = os.environ.get("PICWISH_KEY", "")
+REMOVE_BG_KEY  = os.environ.get("REMOVE_BG_KEY", "")
+PICWISH_URL    = "https://techsz.aoscdn.com/api/tasks/visual/external/idphoto"
 
-# ── rembg: load đồng bộ khi startup ──────────────────────────────────────────
+# ── rembg fallback ────────────────────────────────────────────────────────────
 REMBG_SESSION   = None
 REMBG_AVAILABLE = False
 
@@ -80,64 +50,50 @@ def _load_rembg():
     global REMBG_SESSION, REMBG_AVAILABLE
     try:
         from rembg import new_session
-        for model in ["u2netp", "u2net"]:
+        for m in ["u2netp", "u2net"]:
             try:
-                REMBG_SESSION   = new_session(model)
+                REMBG_SESSION = new_session(m)
                 REMBG_AVAILABLE = True
-                logger.info(f"✓ rembg {model} ready")
+                logger.info(f"✓ rembg {m}")
                 return
-            except Exception as e:
-                logger.warning(f"rembg {model}: {e}")
-    except ImportError:
-        logger.warning("rembg not installed")
+            except: pass
+    except: pass
 
 _load_rembg()
 
 # ── OpenCV ────────────────────────────────────────────────────────────────────
-_FACE_CASCADE = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-)
-_EYE_CASCADE = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_eye.xml"
-)
-_PROFILE_CASCADE = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_profileface.xml"
-)
+_FACE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+_EYE  = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
 
-app = FastAPI(title="ID Photo Pro API v6", version="6.0.0")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
-)
+app = FastAPI(title="ID Photo Pro v7", version="7.0.0")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # ════════════════════════════════════════════════════════════════════════
-# PHOTO SIZE DATABASE — ICAO 9303 + 22 quốc gia
-# ICAO spec: face height = 70-80% of image height
-#            eye line = 56-69% from BOTTOM = 31-44% from TOP
+# PHOTO SIZE DATABASE
 # ════════════════════════════════════════════════════════════════════════
 SIZES = {
-    "vn_cccd":     {"W":22,"H":28,"pw":260,"ph":330,"label":"CCCD/CMND VN",        "hr":0.72,"el":0.42},
-    "the_3x4":     {"W":30,"H":40,"pw":354,"ph":472,"label":"Ảnh 3×4 cm",          "hr":0.72,"el":0.42},
-    "the_4x6":     {"W":40,"H":60,"pw":472,"ph":709,"label":"Ảnh 4×6 cm",          "hr":0.72,"el":0.42},
-    "the_2x3":     {"W":20,"H":30,"pw":236,"ph":354,"label":"Ảnh 2×3 cm",          "hr":0.72,"el":0.42},
-    "chung_minh":  {"W":22,"H":28,"pw":260,"ph":330,"label":"CCCD/CMND",           "hr":0.72,"el":0.42},
-    "passport":    {"W":35,"H":45,"pw":413,"ph":531,"label":"Hộ chiếu 35×45mm",   "hr":0.75,"el":0.43},
-    "visa_us":     {"W":51,"H":51,"pw":600,"ph":600,"label":"US Passport/Visa",    "hr":0.65,"el":0.40},
-    "uk_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"UK Passport",         "hr":0.75,"el":0.43},
-    "eu_schengen": {"W":35,"H":45,"pw":413,"ph":531,"label":"EU/Schengen",         "hr":0.76,"el":0.44},
-    "de_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Đức",                 "hr":0.76,"el":0.44},
-    "fr_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Pháp",                "hr":0.76,"el":0.44},
-    "ca_passport": {"W":50,"H":70,"pw":591,"ph":827,"label":"Canada",              "hr":0.68,"el":0.40},
-    "jp_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Nhật Bản",            "hr":0.75,"el":0.43},
-    "jp_visa":     {"W":45,"H":45,"pw":531,"ph":531,"label":"Visa Nhật",           "hr":0.70,"el":0.42},
-    "kr_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Hàn Quốc",            "hr":0.75,"el":0.43},
-    "cn_visa":     {"W":33,"H":48,"pw":390,"ph":567,"label":"Visa TQ",             "hr":0.72,"el":0.43},
-    "in_passport": {"W":51,"H":51,"pw":600,"ph":600,"label":"Ấn Độ",               "hr":0.65,"el":0.40},
-    "sg_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Singapore",           "hr":0.75,"el":0.43},
-    "au_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"Úc",                  "hr":0.75,"el":0.43},
-    "nz_passport": {"W":35,"H":45,"pw":413,"ph":531,"label":"New Zealand",         "hr":0.75,"el":0.43},
-    "ae_visa":     {"W":35,"H":45,"pw":413,"ph":531,"label":"UAE/Dubai",           "hr":0.75,"el":0.43},
-    "visa_schengen":{"W":35,"H":45,"pw":413,"ph":531,"label":"Visa Schengen",      "hr":0.76,"el":0.44},
+    "vn_cccd":      {"W":22,"H":28,"pw":260,"ph":330, "label":"CCCD/CMND VN",       "hr":0.72,"el":0.42,"picwish_spec":"VN"},
+    "the_3x4":      {"W":30,"H":40,"pw":354,"ph":472, "label":"Ảnh 3×4 cm",         "hr":0.72,"el":0.42,"picwish_spec":"VN"},
+    "the_4x6":      {"W":40,"H":60,"pw":472,"ph":709, "label":"Ảnh 4×6 cm",         "hr":0.72,"el":0.42,"picwish_spec":"VN"},
+    "the_2x3":      {"W":20,"H":30,"pw":236,"ph":354, "label":"Ảnh 2×3 cm",         "hr":0.72,"el":0.42,"picwish_spec":"VN"},
+    "chung_minh":   {"W":22,"H":28,"pw":260,"ph":330, "label":"CCCD/CMND",          "hr":0.72,"el":0.42,"picwish_spec":"VN"},
+    "passport":     {"W":35,"H":45,"pw":413,"ph":531, "label":"Hộ chiếu 35×45mm",  "hr":0.75,"el":0.43,"picwish_spec":"EU"},
+    "visa_us":      {"W":51,"H":51,"pw":600,"ph":600, "label":"US Passport/Visa",   "hr":0.65,"el":0.40,"picwish_spec":"US"},
+    "uk_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"UK Passport",        "hr":0.75,"el":0.43,"picwish_spec":"GB"},
+    "eu_schengen":  {"W":35,"H":45,"pw":413,"ph":531, "label":"EU/Schengen",        "hr":0.76,"el":0.44,"picwish_spec":"EU"},
+    "de_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Đức",                "hr":0.76,"el":0.44,"picwish_spec":"DE"},
+    "fr_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Pháp",               "hr":0.76,"el":0.44,"picwish_spec":"FR"},
+    "ca_passport":  {"W":50,"H":70,"pw":591,"ph":827, "label":"Canada",             "hr":0.68,"el":0.40,"picwish_spec":"CA"},
+    "jp_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Nhật Bản",           "hr":0.75,"el":0.43,"picwish_spec":"JP"},
+    "jp_visa":      {"W":45,"H":45,"pw":531,"ph":531, "label":"Visa Nhật",          "hr":0.70,"el":0.42,"picwish_spec":"JP"},
+    "kr_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Hàn Quốc",           "hr":0.75,"el":0.43,"picwish_spec":"KR"},
+    "cn_visa":      {"W":33,"H":48,"pw":390,"ph":567, "label":"Visa TQ",            "hr":0.72,"el":0.43,"picwish_spec":"CN"},
+    "in_passport":  {"W":51,"H":51,"pw":600,"ph":600, "label":"Ấn Độ",              "hr":0.65,"el":0.40,"picwish_spec":"IN"},
+    "sg_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Singapore",          "hr":0.75,"el":0.43,"picwish_spec":"SG"},
+    "au_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"Úc",                 "hr":0.75,"el":0.43,"picwish_spec":"AU"},
+    "nz_passport":  {"W":35,"H":45,"pw":413,"ph":531, "label":"New Zealand",        "hr":0.75,"el":0.43,"picwish_spec":"NZ"},
+    "ae_visa":      {"W":35,"H":45,"pw":413,"ph":531, "label":"UAE/Dubai",          "hr":0.75,"el":0.43,"picwish_spec":"AE"},
+    "visa_schengen":{"W":35,"H":45,"pw":413,"ph":531, "label":"Visa Schengen",      "hr":0.76,"el":0.44,"picwish_spec":"EU"},
 }
 
 BG_MAP = {
@@ -146,987 +102,355 @@ BG_MAP = {
     "light_blue": (214,228,240),
     "blue":       (67,114,196),
     "red":        (204,0,0),
-    "gray":       (200,200,200),
 }
 
-# Màu sắc outfit cho variants
-OUTFIT_CONFIGS = {
-    "original":     {"name":"Ảnh gốc",       "collar":(220,220,225), "jacket":(210,210,215)},
-    "formal_dark":  {"name":"Vest tối",       "collar":(240,240,245), "jacket":(40,40,60)},
-    "formal_light": {"name":"Áo sáng",        "collar":(245,245,250), "jacket":(200,210,220)},
-    "smart_casual": {"name":"Smart Casual",   "collar":(240,240,245), "jacket":(100,120,140)},
-}
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.bool_):    return bool(obj)
+        if isinstance(obj, np.integer):  return int(obj)
+        if isinstance(obj, np.floating): return float(obj)
+        if isinstance(obj, np.ndarray):  return obj.tolist()
+        return super().default(obj)
 
-# ════════════════════════════════════════════════════════════════════════
-# UTILS
-# ════════════════════════════════════════════════════════════════════════
-def to_cv(pil: Image.Image) -> np.ndarray:
-    return cv2.cvtColor(np.array(pil.convert("RGB")), cv2.COLOR_RGB2BGR)
-
-def to_pil(cv_img: np.ndarray) -> Image.Image:
-    return Image.fromarray(cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB))
-
-def to_bytes(pil: Image.Image, fmt="JPEG", q=95) -> bytes:
-    buf = io.BytesIO()
-    save_pil = pil.convert("RGB") if fmt.upper()=="JPEG" else pil
-    save_pil.save(buf, format=fmt, quality=q, dpi=(300,300))
-    return buf.getvalue()
-
-def to_bytes_target_size(
-    pil: Image.Image,
-    min_kb: int = 300,
-    max_kb: int = 1000,
-    dpi: int = 300,
-) -> Tuple[bytes, int]:
-    """
-    Xuất JPEG với dung lượng trong khoảng [min_kb, max_kb] KB @ dpi DPI.
-    Tự điều chỉnh quality để đạt target size.
-    Trả về (bytes, quality_used).
-    """
-    img = pil.convert("RGB")
-    # Binary search quality để đạt target size
-    lo, hi = 60, 97
-    best_bytes = None
-    best_q = 85
-
-    for _ in range(8):  # max 8 iterations
-        mid = (lo + hi) // 2
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=mid, dpi=(dpi, dpi),
-                 optimize=True, progressive=True)
-        size_kb = buf.tell() // 1024
-
-        if size_kb < min_kb:
-            lo = mid + 1  # cần quality cao hơn
-        elif size_kb > max_kb:
-            hi = mid - 1  # cần quality thấp hơn
-        else:
-            best_bytes = buf.getvalue()
-            best_q = mid
-            break
-        best_bytes = buf.getvalue()
-        best_q = mid
-
-    if best_bytes is None:
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=85, dpi=(dpi, dpi))
-        best_bytes = buf.getvalue()
-        best_q = 85
-
-    return best_bytes, best_q
-
-def pil_to_b64(pil: Image.Image, fmt="JPEG") -> str:
-    return base64.b64encode(to_bytes(pil, fmt)).decode()
-
-def hex_to_rgb(h: str) -> Tuple[int,int,int]:
+# ── Utils ─────────────────────────────────────────────────────────────────────
+def to_cv(pil): return cv2.cvtColor(np.array(pil.convert("RGB")), cv2.COLOR_RGB2BGR)
+def to_pil(cv_img): return Image.fromarray(cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB))
+def hex_to_rgb(h):
     h = h.lstrip("#")
     return (int(h[0:2],16), int(h[2:4],16), int(h[4:6],16))
 
+def img_to_bytes(pil, fmt="JPEG", q=95):
+    buf = io.BytesIO()
+    pil.convert("RGB").save(buf, format=fmt, quality=q, dpi=(300,300))
+    return buf.getvalue()
+
+def bytes_to_b64(b): return base64.b64encode(b).decode()
+
+def url_to_pil(url: str) -> Optional[Image.Image]:
+    """Tải ảnh từ URL về PIL Image."""
+    try:
+        resp = http_req.get(url, timeout=30)
+        if resp.status_code == 200:
+            return Image.open(io.BytesIO(resp.content)).convert("RGB")
+    except Exception as e:
+        logger.warning(f"url_to_pil failed: {e}")
+    return None
+
+def export_jpeg_300dpi(pil, min_kb=300, max_kb=1000):
+    """Xuất JPEG @ 300DPI, binary search quality để đạt target size."""
+    img = pil.convert("RGB")
+    lo, hi, best = 60, 97, None
+    for _ in range(8):
+        mid = (lo+hi)//2
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=mid, dpi=(300,300), optimize=True)
+        kb = buf.tell()//1024
+        if kb < min_kb: lo = mid+1
+        elif kb > max_kb: hi = mid-1
+        else: best = (buf.getvalue(), mid, kb); break
+        best = (buf.getvalue(), mid, kb)
+    if not best:
+        buf = io.BytesIO(); img.save(buf,"JPEG",quality=85,dpi=(300,300))
+        best = (buf.getvalue(), 85, buf.tell()//1024)
+    return best[0], {"quality":best[1],"size_kb":best[2],"dpi":300,"in_range":bool(min_kb<=best[2]<=max_kb)}
+
 # ════════════════════════════════════════════════════════════════════════
-# STEP 1 — NHẬN DIỆN KHUÔN MẶT
+# ENGINE 1: PicWish Advanced ID Photo API
 # ════════════════════════════════════════════════════════════════════════
-def detect_face(img_np: np.ndarray) -> Optional[Dict]:
+def process_via_picwish(
+    img_bytes: bytes,
+    sz: dict,
+    bg_rgb: Tuple,
+    do_beauty: bool = True,
+) -> Optional[Tuple[Image.Image, str]]:
     """
-    Phát hiện khuôn mặt + 2 mắt bằng OpenCV Haar Cascade.
-    Thử nhiều scale, cả frontal và profile.
-    Tự động resize ảnh quá nhỏ để tăng accuracy.
+    Gọi PicWish Advanced ID Photo API.
+    Một call xử lý tất cả: face detect → crop → remove bg → add bg color.
+    
+    Trả về (result_image, "picwish") hoặc None nếu thất bại.
     """
-    H, W   = img_np.shape[:2]
-
-    # Resize nhỏ để detect nhanh và chuẩn hơn (Haar hoạt động tốt ở ~600px)
-    scale_factor = 1.0
-    detect_img = img_np
-    if max(H, W) > 800:
-        scale_factor = 800 / max(H, W)
-        dW, dH = int(W*scale_factor), int(H*scale_factor)
-        detect_img = cv2.resize(img_np, (dW, dH), interpolation=cv2.INTER_AREA)
-    elif max(H, W) < 200:
-        scale_factor = 300 / max(H, W)
-        dW, dH = int(W*scale_factor), int(H*scale_factor)
-        detect_img = cv2.resize(img_np, (dW, dH), interpolation=cv2.INTER_LINEAR)
-
-    dH, dW = detect_img.shape[:2]
-    gray   = cv2.equalizeHist(cv2.cvtColor(detect_img, cv2.COLOR_BGR2GRAY))
-    min_sz = (max(30, dW//15), max(30, dH//15))
-
-    # Thử frontal face detector với nhiều scale
-    faces = np.array([])
-    for scale, nb, min_n in [(1.05,3,1),(1.08,4,2),(1.12,5,3)]:
-        f = _FACE_CASCADE.detectMultiScale(
-            gray, scale, nb, minSize=min_sz,
-            flags=cv2.CASCADE_SCALE_IMAGE
-        )
-        if len(f) > 0:
-            faces = f; break
-
-    # Fallback: profile face
-    if len(faces) == 0:
-        f = _PROFILE_CASCADE.detectMultiScale(gray, 1.05, 3, minSize=min_sz)
-        if len(f) > 0: faces = f
-
-    if len(faces) == 0:
+    if not PICWISH_KEY:
         return None
 
-    dx, dy, dw, dh = map(int, max(faces, key=lambda f: f[2]*f[3]))
+    # Convert màu nền sang hex string
+    bg_hex_str = "{:02x}{:02x}{:02x}".format(*bg_rgb)
+    spec       = sz.get("picwish_spec", "EU")
+    tw, th     = sz["pw"], sz["ph"]
 
-    # Phát hiện mắt trong nửa trên khuôn mặt
-    roi_gray = gray[dy : dy+dh//2, dx : dx+dw]
-    eyes_raw = _EYE_CASCADE.detectMultiScale(roi_gray, 1.08, 4, minSize=(8,8))
-    eyes_scaled = sorted(
-        [(int(dx+ex+ew//2), int(dy+ey+eh//2)) for ex,ey,ew,eh in eyes_raw],
-        key=lambda e: e[0]
-    )[:2]
-
-    # Chuyển tọa độ về scale ảnh gốc
-    inv = 1.0 / scale_factor
-    x, y, w, h = int(dx*inv), int(dy*inv), int(dw*inv), int(dh*inv)
-    eyes = [(int(ex*inv), int(ey*inv)) for ex,ey in eyes_scaled]
-
-    return {
-        "x":x, "y":y, "w":w, "h":h,
-        "cx": x+w//2, "cy": y+h//2,
-        "eyes": eyes,
-        "chin_y": y+h,
-        "crown_y": y,
+    # Build form data
+    files   = {"image_file": ("photo.jpg", img_bytes, "image/jpeg")}
+    payload = {
+        "sync":     "1",               # synchronous mode
+        "spec":     spec,              # country spec
+        "bg_color": bg_hex_str,        # background color
+        "size":     f"{tw}x{th}",      # output size in pixels
     }
+    if do_beauty:
+        payload["auto_bright"] = "1"
+        payload["auto_smooth"] = "1"
+        payload["auto_sharp"]  = "1"
+
+    headers = {"X-API-KEY": PICWISH_KEY}
+
+    try:
+        logger.info(f"  → PicWish API: spec={spec} bg=#{bg_hex_str} size={tw}x{th}")
+        resp = http_req.post(
+            PICWISH_URL,
+            headers=headers,
+            files=files,
+            data=payload,
+            timeout=60,
+        )
+        data = resp.json()
+        logger.info(f"  ← PicWish status={resp.status_code} code={data.get('status')}")
+
+        if resp.status_code != 200 or data.get("status") != 200:
+            logger.warning(f"  PicWish error: {data}")
+            return None
+
+        state = data.get("data", {}).get("state", 0)
+        if state == 1:
+            img_url = data["data"].get("image")
+            if img_url:
+                result = url_to_pil(img_url)
+                if result:
+                    # Resize về đúng kích thước target nếu PicWish trả khác
+                    if result.size != (tw, th):
+                        result = result.resize((tw, th), Image.LANCZOS)
+                    logger.info(f"  ✓ PicWish success: {result.size}")
+                    return result, "picwish"
+
+        # Async: poll nếu sync trả về task_id
+        task_id = data.get("data", {}).get("task_id")
+        if task_id:
+            return _picwish_poll(task_id, tw, th)
+
+    except Exception as e:
+        logger.warning(f"  PicWish exception: {e}")
+    return None
+
+def _picwish_poll(task_id: str, tw: int, th: int, max_wait: int = 30) -> Optional[Tuple]:
+    """Polling PicWish task result."""
+    headers = {"X-API-KEY": PICWISH_KEY}
+    poll_url = f"{PICWISH_URL}/{task_id}"
+
+    for i in range(max_wait):
+        if i > 0: time.sleep(1)
+        try:
+            resp = http_req.get(poll_url, headers=headers, timeout=10)
+            d    = resp.json().get("data", {})
+            state = d.get("state", 0)
+            if state == 1:
+                img_url = d.get("image")
+                if img_url:
+                    result = url_to_pil(img_url)
+                    if result:
+                        if result.size != (tw, th):
+                            result = result.resize((tw, th), Image.LANCZOS)
+                        logger.info(f"  ✓ PicWish poll success ({i+1}s)")
+                        return result, "picwish"
+            elif state < 0:
+                logger.warning(f"  PicWish poll error: {d}")
+                return None
+        except: pass
+    logger.warning("  PicWish poll timeout")
+    return None
 
 # ════════════════════════════════════════════════════════════════════════
-# STEP 2 — XOAY THẲNG MẶT
+# ENGINE 2: FALLBACK PIPELINE
+# (Remove.bg → rembg → color-based → keep original)
 # ════════════════════════════════════════════════════════════════════════
-def straighten_face(img_np: np.ndarray, face: Dict) -> Tuple[np.ndarray, float]:
-    """
-    Xoay ảnh để đường nối 2 mắt nằm ngang.
-    Trả về (ảnh đã xoay, góc xoay).
-    """
-    eyes = face.get("eyes", [])
-    if len(eyes) < 2:
-        return img_np, 0.0
-
-    e1, e2 = eyes[0], eyes[1]
-    angle  = math.degrees(math.atan2(e2[1]-e1[1], e2[0]-e1[0]))
-
-    if abs(angle) < 0.3:
-        return img_np, 0.0
-
-    cx = (e1[0]+e2[0]) / 2
-    cy = (e1[1]+e2[1]) / 2
+def detect_face(img_np):
     H, W = img_np.shape[:2]
-    M    = cv2.getRotationMatrix2D((cx,cy), angle, 1.0)
-    out  = cv2.warpAffine(img_np, M, (W,H),
-                          flags=cv2.INTER_LANCZOS4,
-                          borderMode=cv2.BORDER_REFLECT_101)
-    logger.info(f"  Rotated {angle:.2f}°")
-    return out, angle
+    scale = 1.0
+    work  = img_np
+    if max(H,W) > 800:
+        scale = 800/max(H,W)
+        work  = cv2.resize(img_np, (int(W*scale),int(H*scale)))
+    dH,dW = work.shape[:2]
+    gray = cv2.equalizeHist(cv2.cvtColor(work, cv2.COLOR_BGR2GRAY))
+    min_sz = (max(30,dW//15), max(30,dH//15))
+    faces = []
+    for sc,nb in [(1.05,3),(1.08,4),(1.12,5)]:
+        f = _FACE.detectMultiScale(gray, sc, nb, minSize=min_sz)
+        if len(f): faces=f; break
+    if not len(faces): return None
+    dx,dy,dw,dh = map(int, max(faces, key=lambda f:f[2]*f[3]))
+    roi = gray[dy:dy+dh//2, dx:dx+dw]
+    eyes_raw = _EYE.detectMultiScale(roi, 1.08, 4, minSize=(8,8))
+    eyes = sorted([(int((dx+ex+ew//2)/scale), int((dy+ey+eh//2)/scale)) for ex,ey,ew,eh in eyes_raw], key=lambda e:e[0])[:2]
+    inv = 1.0/scale
+    x,y,w,h = int(dx*inv),int(dy*inv),int(dw*inv),int(dh*inv)
+    return {"x":x,"y":y,"w":w,"h":h,"cx":x+w//2,"cy":y+h//2,"eyes":eyes}
 
-# ════════════════════════════════════════════════════════════════════════
-# STEP 3 — ICAO CROP (IED-based)
-# ════════════════════════════════════════════════════════════════════════
-def icao_crop(pil_img: Image.Image, face: Optional[Dict],
-              tw: int, th: int, hr: float, el: float) -> Image.Image:
-    """
-    Crop ảnh theo chuẩn ICAO 9303.
+def straighten(img_np, face):
+    eyes = face.get("eyes",[])
+    if len(eyes)<2: return img_np, 0.0
+    e1,e2 = eyes[0],eyes[1]
+    angle = math.degrees(math.atan2(e2[1]-e1[1], e2[0]-e1[0]))
+    if abs(angle)<0.3: return img_np, 0.0
+    cx,cy = (e1[0]+e2[0])/2, (e1[1]+e2[1])/2
+    H,W = img_np.shape[:2]
+    M = cv2.getRotationMatrix2D((cx,cy), angle, 1.0)
+    return cv2.warpAffine(img_np, M, (W,H), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_REFLECT_101), angle
 
-    Công thức:
-      IED = khoảng cách 2 mắt (pixel)
-      face_h (mắt→cằm) = IED × 1.8
-      head_h (đỉnh→cằm) = face_h × 1.55   (bao gồm trán + tóc)
-      crop_h = head_h / hr                  (hr: tỷ lệ đầu/ảnh)
-      crop_top = eye_y - el × crop_h        (el: vị trí mắt từ trên)
-      crop_left = eye_x - crop_w/2          (căn giữa ngang)
-    """
-    iw, ih = pil_img.size
-
+def icao_crop(pil, face, tw, th, hr, el):
+    iw,ih = pil.size
     if face is None:
-        # Không tìm thấy mặt → crop giữa đúng tỷ lệ
-        ratio = tw/th
-        if iw/ih > ratio:
-            nw = int(ih*ratio)
-            pil_img = pil_img.crop(((iw-nw)//2, 0, (iw+nw)//2, ih))
-        else:
-            nh = int(iw/ratio)
-            pil_img = pil_img.crop((0, (ih-nh)//2, iw, (ih+nh)//2))
-        return pil_img.resize((tw, th), Image.LANCZOS)
-
-    fx, fy, fw, fh = face["x"], face["y"], face["w"], face["h"]
-    eyes = face.get("eyes", [])
-
-    if len(eyes) >= 2:
-        e1, e2 = eyes[0], eyes[1]
-        ied    = math.hypot(e2[0]-e1[0], e2[1]-e1[1])
-        eye_y  = (e1[1]+e2[1]) / 2
-        eye_x  = (e1[0]+e2[0]) / 2
+        r = tw/th
+        if iw/ih>r: nw=int(ih*r); pil=pil.crop(((iw-nw)//2,0,(iw+nw)//2,ih))
+        else: nh=int(iw/r); pil=pil.crop((0,(ih-nh)//2,iw,(ih+nh)//2))
+        return pil.resize((tw,th),Image.LANCZOS)
+    fx,fy,fw,fh = face["x"],face["y"],face["w"],face["h"]
+    eyes = face.get("eyes",[])
+    if len(eyes)>=2:
+        e1,e2=eyes[0],eyes[1]
+        ied=math.hypot(e2[0]-e1[0],e2[1]-e1[1])
+        ey=(e1[1]+e2[1])/2; ex=(e1[0]+e2[0])/2
     else:
-        # Ước lượng từ bounding box
-        ied    = fw * 0.45
-        eye_y  = fy + fh * 0.35
-        eye_x  = float(face["cx"])
+        ied=fw*0.45; ey=fy+fh*0.35; ex=float(face["cx"])
+    head_h = ied*1.8*1.55
+    crop_h = head_h/hr
+    crop_w = crop_h*(tw/th)
+    ct = ey-el*crop_h; cl = ex-crop_w/2
+    # Centering fix
+    crop_cx = cl+crop_w/2
+    off = ex-crop_cx
+    if abs(off)>crop_w*0.08: cl = max(0,min(cl+off*0.5, iw-crop_w))
+    cl=max(0,min(cl,iw-crop_w)); ct=max(0,min(ct,ih-crop_h))
+    crop_w=min(crop_w,float(iw)); crop_h=min(crop_h,float(ih))
+    return pil.crop((int(cl),int(ct),int(cl+crop_w),int(ct+crop_h))).resize((tw,th),Image.LANCZOS)
 
-    # Tính kích thước crop
-    face_h2chin = ied * 1.8
-    head_h      = face_h2chin * 1.55
-    crop_h      = head_h / hr
-    crop_w      = crop_h * (tw / th)
-
-    crop_top  = eye_y - el * crop_h
-    crop_left = eye_x - crop_w / 2
-
-    # Clamp trong ảnh
-    crop_left = max(0.0, min(crop_left, iw - crop_w))
-    crop_top  = max(0.0, min(crop_top,  ih - crop_h))
-    crop_w    = min(crop_w, float(iw))
-    crop_h    = min(crop_h, float(ih))
-
-    # Verify & adjust horizontal centering
-    # Nếu face center quá lệch so với crop center → điều chỉnh
-    crop_center_x = crop_left + crop_w / 2
-    face_center_x = float(face["cx"])
-    offset = face_center_x - crop_center_x
-    if abs(offset) > crop_w * 0.08:  # lệch > 8%
-        crop_left = max(0.0, min(crop_left + offset * 0.5, iw - crop_w))
-
-    box = (int(crop_left), int(crop_top),
-           int(crop_left+crop_w), int(crop_top+crop_h))
-    cropped = pil_img.crop(box)
-
-    # Final resize với high-quality resampling
-    return cropped.resize((tw, th), Image.LANCZOS)
-
-# ════════════════════════════════════════════════════════════════════════
-# STEP 4 — XÓA NỀN (3-tier fallback)
-# ════════════════════════════════════════════════════════════════════════
-def _removebg_api(pil_img: Image.Image) -> Optional[Image.Image]:
-    """Remove.bg API — best quality."""
+def remove_bg_api(pil):
     if not REMOVE_BG_KEY: return None
     try:
-        buf = io.BytesIO()
-        pil_img.save(buf, "PNG"); buf.seek(0)
-        resp = http_requests.post(
-            "https://api.remove.bg/v1.0/removebg",
-            files={"image_file": ("p.png", buf, "image/png")},
-            data={"size": "auto"},
-            headers={"X-Api-Key": REMOVE_BG_KEY},
-            timeout=30,
-        )
-        if resp.status_code == 200:
+        buf=io.BytesIO(); pil.save(buf,"PNG"); buf.seek(0)
+        r=http_req.post("https://api.remove.bg/v1.0/removebg",
+            files={"image_file":("p.png",buf,"image/png")},
+            data={"size":"auto"}, headers={"X-Api-Key":REMOVE_BG_KEY}, timeout=30)
+        if r.status_code==200:
             logger.info("  ✓ Remove.bg API")
-            return Image.open(io.BytesIO(resp.content)).convert("RGBA")
-        logger.warning(f"  Remove.bg {resp.status_code}: {resp.text[:100]}")
-    except Exception as e:
-        logger.warning(f"  Remove.bg error: {e}")
+            return Image.open(io.BytesIO(r.content)).convert("RGBA")
+        logger.warning(f"  Remove.bg {r.status_code}")
+    except Exception as e: logger.warning(f"  Remove.bg: {e}")
     return None
 
-def _removebg_rembg(pil_img: Image.Image) -> Optional[Image.Image]:
-    """rembg local ONNX."""
-    if not REMBG_AVAILABLE or REMBG_SESSION is None: return None
+def remove_bg_rembg(pil):
+    if not REMBG_AVAILABLE: return None
     try:
-        from rembg import remove as rembg_fn
-        raw    = to_bytes(pil_img, "PNG")
-        result = rembg_fn(raw, session=REMBG_SESSION)
-        logger.info("  ✓ rembg AI")
+        from rembg import remove as fn
+        raw=img_to_bytes(pil,"PNG"); result=fn(raw,session=REMBG_SESSION)
+        logger.info("  ✓ rembg")
         return Image.open(io.BytesIO(result)).convert("RGBA")
-    except Exception as e:
-        logger.warning(f"  rembg error: {e}")
-    return None
+    except Exception as e: logger.warning(f"  rembg: {e}"); return None
 
-def _removebg_color_based(pil_img: Image.Image) -> Image.Image:
-    """
-    Xóa nền màu đơn sắc bằng LAB color distance.
-    Chỉ gọi khi nền đã được verify là đơn sắc (uniformity < 30).
-
-    Thuật toán:
-    1. Lấy màu nền từ 4 góc (trung bình)
-    2. LAB distance từng pixel vs màu nền
-    3. Threshold adaptive
-    4. Connected component → giữ foreground lớn nhất
-    5. Feather edges
-    """
-    img_np = to_cv(pil_img)
-    H, W   = img_np.shape[:2]
-    s = max(15, min(30, W//15, H//15))
-
-    # Màu nền từ 4 góc
-    corners_px = [
-        img_np[0:s, 0:s], img_np[0:s, W-s:W],
-        img_np[H-s:H, 0:s], img_np[H-s:H, W-s:W],
-    ]
-    bg_color = np.mean([c.reshape(-1,3).mean(axis=0) for c in corners_px], axis=0)
-
-    # LAB distance
-    img_lab = cv2.cvtColor(img_np, cv2.COLOR_BGR2LAB).astype(np.float32)
-    bg_bgr  = np.clip(bg_color, 0, 255).astype(np.uint8).reshape(1,1,3)
-    bg_lab  = cv2.cvtColor(bg_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)[0,0]
-    dist    = np.sqrt(np.sum((img_lab - bg_lab)**2, axis=2))
-
-    # Adaptive threshold: dựa trên std của các góc
-    corner_stds = [float(np.std(c)) for c in corners_px]
-    uniformity  = float(np.mean(corner_stds))
-    thresh = max(18, min(40, 25 + uniformity * 0.4))
-
-    # Foreground mask
-    fg = (dist > thresh).astype(np.uint8) * 255
-
-    # Morphology
-    ker_c = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9))
-    ker_o = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-    fg = cv2.morphologyEx(fg, cv2.MORPH_CLOSE, ker_c, iterations=3)
-    fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN,  ker_o, iterations=1)
-
-    # Lấy component lớn nhất = người
-    n, labels, stats, _ = cv2.connectedComponentsWithStats(fg)
-    if n > 1:
-        largest = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
-        fg = ((labels == largest) * 255).astype(np.uint8)
-
-    # Kiểm tra: nếu foreground < 10% ảnh → xóa sai, giữ toàn bộ
-    fg_ratio = float(fg.sum()) / (255 * H * W)
-    if fg_ratio < 0.10:
-        logger.warning(f"  Color-based: fg too small ({fg_ratio:.1%}), keeping original")
-        fg = np.ones((H, W), np.uint8) * 255
-
-    fg = cv2.GaussianBlur(fg, (7,7), 0)
-
-    rgba = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGBA)
-    rgba[:,:,3] = fg
-    logger.info(f"  ✓ Color-based (thresh={thresh:.1f}, fg={fg_ratio:.1%})")
+def remove_bg_color(pil):
+    img=to_cv(pil); H,W=img.shape[:2]; s=max(15,min(30,W//15,H//15))
+    corners=[img[0:s,0:s],img[0:s,W-s:W],img[H-s:H,0:s],img[H-s:H,W-s:W]]
+    bg=np.mean([c.reshape(-1,3).mean(0) for c in corners],0)
+    lab=cv2.cvtColor(img,cv2.COLOR_BGR2LAB).astype(np.float32)
+    bg_bgr=np.clip(bg,0,255).astype(np.uint8).reshape(1,1,3)
+    bg_lab=cv2.cvtColor(bg_bgr,cv2.COLOR_BGR2LAB).astype(np.float32)[0,0]
+    dist=np.sqrt(np.sum((lab-bg_lab)**2,2))
+    stds=[float(np.std(c)) for c in corners]; unif=float(np.mean(stds))
+    thresh=max(18,min(40,25+unif*0.4))
+    fg=(dist>thresh).astype(np.uint8)*255
+    ker=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(9,9))
+    fg=cv2.morphologyEx(fg,cv2.MORPH_CLOSE,ker,iterations=3)
+    fg=cv2.morphologyEx(fg,cv2.MORPH_OPEN,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)),iterations=1)
+    n,labels,stats,_=cv2.connectedComponentsWithStats(fg)
+    if n>1: largest=1+int(np.argmax(stats[1:,cv2.CC_STAT_AREA])); fg=((labels==largest)*255).astype(np.uint8)
+    if float(fg.sum())/(255*H*W)<0.10:
+        logger.warning("  Color-based: fg<10%, keep original"); return pil.convert("RGBA")
+    fg=cv2.GaussianBlur(fg,(7,7),0)
+    rgba=cv2.cvtColor(img,cv2.COLOR_BGR2RGBA); rgba[:,:,3]=fg
+    logger.info(f"  ✓ Color-based (thresh={thresh:.1f})")
     return Image.fromarray(rgba).convert("RGBA")
 
-def _removebg_keep_original(pil_img: Image.Image) -> Image.Image:
-    """Giữ nguyên ảnh, không xóa nền — fallback an toàn nhất."""
-    logger.info("  ✓ Keep original (no bg removal)")
-    return pil_img.convert("RGBA")
+def clean_alpha(rgba):
+    r,g,b,a=rgba.split(); an=np.array(a)
+    an=cv2.erode(an,cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)),iterations=1)
+    an=cv2.GaussianBlur(an,(3,3),0)
+    an=np.where(an<10,0,np.where(an>245,255,an))
+    return Image.merge("RGBA",[r,g,b,Image.fromarray(an.astype(np.uint8))])
 
-def remove_background(pil_img: Image.Image) -> Tuple[Image.Image, str]:
-    """
-    Xóa nền theo thứ tự ưu tiên:
-    1. Remove.bg API  → chất lượng tốt nhất (cần key + credit)
-    2. rembg u2netp   → AI local, không cần API (cần model ONNX)
-    3. Color-based    → xóa nền màu đơn sắc (an toàn, không xóa sai)
-    4. Keep original  → giữ nguyên nếu không thể xóa an toàn
-    """
-    r = _removebg_api(pil_img)
+def apply_bg(rgba, bg_rgb):
+    rgba=clean_alpha(rgba); W,H=rgba.size
+    bg=Image.new("RGB",(W,H),bg_rgb); bg.paste(rgba,mask=rgba.split()[3])
+    arr=np.array(bg); t=np.array(bg_rgb,np.uint8); s=5
+    for sy,ey,sx,ex in [(0,s,0,s),(0,s,W-s,W),(H-s,H,0,s),(H-s,H,W-s,W)]: arr[sy:ey,sx:ex]=t
+    return Image.fromarray(arr)
+
+def remove_background_fallback(pil, face):
+    """Fallback pipeline khi không có PicWish."""
+    # Kiểm tra uniformity nền
+    img_cv=to_cv(pil); H,W=img_cv.shape[:2]; s=20
+    corners=[img_cv[0:s,0:s],img_cv[0:s,W-s:W],img_cv[H-s:H,0:s],img_cv[H-s:H,W-s:W]]
+    unif=float(np.mean([np.std(c) for c in corners]))
+
+    r = remove_bg_api(pil)
     if r: return r, "removebg_api"
-
-    r = _removebg_rembg(pil_img)
+    r = remove_bg_rembg(pil)
     if r: return r, "rembg"
+    if unif < 40: return remove_bg_color(pil), "color_based"
+    logger.info("  Keep original"); return pil.convert("RGBA"), "keep_original"
 
-    # Kiểm tra xem nền có đơn sắc đủ để xóa an toàn không
-    img_np = to_cv(pil_img)
-    H, W   = img_np.shape[:2]
-    s = 20
-    corners = [
-        img_np[0:s, 0:s],
-        img_np[0:s, W-s:W],
-        img_np[H-s:H, 0:s],
-        img_np[H-s:H, W-s:W],
-    ]
-    corner_stds = [float(np.std(c)) for c in corners]
-    bg_uniformity = float(np.mean(corner_stds))
-    
-    if bg_uniformity < 40:
-        # Nền đơn sắc đủ → color-based removal
-        r = _removebg_color_based(pil_img)
-        return r, "color_based"
-    else:
-        # Nền phức tạp → giữ nguyên
-        r = _removebg_keep_original(pil_img)
-        return r, "keep_original"
-
-def clean_alpha_edges(rgba: Image.Image) -> Image.Image:
-    """
-    Làm sạch viền alpha sau Remove.bg để loại bỏ fringe pixels.
-    - Erode nhẹ để loại viền màu không mong muốn
-    - Feather edges cho transition mượt
-    """
-    r, g, b, a = rgba.split()
-    alpha_np = np.array(a)
-
-    # Erode nhẹ để loại fringe (1px)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-    alpha_np = cv2.erode(alpha_np, kernel, iterations=1)
-
-    # Feather edges nhẹ
-    alpha_np = cv2.GaussianBlur(alpha_np, (3,3), 0)
-
-    # Threshold: pixel < 10 → fully transparent
-    alpha_np = np.where(alpha_np < 10, 0, alpha_np)
-    # Pixel > 245 → fully opaque
-    alpha_np = np.where(alpha_np > 245, 255, alpha_np)
-
-    cleaned = Image.merge("RGBA", [r, g, b, Image.fromarray(alpha_np.astype(np.uint8))])
-    return cleaned
-
-def apply_background(rgba: Image.Image, bg_rgb: Tuple) -> Image.Image:
-    """
-    Ghép ảnh đã xóa nền lên màu nền mới.
-    Bao gồm clean edges để loại artifact.
-    """
-    # Clean alpha trước
-    rgba = clean_alpha_edges(rgba)
-
-    W, H = rgba.size
-    bg = Image.new("RGB", (W, H), bg_rgb)
-    bg.paste(rgba, mask=rgba.split()[3])
-
-    # Đảm bảo 4 góc là màu nền thuần (không artifact)
-    bg_arr = np.array(bg)
-    target = np.array(bg_rgb, dtype=np.uint8)
-    corner_s = 5  # 5px mỗi góc
-    for sy, ey, sx, ex in [(0,corner_s,0,corner_s),(0,corner_s,W-corner_s,W),
-                            (H-corner_s,H,0,corner_s),(H-corner_s,H,W-corner_s,W)]:
-        bg_arr[sy:ey, sx:ex] = target
-    return Image.fromarray(bg_arr)
-
-# ════════════════════════════════════════════════════════════════════════
-# STEP 5 — ENHANCE CHẤT LƯỢNG
-# ════════════════════════════════════════════════════════════════════════
-def enhance_photo(pil_img: Image.Image) -> Image.Image:
-    """
-    Cải thiện chất lượng ảnh thẻ:
-    - Bilateral filter: giảm noise giữ cạnh sắc
-    - Brightness: +5%
-    - Contrast: +12%
-    - Sharpness: +80%
-    - Color saturation: +5%
-    - UnsharpMask: làm nét chi tiết
-    """
-    cv_img = to_cv(pil_img)
-    cv_img = cv2.bilateralFilter(cv_img, d=5, sigmaColor=35, sigmaSpace=35)
-    img = to_pil(cv_img)
-    img = ImageEnhance.Brightness(img).enhance(1.03)
-    img = ImageEnhance.Contrast(img).enhance(1.08)
-    img = ImageEnhance.Sharpness(img).enhance(1.3)
-    img = ImageEnhance.Color(img).enhance(1.03)
-    img = img.filter(ImageFilter.UnsharpMask(radius=0.5, percent=80, threshold=4))
+def enhance_photo(pil):
+    cv=to_cv(pil); cv=cv2.bilateralFilter(cv,5,35,35)
+    img=to_pil(cv)
+    img=ImageEnhance.Brightness(img).enhance(1.03)
+    img=ImageEnhance.Contrast(img).enhance(1.08)
+    img=ImageEnhance.Sharpness(img).enhance(1.3)
+    img=ImageEnhance.Color(img).enhance(1.03)
+    img=img.filter(ImageFilter.UnsharpMask(radius=0.5,percent=80,threshold=4))
     return img
 
-# ════════════════════════════════════════════════════════════════════════
-# STEP 5b — XỬ LÝ NÂNG CAO: SHADOW, BLUR, CLOTHING
-# ════════════════════════════════════════════════════════════════════════
-
-def remove_shadow(pil_img: Image.Image, bg_rgb: Tuple) -> Image.Image:
-    """
-    Loại bỏ bóng đổ (shadow) trên nền ảnh thẻ.
-
-    Thuật toán:
-    1. Chuyển sang LAB colorspace
-    2. Xác định vùng nền (góc ảnh)
-    3. Pixel nền tối hơn bg_rgb > threshold → paint bằng bg_rgb
-    4. Gradient smooth ở vùng biên người↔nền
-    """
-    if bg_rgb[0] < 200:  # Nền tối → không cần xóa shadow
-        return pil_img
-
-    img_np = to_cv(pil_img)
-    H, W   = img_np.shape[:2]
-
-    # Màu nền target trong BGR
-    bg_bgr = np.array([bg_rgb[2], bg_rgb[1], bg_rgb[0]], dtype=np.float32)
-
-    # Chuyển sang LAB để detect shadow tốt hơn
-    img_lab = cv2.cvtColor(img_np, cv2.COLOR_BGR2LAB).astype(np.float32)
-    bg_lab  = cv2.cvtColor(
-        np.uint8([[bg_bgr]]), cv2.COLOR_BGR2LAB
-    ).astype(np.float32)[0, 0]
-
-    # Color distance từng pixel đến màu nền
-    diff  = img_lab - bg_lab
-    dist  = np.sqrt(np.sum(diff**2, axis=2))
-
-    # Shadow: pixel gần màu nền nhưng tối hơn (L channel thấp hơn)
-    L_bg   = float(bg_lab[0])
-    L_img  = img_lab[:,:,0]
-    is_near_bg  = dist < 35          # gần màu nền
-    is_darker   = L_img < (L_bg - 8) # tối hơn nền
-
-    shadow_mask = (is_near_bg & is_darker).astype(np.uint8) * 255
-
-    # Loại shadow bằng cách replace bằng màu nền
-    result = img_np.copy()
-    result[shadow_mask > 0] = bg_bgr.astype(np.uint8)
-
-    # Smooth transition ở vùng shadow↔nền
-    shadow_blur = cv2.GaussianBlur(shadow_mask.astype(np.float32)/255, (5,5), 0)
-    for c in range(3):
-        result[:,:,c] = (
-            result[:,:,c] * (1 - shadow_blur) +
-            bg_bgr[c] * shadow_blur
-        ).astype(np.uint8)
-
-    logger.info(f"  Shadow pixels removed: {int(shadow_mask.sum()//255)}")
-    return to_pil(result)
-
-
-def check_blur_score(pil_img: Image.Image) -> Dict:
-    """
-    Đánh giá độ sắc nét của ảnh bằng Laplacian variance.
-    Score < 50: mờ (blur), cần warning.
-    Score > 200: rất sắc nét.
-    """
-    gray    = cv2.cvtColor(to_cv(pil_img), cv2.COLOR_BGR2GRAY)
-    lap_var = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-    is_blur = lap_var < 50
-    level   = "sharp" if lap_var > 200 else ("acceptable" if lap_var > 50 else "blurry")
+def check_quality(pil, face_ok, bg_mode):
+    """Kiểm tra blur, noise, clothing, background."""
+    gray=cv2.cvtColor(to_cv(pil),cv2.COLOR_BGR2GRAY)
+    lap=float(cv2.Laplacian(gray,cv2.CV_64F).var())
+    blur_ok=bool(lap>=50)
+    blurred=cv2.GaussianBlur(gray,(5,5),0)
+    noise=float(np.std(gray.astype(np.float32)-blurred.astype(np.float32)))
+    noise_ok=bool(noise<12)
+    # Background uniformity
+    arr=np.array(pil); W,H=pil.size; s=20
+    corners=[arr[0:s,0:s],arr[0:s,W-s:W],arr[H-s:H,0:s],arr[H-s:H,W-s:W]]
+    cm=[float(np.mean(c)) for c in corners]
+    bg_ok=bool(max(cm)-min(cm)<40)
+    # Clothing
+    y1,y2=int(H*0.55),H; x1,x2=int(W*0.2),int(W*0.8)
+    cl_reg=to_cv(pil)[y1:y2,x1:x2]
+    sat=float(np.mean(cv2.cvtColor(cl_reg,cv2.COLOR_BGR2HSV)[:,:,1])) if cl_reg.size>0 else 0
+    cloth_ok=bool(sat<80)
     return {
-        "score": round(lap_var, 1),
-        "level": level,
-        "is_acceptable": bool(lap_var >= 50),
-        "message": "Ảnh đủ sắc nét" if not is_blur else "Ảnh có thể bị mờ — nên chụp lại"
+        "blur":     {"score":round(lap,1),"level":"sharp" if lap>200 else "acceptable" if lap>=50 else "blurry","ok":blur_ok},
+        "noise":    {"score":round(noise,1),"level":"clean" if noise<5 else "acceptable" if noise<12 else "noisy","ok":noise_ok},
+        "background":{"uniform":bg_ok,"ok":bg_ok},
+        "clothing": {"saturation":round(sat,1),"is_neutral":cloth_ok,"ok":cloth_ok},
+        "overall":  bool(blur_ok and noise_ok and bg_ok),
     }
 
-
-def check_noise_level(pil_img: Image.Image) -> Dict:
-    """
-    Đo mức độ noise (nhiễu hạt) bằng so sánh ảnh gốc vs smoothed.
-    """
-    gray    = cv2.cvtColor(to_cv(pil_img), cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5,5), 0)
-    noise   = float(np.std(gray.astype(np.float32) - blurred.astype(np.float32)))
-    level   = "clean" if noise < 5 else ("acceptable" if noise < 12 else "noisy")
-    return {
-        "score": round(noise, 1),
-        "level": level,
-        "is_acceptable": bool(noise < 12),
-        "message": "Ảnh sạch, ít nhiễu" if noise < 5 else (
-                   "Ảnh có nhiễu nhẹ" if noise < 12 else "Ảnh bị nhiễu — nên chụp ảnh khác")
-    }
-
-
-def assess_clothing(pil_img: Image.Image, face: Optional[Dict]) -> Dict:
-    """
-    Đánh giá trang phục có phù hợp với ảnh thẻ không.
-
-    Tiêu chí:
-    - Màu sắc trung tính (không quá sặc sỡ)
-    - Đơn sắc/trơn (không pattern phức tạp)
-
-    Thuật toán:
-    1. Xác định vùng quần áo (dưới cằm, bỏ nền)
-    2. Phân tích màu sắc: saturation trung bình
-    3. Phân tích texture: gradient variance
-    """
-    W, H = pil_img.size
-    img_np = to_cv(pil_img)
-
-    # Vùng quần áo: 55-100% chiều cao, 20-80% chiều ngang
-    y1 = int(H * 0.55)
-    y2 = H
-    x1 = int(W * 0.20)
-    x2 = int(W * 0.80)
-    clothing_region = img_np[y1:y2, x1:x2]
-
-    if clothing_region.size == 0:
-        return {"neutral": True, "plain": True, "message": "Không đánh giá được vùng trang phục"}
-
-    # 1. Màu sắc: chuyển sang HSV, đo saturation
-    hsv = cv2.cvtColor(clothing_region, cv2.COLOR_BGR2HSV)
-    saturation = float(np.mean(hsv[:,:,1]))  # 0-255, thấp = trung tính
-    is_neutral = saturation < 80  # < 80/255 ≈ < 31% saturation
-
-    # 2. Texture/pattern: Laplacian của vùng quần áo
-    gray_cloth  = cv2.cvtColor(clothing_region, cv2.COLOR_BGR2GRAY)
-    texture_var = float(cv2.Laplacian(gray_cloth, cv2.CV_64F).var())
-    is_plain    = texture_var < 300  # thấp = ít pattern
-
-    # 3. Màu chủ đạo
-    pixels = clothing_region.reshape(-1, 3).astype(np.float32)
-    if len(pixels) > 1000:
-        idx = np.random.choice(len(pixels), 500, replace=False)
-        pixels = pixels[idx]
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    _, _, centers = cv2.kmeans(pixels, 2, None, criteria, 3, cv2.KMEANS_PP_CENTERS)
-    dominant_bgr = centers[0].astype(int)
-    dominant_rgb = (int(dominant_bgr[2]), int(dominant_bgr[1]), int(dominant_bgr[0]))
-    dominant_hex = "#{:02x}{:02x}{:02x}".format(*dominant_rgb)
-
-    result = {
-        "is_neutral":    bool(is_neutral),
-        "is_plain":      bool(is_plain),
-        "is_compliant":  bool(is_neutral and is_plain),
-        "saturation":    round(saturation, 1),
-        "texture_score": round(texture_var, 1),
-        "dominant_color": dominant_hex,
-        "message": (
-            "✓ Trang phục phù hợp — màu trung tính, đơn sắc" if (is_neutral and is_plain)
-            else "⚠ Trang phục nên là màu trung tính, đơn sắc" if not is_neutral
-            else "⚠ Trang phục có pattern phức tạp — nên mặc áo trơn"
-        )
-    }
-    logger.info(f"  Clothing: neutral={is_neutral} plain={is_plain} sat={saturation:.0f}")
-    return result
-
-
-def export_jpeg_300dpi(
-    pil_img: Image.Image,
-    target_min_kb: int = 300,
-    target_max_kb: int = 1000,
-) -> Tuple[bytes, Dict]:
-    """
-    Xuất JPEG @ 300 DPI với kích thước file trong khoảng mục tiêu.
-    Trả về (jpeg_bytes, export_info).
-    """
-    img = pil_img.convert("RGB")
-    jpeg_bytes, quality = to_bytes_target_size(img, target_min_kb, target_max_kb, dpi=300)
-
-    size_kb = len(jpeg_bytes) // 1024
-    info = {
-        "format":     "JPEG",
-        "dpi":        300,
-        "quality":    quality,
-        "size_kb":    size_kb,
-        "size_mb":    round(size_kb / 1024, 2),
-        "dimensions": f"{img.width}×{img.height}px",
-        "in_range":   bool(target_min_kb <= size_kb <= target_max_kb),
-    }
-    logger.info(f"  Export: JPEG q={quality} {size_kb}KB @ 300DPI")
-    return jpeg_bytes, info
-
-
-def icao_compliance_check(
-    pil_img: Image.Image,
-    face_detected: bool,
-    bg_mode: str,
-    head_ratio: float,
-    eye_line: float,
-) -> Dict:
-    """
-    Kiểm tra 12 tiêu chí ICAO 9303 + ISO/IEC 19794-5.
-    Trả về dict với danh sách pass/fail và overall score.
-    """
-    W, H = pil_img.size
-    checks = []
-
-    # 1. Kích thước tối thiểu
-    checks.append({
-        "id": "resolution",
-        "label": "Độ phân giải đủ (min 300×300px)",
-        "pass": bool(W >= 300 and H >= 300),
-        "detail": f"{W}×{H}px"
-    })
-
-    # 2. Tỷ lệ khung hình
-    ratio = W/H if H>0 else 0
-    checks.append({
-        "id": "aspect",
-        "label": "Tỷ lệ khung hình đúng",
-        "pass": bool(0.4 < ratio < 2.0),
-        "detail": f"{ratio:.2f}"
-    })
-
-    # 3. Phát hiện khuôn mặt
-    checks.append({
-        "id": "face",
-        "label": "Phát hiện khuôn mặt",
-        "pass": bool(face_detected),
-        "detail": "Có" if face_detected else "Không"
-    })
-
-    # 4. Vị trí khuôn mặt (head ratio)
-    hr_ok = 0.50 <= head_ratio <= 0.85
-    checks.append({
-        "id": "head_size",
-        "label": "Tỷ lệ đầu ICAO (50-85%)",
-        "pass": bool(hr_ok),
-        "detail": f"{head_ratio*100:.0f}%"
-    })
-
-    # 5. Vị trí mắt (ICAO: mắt ở 31-44% từ trên = 56-69% từ dưới)
-    el_ok = 0.30 <= eye_line <= 0.48
-    checks.append({
-        "id": "eye_position",
-        "label": "Vị trí mắt ICAO (31-48% từ trên)",
-        "pass": bool(el_ok),
-        "detail": f"{eye_line*100:.0f}% từ trên"
-    })
-
-    # 6. Phân tích độ sáng (ICAO: không quá tối/sáng)
-    gray = np.array(pil_img.convert("L"))
-    mean_brightness = float(np.mean(gray))
-    brightness_ok = bool(80 < mean_brightness < 220)
-    checks.append({
-        "id": "brightness",
-        "label": "Độ sáng hợp lý (80-220/255)",
-        "pass": bool(brightness_ok),
-        "detail": f"{mean_brightness:.0f}/255"
-    })
-
-    # 7. Độ tương phản
-    std_brightness = float(np.std(gray))
-    contrast_ok = bool(std_brightness > 20)
-    checks.append({
-        "id": "contrast",
-        "label": "Tương phản đủ (std>20)",
-        "pass": bool(contrast_ok),
-        "detail": f"std={std_brightness:.1f}"
-    })
-
-    # 8. Độ sắc nét (Laplacian variance)
-    lap_var = float(cv2.Laplacian(gray, cv2.CV_64F).var())
-    sharpness_ok = bool(lap_var > 50)
-    checks.append({
-        "id": "sharpness",
-        "label": "Ảnh đủ sắc nét (blur<threshold)",
-        "pass": bool(sharpness_ok),
-        "detail": f"score={lap_var:.0f}"
-    })
-
-    # 9. Màu nền (kiểm tra góc ảnh có đồng màu không)
-    corners = [
-        pil_img.crop((0,0,30,30)),
-        pil_img.crop((W-30,0,W,30)),
-        pil_img.crop((0,H-30,30,H)),
-        pil_img.crop((W-30,H-30,W,H)),
-    ]
-    corner_means = [float(np.mean(np.array(c))) for c in corners]
-    bg_uniform = bool((max(corner_means) - min(corner_means)) < 60)
-    checks.append({
-        "id": "background",
-        "label": "Nền đồng màu (không loang)",
-        "pass": bool(bg_uniform),
-        "detail": "Đồng màu" if bg_uniform else "Không đồng màu"
-    })
-
-    # 10. Màu nền sáng (ICAO yêu cầu nền sáng)
-    avg_corner = float(sum(corner_means)/len(corner_means))
-    bg_light = bool(avg_corner > 160)
-    checks.append({
-        "id": "bg_color",
-        "label": "Màu nền sáng (ICAO yêu cầu)",
-        "pass": bool(bg_light),
-        "detail": f"avg={avg_corner:.0f}/255"
-    })
-
-    # 11. Không bị cắt mặt (face detected + center)
-    face_centered = face_detected  # nếu detect được thì đã crop chuẩn
-    checks.append({
-        "id": "face_complete",
-        "label": "Khuôn mặt đầy đủ, không bị cắt",
-        "pass": bool(face_centered),
-        "detail": "OK" if face_centered else "Cần kiểm tra"
-    })
-
-    # 12. Định dạng ảnh màu (không trắng đen)
-    arr = np.array(pil_img)
-    r_ch = float(np.mean(arr[:,:,0]))
-    g_ch = float(np.mean(arr[:,:,1]))
-    b_ch = float(np.mean(arr[:,:,2]))
-    is_color = bool(max(abs(r_ch-g_ch), abs(g_ch-b_ch), abs(r_ch-b_ch)) > 8)
-    checks.append({
-        "id": "color",
-        "label": "Ảnh màu (không trắng đen)",
-        "pass": bool(is_color),
-        "detail": "Màu" if is_color else "Trắng đen"
-    })
-
-    passed = sum(1 for c in checks if c["pass"])
-    total  = len(checks)
-    score  = round(passed / total * 100)
-
-    return {
-        "score":   score,
-        "passed":  passed,
-        "total":   total,
-        "checks":  checks,
-        "verdict": "COMPLIANT" if score >= 75 else ("REVIEW" if score >= 60 else "NON_COMPLIANT"),
-    }
-
-# ════════════════════════════════════════════════════════════════════════
-# STEP 7 — PHOTO VARIANTS (4 biến thể outfit)
-# ════════════════════════════════════════════════════════════════════════
-def _get_clothing_region(pil_img: Image.Image, face: Optional[Dict]) -> Tuple[int,int,int,int]:
-    """
-    Xác định vùng quần áo (bên dưới cổ).
-    Trả về (x1, y1, x2, y2) vùng clothing.
-    """
-    W, H = pil_img.size
-    if face is None:
-        # Không có face → dùng 60% dưới ảnh
-        return (0, int(H*0.40), W, H)
-
-    fy, fh = face["y"], face["h"]
-    # Vùng quần áo: từ cổ (≈ đáy khuôn mặt + 10%) đến đáy ảnh
-    neck_y = min(int((fy + fh) * 1.05), H-1)
-    return (0, neck_y, W, H)
-
-def _create_outfit_variant(
-    base_img: Image.Image,
-    nobg_rgba: Image.Image,
-    bg_rgb: Tuple,
-    face_region: Optional[Dict],
-    outfit: str,
-    collar_color: Tuple,
-    jacket_color: Tuple,
-) -> Image.Image:
-    """
-    Tạo biến thể ảnh với outfit khác nhau.
-
-    Thuật toán:
-    1. Lấy mask alpha từ ảnh đã xóa nền
-    2. Xác định vùng quần áo (dưới cằm)
-    3. Tạo gradient outfit trên vùng đó
-    4. Blend nhẹ nhàng qua Gaussian blur ở viền
-    5. Ghép lên nền màu
-    """
-    W, H = base_img.size
-
-    if outfit == "original":
-        return base_img
-
-    # Lấy alpha mask từ nobg
-    alpha = nobg_rgba.split()[3]  # alpha channel
-    alpha_np = np.array(alpha)
-
-    # Vùng quần áo
-    cloth_x1, cloth_y1, cloth_x2, cloth_y2 = _get_clothing_region(base_img, face_region)
-
-    # Tạo cloth mask: chỉ trong vùng quần áo VÀ có người (alpha > 0)
-    cloth_mask = np.zeros((H, W), dtype=np.uint8)
-    cloth_mask[cloth_y1:cloth_y2, cloth_x1:cloth_x2] = 255
-    # Chỉ thay vùng có người
-    person_mask = (alpha_np > 128).astype(np.uint8) * 255
-    cloth_mask  = cv2.bitwise_and(cloth_mask, person_mask)
-
-    # Làm mịn mask để transition tự nhiên
-    blur_sz = max(11, min(W, H) // 15)
-    if blur_sz % 2 == 0: blur_sz += 1
-    cloth_mask_blur = cv2.GaussianBlur(cloth_mask, (blur_sz, blur_sz), 0)
-
-    # Tạo outfit layer
-    outfit_layer = np.zeros((H, W, 3), dtype=np.uint8)
-
-    # Vùng collar (cổ áo): ~15% trên vùng quần áo, màu sáng hơn
-    collar_h = max(10, int((cloth_y2 - cloth_y1) * 0.15))
-    collar_y2 = cloth_y1 + collar_h
-    outfit_layer[cloth_y1:collar_y2, cloth_x1:cloth_x2] = collar_color
-
-    # Vùng jacket (thân áo): phần còn lại
-    outfit_layer[collar_y2:cloth_y2, cloth_x1:cloth_x2] = jacket_color
-
-    # Thêm gradient (đậm dần xuống dưới)
-    for row in range(collar_y2, cloth_y2):
-        t = (row - collar_y2) / max(1, cloth_y2 - collar_y2)
-        factor = 0.85 + t * 0.15
-        outfit_layer[row, cloth_x1:cloth_x2] = np.clip(
-            np.array(jacket_color) * factor, 0, 255
-        ).astype(np.uint8)
-
-    # Blend outfit vào ảnh gốc
-    base_np = np.array(base_img.convert("RGB"))
-    mask_3ch = cloth_mask_blur[:,:,np.newaxis] / 255.0
-
-    # Alpha blend: alpha=0.85 cho jacket (giữ texture nhẹ từ gốc)
-    blend_alpha = 0.80
-    result_np = (
-        base_np * (1 - mask_3ch * blend_alpha) +
-        outfit_layer * mask_3ch * blend_alpha
-    ).astype(np.uint8)
-
-    # Áp lại alpha mask (giữ nền trong suốt)
-    result_rgba = np.dstack([result_np, alpha_np])
-    result_pil  = Image.fromarray(result_rgba, "RGBA")
-
-    # Ghép lên nền màu
-    bg = Image.new("RGBA", (W,H), bg_rgb+(255,))
-    bg.paste(result_pil, mask=result_pil.split()[3])
-    return bg.convert("RGB")
-
-def generate_variants(
-    cropped_pil: Image.Image,
-    nobg_rgba: Image.Image,
-    bg_rgb: Tuple,
-    face: Optional[Dict],
-    do_enhance: bool,
-    tw: int,
-    th: int,
-) -> Dict[str, str]:
-    """
-    Tạo 4 biến thể outfit.
-    Trả về dict {variant_name: base64_image}.
-    """
-    variants = {}
-    cfg = OUTFIT_CONFIGS
-
-    # Ảnh gốc (với nền mới)
-    orig = apply_background(nobg_rgba, bg_rgb)
-    if do_enhance: orig = enhance_photo(orig)
-    variants["original"] = pil_to_b64(orig)
-
-    # 3 biến thể outfit
-    for key in ["formal_dark", "formal_light", "smart_casual"]:
-        c = cfg[key]
-        try:
-            v = _create_outfit_variant(
-                orig, nobg_rgba, bg_rgb, face,
-                key, c["collar"], c["jacket"]
-            )
-            if do_enhance: v = enhance_photo(v)
-            variants[key] = pil_to_b64(v)
-        except Exception as e:
-            logger.warning(f"Variant {key} failed: {e}")
-            variants[key] = variants["original"]  # fallback
-
-    return variants
-
-# ════════════════════════════════════════════════════════════════════════
-# STEP 8 — PDF A4 TỜ IN
-# ════════════════════════════════════════════════════════════════════════
-def make_pdf(photo: Image.Image, W_mm: int, H_mm: int, label: str) -> bytes:
-    """
-    Tạo PDF A4 landscape — lưới ảnh thẻ với đường kẻ cắt.
-    Giống For-Print-(A4).pdf của PhotoGov.
-    """
-    buf    = io.BytesIO()
-    pw, ph = A4[1], A4[0]   # landscape 841×595 pts
-
-    margin = 10 * mm
-    gap    = 3  * mm
-    iw, ih = W_mm*mm, H_mm*mm
-
-    cols = max(1, int((pw - 2*margin + gap) / (iw + gap)))
-    rows = max(1, int((ph - 2*margin + gap) / (ih + gap)))
-
-    c = pdf_canvas.Canvas(buf, pagesize=(pw, ph))
+def make_pdf(photo, W_mm, H_mm, label):
+    buf=io.BytesIO(); pw,ph=A4[1],A4[0]
+    margin=10*mm; gap=3*mm; iw,ih=W_mm*mm,H_mm*mm
+    cols=max(1,int((pw-2*margin+gap)/(iw+gap)))
+    rows=max(1,int((ph-2*margin+gap)/(ih+gap)))
+    c=pdf_canvas.Canvas(buf,pagesize=(pw,ph))
     c.setTitle(f"ID Photo — {label}")
-
-    # Header
-    c.setFont("Helvetica-Bold", 8)
-    c.drawString(margin, ph-margin+3*mm,
-                 f"{label}  |  {W_mm}×{H_mm}mm  |  {cols}×{rows} ảnh  |  In ở 100% (không scale)")
-
-    # Render ảnh vào buffer
-    img_buf = io.BytesIO()
-    photo.convert("RGB").save(img_buf, "JPEG", quality=97, dpi=(300,300))
-    img_buf.seek(0)
-    ir = ImageReader(img_buf)
-
-    # Vẽ lưới
-    c.setStrokeColorRGB(.7,.7,.7)
-    c.setLineWidth(0.25)
+    c.setFont("Helvetica-Bold",8)
+    c.drawString(margin,ph-margin+3*mm,f"{label} | {W_mm}×{H_mm}mm | {cols}×{rows} ảnh | In 100%")
+    ib=io.BytesIO(); photo.convert("RGB").save(ib,"JPEG",quality=97,dpi=(300,300)); ib.seek(0)
+    ir=ImageReader(ib)
+    c.setStrokeColorRGB(.7,.7,.7); c.setLineWidth(0.25)
     for row in range(rows):
         for col in range(cols):
-            x = margin + col*(iw+gap)
-            y = ph - margin - ih - row*(ih+gap)
-            c.drawImage(ir, x, y, iw, ih, preserveAspectRatio=False)
-            # Đường kẻ cắt
-            c.rect(x, y, iw, ih, stroke=1, fill=0)
-            # Dấu cắt góc
-            cut = 3*mm
-            c.setStrokeColorRGB(.5,.5,.5)
-            c.setLineWidth(0.15)
-            for dx, dy in [(-cut,0),(cut,0),(0,-cut),(0,cut)]:
-                cx_start = x + (0 if dx<0 else iw)
-                cy_start = y + (0 if dy<0 else ih)
-                c.line(cx_start, cy_start,
-                       cx_start+dx, cy_start+dy)
-            c.setStrokeColorRGB(.7,.7,.7)
-            c.setLineWidth(0.25)
-
-    # Footer
-    c.setFont("Helvetica", 6)
-    c.setFillColorRGB(.4,.4,.4)
-    c.drawCentredString(pw/2, margin/3,
-                        "ID Photo Pro — In ở kích thước thực 100% — không phóng to thu nhỏ")
-    c.save()
-    return buf.getvalue()
+            x=margin+col*(iw+gap); y=ph-margin-ih-row*(ih+gap)
+            c.drawImage(ir,x,y,iw,ih,preserveAspectRatio=False)
+            c.rect(x,y,iw,ih,stroke=1,fill=0)
+    c.setFont("Helvetica",6); c.setFillColorRGB(.4,.4,.4)
+    c.drawCentredString(pw/2,margin/3,"In ở kích thước thực 100% — không phóng to")
+    c.save(); return buf.getvalue()
 
 # ════════════════════════════════════════════════════════════════════════
 # ENDPOINTS
@@ -1136,17 +460,12 @@ def make_pdf(photo: Image.Image, W_mm: int, H_mm: int, label: str) -> bytes:
 async def health():
     return {
         "status":        "ok",
-        "version":       "6.0.0",
+        "version":       "7.0.0",
+        "picwish":       bool(PICWISH_KEY),
         "remove_bg_api": bool(REMOVE_BG_KEY),
         "rembg":         REMBG_AVAILABLE,
         "opencv":        cv2.__version__,
-        "reportlab":     True,
-        "bg_mode":       ("remove.bg" if REMOVE_BG_KEY
-                          else "rembg" if REMBG_AVAILABLE
-                          else "grabcut"),
-        "features": ["face_detect","straighten","icao_crop",
-                     "bg_remove","enhance","compliance_check",
-                     "variants_4","pdf_a4"],
+        "engine":        "picwish" if PICWISH_KEY else ("remove.bg" if REMOVE_BG_KEY else "rembg" if REMBG_AVAILABLE else "color_based"),
     }
 
 @app.get("/api/sizes")
@@ -1155,16 +474,16 @@ async def get_sizes():
 
 @app.post("/api/process")
 async def process_photo(
-    file:           UploadFile = File(...),
-    size_key:       str   = Form("the_3x4"),
-    bg_color:       str   = Form("white"),
-    bg_hex:         str   = Form(""),
-    do_enhance:     bool  = Form(True),
-    do_variants:    bool  = Form(True),   # tạo 4 biến thể outfit
-    do_compliance:  bool  = Form(True),   # ICAO compliance check
-    output_fmt:     str   = Form("jpeg"),
-    head_ratio:     float = Form(0.0),
-    eye_line:       float = Form(0.0),
+    file:          UploadFile = File(...),
+    size_key:      str   = Form("the_3x4"),
+    bg_color:      str   = Form("white"),
+    bg_hex:        str   = Form(""),
+    do_enhance:    bool  = Form(True),
+    do_variants:   bool  = Form(False),
+    do_compliance: bool  = Form(True),
+    output_fmt:    str   = Form("jpeg"),
+    head_ratio:    float = Form(0.0),
+    eye_line:      float = Form(0.0),
 ):
     if not (file.content_type or "").startswith("image/"):
         raise HTTPException(400, "Chỉ chấp nhận file ảnh")
@@ -1173,9 +492,7 @@ async def process_photo(
     hr  = head_ratio if head_ratio > 0 else sz["hr"]
     el  = eye_line   if eye_line   > 0 else sz["el"]
     tw, th = sz["pw"], sz["ph"]
-    fmt = "jpeg" if output_fmt.lower() == "jpeg" else "png"
 
-    # Màu nền
     try:
         bg_rgb = hex_to_rgb(bg_hex) if (bg_hex and bg_hex.startswith("#") and len(bg_hex)==7) \
                  else BG_MAP.get(bg_color, (255,255,255))
@@ -1186,123 +503,95 @@ async def process_photo(
         raw = await file.read()
         pil = Image.open(io.BytesIO(raw)).convert("RGB")
 
-        # Giới hạn input
-        if max(pil.size) > MAX_INPUT_DIM:
-            sc = MAX_INPUT_DIM / max(pil.size)
-            pil = pil.resize(
-                (int(pil.width*sc), int(pil.height*sc)),
-                Image.LANCZOS
-            )
+        # Giới hạn kích thước input
+        MAX_DIM = 2000
+        if max(pil.size) > MAX_DIM:
+            sc = MAX_DIM/max(pil.size)
+            pil = pil.resize((int(pil.width*sc),int(pil.height*sc)),Image.LANCZOS)
 
-        logger.info(f"▶ process {pil.size} → {size_key} bg={bg_color} hr={hr:.2f}")
+        logger.info(f"▶ process {pil.size} → {size_key} bg={bg_color}")
 
-        # ── 1. Nhận diện khuôn mặt ─────────────────────────────────────
-        img_cv  = to_cv(pil)
-        face    = detect_face(img_cv)
-        face_ok = face is not None
-        logger.info(f"  Face: {'✓' if face_ok else '✗ (center crop)'}")
+        engine   = "unknown"
+        result   = None
+        face_ok  = False
+        angle    = 0.0
 
-        # ── 2. Xoay thẳng mặt ──────────────────────────────────────────
-        angle = 0.0
-        if face_ok:
-            img_cv, angle = straighten_face(img_cv, face)
-            if abs(angle) > 0.3:
-                face = detect_face(img_cv) or face  # detect lại sau xoay
-            pil = to_pil(img_cv)
+        # ══ ENGINE 1: PicWish (tốt nhất — 1 call xử lý tất cả) ══════════
+        if PICWISH_KEY:
+            img_bytes = img_to_bytes(pil, "JPEG", 95)
+            pw_result = process_via_picwish(img_bytes, sz, bg_rgb, do_enhance)
+            if pw_result:
+                result, engine = pw_result
+                face_ok = True  # PicWish luôn detect và crop đúng
 
-        # ── 3. CROP ICAO ────────────────────────────────────────────────
-        cropped = icao_crop(pil, face, tw, th, hr, el)
-        logger.info(f"  Crop: {cropped.size}")
+        # ══ ENGINE 2: Fallback pipeline ═══════════════════════════════════
+        if result is None:
+            logger.info("  → Fallback pipeline")
+            # 1. Face detect
+            img_cv = to_cv(pil)
+            face   = detect_face(img_cv)
+            face_ok = face is not None
 
-        # ── 4. Xóa nền (trên ảnh đã crop — nhỏ hơn, nhanh hơn) ────────
-        nobg_rgba, bg_mode = remove_background(cropped)
-
-        # ── 5. Thêm màu nền (ảnh chính) ────────────────────────────────
-        result = apply_background(nobg_rgba, bg_rgb)
-        if bg_rgb[0] >= 230:  # Làm trắng tinh
-            _rn = np.array(result); _rn[np.all(_rn >= 238, axis=2)] = list(bg_rgb); result = Image.fromarray(_rn)
-
-        # ── 6. Enhance ─────────────────────────────────────────────────
-        if do_enhance:
-            result = enhance_photo(result)
-
-        # ── 6b. Loại bỏ bóng đổ ────────────────────────────────────────
-        result = remove_shadow(result, bg_rgb)
-
-        # ── 7. ICAO Compliance Check ────────────────────────────────────
-        compliance = None
-        if do_compliance:
-            compliance = icao_compliance_check(result, face_ok, bg_mode, hr, el)
-            logger.info(f"  Compliance: {compliance['score']}% ({compliance['verdict']})")
-
-        # ── 7b. Quality checks ──────────────────────────────────────────
-        blur_info     = check_blur_score(result)
-        noise_info    = check_noise_level(result)
-        clothing_info = assess_clothing(result, face if face_ok else None)
-
-        # ── 8. Variants (4 biến thể outfit) ────────────────────────────
-        variants_b64 = {}
-        if do_variants:
-            face_in_crop = None
+            # 2. Straighten
             if face_ok:
-                crop_cv = to_cv(cropped)
-                face_in_crop = detect_face(crop_cv)
-            variants_b64 = generate_variants(
-                cropped, nobg_rgba, bg_rgb,
-                face_in_crop, do_enhance, tw, th
-            )
-            logger.info(f"  Variants: {list(variants_b64.keys())}")
+                img_cv, angle = straighten(img_cv, face)
+                if abs(angle)>0.3: face = detect_face(img_cv) or face
+                pil = to_pil(img_cv)
 
-        # ── 9. Export JPEG @ 300 DPI với size control ───────────────────
-        # Target: 300KB-1MB (300-1000KB) như spec
+            # 3. ICAO Crop
+            cropped = icao_crop(pil, face, tw, th, hr, el)
+
+            # 4. Remove background
+            nobg_rgba, engine = remove_background_fallback(cropped, face)
+
+            # 5. Apply background
+            result = apply_bg(nobg_rgba, bg_rgb)
+
+            # 6. Enhance
+            if do_enhance:
+                result = enhance_photo(result)
+
+            # 7. Whitening background
+            if bg_rgb[0] >= 230:
+                arr = np.array(result)
+                arr[np.all(arr>=238, axis=2)] = list(bg_rgb)
+                result = Image.fromarray(arr)
+
+        # ══ Quality checks ════════════════════════════════════════════════
+        quality_info = check_quality(result, face_ok, engine) if do_compliance else {}
+
+        # ══ Export JPEG @ 300 DPI ═════════════════════════════════════════
         img_bytes, export_info = export_jpeg_300dpi(result, 300, 1000)
-        img_b64 = base64.b64encode(img_bytes).decode()
+        img_b64 = bytes_to_b64(img_bytes)
 
-        # ── 10. PDF tờ in A4 ───────────────────────────────────────────
+        # ══ PDF tờ in ════════════════════════════════════════════════════
         pdf_bytes = make_pdf(result, sz["W"], sz["H"], sz["label"])
-        pdf_b64   = base64.b64encode(pdf_bytes).decode()
+        pdf_b64   = bytes_to_b64(pdf_bytes)
 
-        logger.info(f"  ✓ Done img={export_info['size_kb']}KB @ {export_info['dpi']}DPI pdf={len(pdf_bytes)//1024}KB")
+        logger.info(f"  ✓ Done engine={engine} size={export_info['size_kb']}KB")
 
-        response_data = {
-            "success":       True,
-            "image_b64":     img_b64,
-            "pdf_b64":       pdf_b64,
-            "format":        "jpeg",
-            "width":         tw,
-            "height":        th,
-            "size_label":    sz["label"],
-            "face_detected": bool(face_ok),
+        resp_data = {
+            "success":        True,
+            "image_b64":      img_b64,
+            "pdf_b64":        pdf_b64,
+            "format":         "jpeg",
+            "width":          tw,
+            "height":         th,
+            "size_label":     sz["label"],
+            "face_detected":  bool(face_ok),
             "rotation_angle": round(float(angle), 2),
-            "bg_mode":       bg_mode,
-            # Compliance ICAO
-            "compliance":    compliance,
-            # Quality metrics mới
-            "quality": {
-                "blur":      blur_info,
-                "noise":     noise_info,
-                "clothing":  clothing_info,
-                "export":    export_info,
-            },
-            # Variants
-            "variants":      variants_b64,
-            "variant_names": {
-                "original":     OUTFIT_CONFIGS["original"]["name"],
-                "formal_dark":  OUTFIT_CONFIGS["formal_dark"]["name"],
-                "formal_light": OUTFIT_CONFIGS["formal_light"]["name"],
-                "smart_casual": OUTFIT_CONFIGS["smart_casual"]["name"],
-            },
-            # Spec summary (như PhotoGov hiển thị)
+            "engine":         engine,
+            "bg_mode":        engine,
+            "quality":        quality_info,
+            "export":         export_info,
             "spec_summary": {
-                "format":     f"JPG ({tw}×{th}px)",
-                "background": f"Trắng #{bg_rgb[0]:02x}{bg_rgb[1]:02x}{bg_rgb[2]:02x}".upper(),
-                "dpi":        f"300 DPI",
+                "format":     f"JPEG {tw}×{th}px",
+                "background": "#{:02X}{:02X}{:02X}".format(*bg_rgb),
+                "dpi":        "300 DPI",
                 "file_size":  f"{export_info['size_kb']}KB",
-                "quality":    f"Blur={blur_info['level']}, Noise={noise_info['level']}",
-                "clothing":   clothing_info["message"],
             }
         }
-        return JSONResponse(content=json.loads(json.dumps(response_data, cls=NumpyEncoder)))
+        return JSONResponse(content=json.loads(json.dumps(resp_data, cls=NumpyEncoder)))
 
     except Exception as e:
         logger.error(f"process error: {e}", exc_info=True)
